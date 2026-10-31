@@ -100,6 +100,49 @@ svg text{fill:var(--muted);font-size:11px}
 .bar-r.spike{fill:var(--bad)}
 table{width:100%;border-collapse:collapse;font-size:13.5px}td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-weight:500}
 
+/* motion + energy effects */
+#v-home{position:relative}.wrap{position:relative;z-index:1}
+#fx{position:absolute;left:0;top:0;width:100%;height:480px;pointer-events:none;-webkit-mask-image:linear-gradient(#000 35%,transparent);mask-image:linear-gradient(#000 35%,transparent)}
+#prog{position:sticky;top:0;height:3px;width:0;z-index:7;background:linear-gradient(90deg,var(--accent),#5aa9e6);transition:width .1s}
+.meter{position:fixed;right:18px;bottom:22px;width:26px;height:110px;border:2px solid var(--line);border-radius:7px;overflow:hidden;z-index:6;background:var(--panel)}
+.meter .mf{position:absolute;bottom:0;left:0;right:0;height:0;background:linear-gradient(var(--accent),var(--accent-d));transition:height .15s}
+.meter span{position:absolute;inset:0;display:grid;place-items:center;font-size:9px;font-weight:600;color:#fff;mix-blend-mode:difference}
+.circ{width:100%;height:30px;margin-top:44px;display:block}.circ path{fill:none;stroke:var(--accent);stroke-width:2}.circ .cd{fill:var(--accent)}
+.hero h1 span{background:linear-gradient(90deg,var(--accent),#5aa9e6,var(--accent));background-size:200%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 6s linear infinite}
+@keyframes sh{to{background-position:200%}}
+.logo-t i{display:inline-block;animation:glow 3s ease-in-out infinite}@keyframes glow{50%{opacity:.6;transform:translateY(-1px) scale(1.08)}}
+.top a::after{content:'';position:absolute;left:12px;right:12px;bottom:4px;height:2px;background:var(--accent);transform:scaleX(0);transition:transform .3s}.top a:hover::after{transform:scaleX(1)}
+.btn,.chip,.send{position:relative;overflow:hidden}
+.rip{position:absolute;border-radius:50%;background:currentColor;opacity:.25;transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(1);opacity:0}}
+.reveal:not(.in) .card{opacity:0}.reveal.in .card{animation:up .6s calc(var(--i,0)*90ms) backwards}
+.bar-r{transform-box:fill-box;transform-origin:50% 100%;animation:grow .9s cubic-bezier(.2,.8,.2,1) backwards}.gr{transform-box:fill-box;transform-origin:50% 100%;animation:grow .9s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes grow{from{transform:scaleY(0)}}
+tr.flash{animation:flash 2.4s}@keyframes flash{from{background:color-mix(in srgb,var(--accent) 28%,transparent)}}
+.vf{font-size:11px;color:var(--warn);white-space:nowrap}
+@media(max-width:800px){.meter{display:none}}
+.vb{position:absolute;left:4px;bottom:4px;font-size:10px;background:#000a;color:#fff;padding:1px 5px;border-radius:5px}
+.vchip{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:8px}.vchip img{height:48px;width:auto;border-radius:8px;margin:0}
+.rc{display:flex;align-items:center;border-radius:8px;animation:up .3s both;transition:opacity .3s,transform .3s}
+.rc .nav{flex:1;min-width:0}.rc.gone{opacity:0;transform:translateX(-14px)}
+.rx{opacity:0;width:24px;height:24px;border-radius:6px;color:var(--muted);font-size:15px;flex-shrink:0;margin-right:4px}
+.rc:hover .rx,.rx.sure{opacity:1}.rx:hover{color:var(--bad);background:var(--panel2)}
+.rx.sure{width:auto;padding:0 8px;font-size:11.5px;color:var(--bad)}
+.clr{color:var(--muted)!important;font-size:12.5px!important;margin-top:6px}.clr.sure{color:var(--bad)!important}
+@media(hover:none){.rx{opacity:.6}}
+.av{width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;margin:2px 12px 0 0;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center}
+.av img{width:100%;height:100%;object-fit:cover}
+.av.nologo::after{content:'X';font-family:'Playfair Display',serif;font-style:italic;font-weight:600;color:var(--accent)}
+.m.b{align-items:flex-start}.fu{padding-left:70px}
+/* reply actions */
+.acts{display:flex;gap:2px;margin-top:6px;white-space:normal;position:relative;flex-wrap:wrap}
+.acts button{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);padding:5px 8px;border-radius:7px}
+.acts button:hover,.acts button.on{background:var(--panel2);color:var(--accent)}
+.acts svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lm{position:absolute;left:0;bottom:34px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px;display:grid;grid-template-columns:repeat(2,1fr);gap:2px;z-index:20;max-height:230px;overflow:auto;animation:up .2s both;box-shadow:0 8px 24px #0004}
+.lm button{text-align:left;padding:6px 12px;font-size:13px}
+.tr{margin-top:10px;padding:10px 14px;border-left:2px solid var(--accent);background:var(--panel2);border-radius:0 10px 10px 0;white-space:pre-wrap;font-size:14.5px;animation:up .3s both}
+.tr small{display:block;color:var(--accent);margin-bottom:4px;font-size:12px}
 /* rich replies */
 .chart{background:var(--panel2);border-radius:12px;padding:12px;margin:10px 0;white-space:normal}.chart b{font-size:13px}
 .bub pre{background:var(--panel2);padding:10px;border-radius:10px;overflow:auto;white-space:pre;font-size:13px}
@@ -171,19 +214,20 @@ table{width:100%;border-collapse:collapse;font-size:13.5px}td,th{padding:8px;bor
 
     <!-- ===== HOME VIEW ===== -->
     <section class="view" id="v-home">
+      <div id="prog"></div><canvas id="fx"></canvas><div class="meter"><div class="mf" id="mf"></div><span id="mp">0%</span></div>
       <div class="wrap">
         <div class="hero"><small>Energy Assistant</small><h1>Cut your power waste with <span>VoltX</span></h1></div>
         <div class="composer" id="homeComposer">
           <div class="thumbs" id="homeThumbs"></div>
           <textarea id="homeInput" placeholder="Ask about your usage, or drop / paste (Ctrl+V) an image…"></textarea>
           <div class="crow">
-            <button class="chip" onclick="pick('homeFile')">＋ Attach image</button>
+            <button class="chip" onclick="pick('homeFile')">＋ Image / video</button>
             <button class="chip" onclick="go('setup')">Add household details</button>
             <span class="sp"></span>
             <button class="send" onclick="sendFrom('home')">↑</button>
           </div>
         </div>
-        <input type="file" id="homeFile" accept="image/*" multiple class="hidden">
+        <input type="file" id="homeFile" accept="image/*,video/*" multiple class="hidden">
         <div class="sug" id="sug"></div>
 
         <div class="sec reveal" id="bills">
@@ -199,12 +243,14 @@ table{width:100%;border-collapse:collapse;font-size:13.5px}td,th{padding:8px;bor
 
         <div class="sec reveal" id="dash"><h2>Your dashboard</h2><div id="dashBody"></div></div>
 
+        <svg class="circ" viewBox="0 0 900 30"><path d="M0 15H260l18-10h70l18 10H620l18 10h70l18-10H900"/><circle class="cd" r="4" cx="0" cy="15"/></svg>
         <div class="sec reveal" id="about"><h2>About Us</h2><p class="muted">VoltX is an AI energy assistant built to help individuals, homes and institutions understand their electricity use, spot waste and lower their bills. Built by Meet Nimbalkar, Vedant Patel, Nisarg Patel, Krishiv Patel and Soham Panchal.</p></div>
         <div class="sec reveal" id="what"><h2>What We Do</h2>
           <div class="grid">
             <div class="card"><h3>Track</h3><p>Turn your bills and appliance details into clear usage and cost insights.</p></div>
             <div class="card"><h3>Predict</h3><p>Learn from your history to forecast usage and flag unusual spikes.</p></div>
             <div class="card"><h3>Optimise</h3><p>Recommend efficient habits and the best times to run flexible loads.</p></div></div></div>
+        <svg class="circ" viewBox="0 0 900 30"><path d="M0 15H260l18-10h70l18 10H620l18 10h70l18-10H900"/><circle class="cd" r="4" cx="0" cy="15"/></svg>
         <div class="sec reveal" id="provide"><h2>What We Provide</h2>
           <div class="grid">
             <div class="card"><h3>AI chat assistant</h3><p>Ask anything about your consumption, in plain language.</p></div>
@@ -241,9 +287,9 @@ table{width:100%;border-collapse:collapse;font-size:13.5px}td,th{padding:8px;bor
         <div class="msgs" id="msgs"></div>
         <div class="cbox"><div class="composer" id="chatComposer">
           <div class="thumbs" id="chatThumbs"></div>
-          <textarea id="chatInput" rows="1" placeholder="Message VoltX… (paste images with Ctrl+V)"></textarea>
-          <div class="crow"><button class="chip" onclick="pick('chatFile')">＋ Image</button><span class="sp"></span><button class="send" onclick="sendFrom('chat')">↑</button></div>
-        </div><input type="file" id="chatFile" accept="image/*" multiple class="hidden"></div>
+          <textarea id="chatInput" rows="1" placeholder="Message VoltX… (attach images or a video)"></textarea>
+          <div class="crow"><button class="chip" onclick="pick('chatFile')">＋ Image / video</button><span class="sp"></span><button class="send" onclick="sendFrom('chat')">↑</button></div>
+        </div><input type="file" id="chatFile" accept="image/*,video/*" multiple class="hidden"></div>
       </div>
     </section>
   </div>
@@ -252,7 +298,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px}td,th{padding:8px;bor
 <script>
 /* ===== A. CONFIG (fixed, hidden from users) ===== */
 const WORKER_URL = 'https://voltx.meetnimbalkar.workers.dev';   // <- paste your Cloudflare Worker URL (no API key lives in this file)
-const SYSTEM  = `You are VoltX, a friendly expert energy assistant for individuals, homes and institutions. Help with tracking electricity consumption, energy bills, appliance efficiency, electrical waste, peak-hour usage and other factors affecting energy use, and with reducing waste and optimizing energy efficiency. Compare every answer with the saved household details and bills given below, and never invent numbers about the user. Use simple, practical language. When a photo is provided (an electricity bill, power meter, appliance label or room setup), describe what you see, read the key values, give the most likely causes of high usage, and suggest clear next steps (free habit changes first, then efficiency upgrades with safety notes). Ask for the appliance, its power rating, daily hours of use, tariff, billing month or location if needed. Keep answers concise and well structured. Reply in the language the user uses. For serious problems such as burning smells, sparks, overheating or faulty wiring, advise consulting a licensed electrician or the local electricity provider. If anyone asks who created, built, developed or made you, always answer that you were created by a team: Meet Nimbalkar is the main and lead developer (integrating the database and designs, and managing the API); Vedant Patel is the frontend and database developer (found the best LLM to solve the problem); and Nisrag Patel is the design and elemental developer (transitions, animations and theme), Krishiv Patel (Project Analyst) , Soham Panchal (Interviewer). Do not write any programming code or data formats (such as HTML, CSS, JavaScript, Python, JSON or SQL) in your answers unless the user clearly asks for code. Users want plain, practical advice, so never show code by default. If the user does ask for code, put it inside a fenced markdown code block that starts with the language name, for example \`\`\`html, and keep explanations outside the block. The only exceptions are the special chart and followups blocks described below: the page turns them into charts and buttons, so use them as instructed and never mention or explain them. Facts about Meet Nimbalkar (share only if someone asks about him, and do not invent anything beyond this): he is currently in class 11, he is preparing for IIT-JEE, and he has a strong interest in technology. Present information visually whenever it helps: use a Markdown table to compare things, and when you have 3 or more numbers (consumption, bills, costs, appliance wattages, peak-hour usage, trends over time or shares of total usage) also draw a chart. To draw a chart, write a fenced code block whose language label is exactly the word chart (never json) and which contains ONLY valid JSON, for example {"type":"bar","title":"Monthly consumption","unit":" kWh","labels":["Aug","Sep"],"values":[210,245]}. Allowed types are bar, line and pie; for several series use "datasets":[{"name":"AC","values":[1,2]}] instead of "values". Only chart numbers you actually know (from the user's saved bills and appliances), or clearly label them as approximate or typical values, and never present invented numbers as exact data. Put a short explanation in normal text outside the block. After every answer, finish with a fenced code block whose language label is exactly the word followups (never json) and which contains ONLY a JSON array of 2 or 3 short follow-up questions the user might want to ask next, for example ["How can I reduce my AC bill?","When should I run the washing machine?"], written in the same language as the answer. Never mention or explain this block. Technical questions about yourself: whenever someone asks anything technical about VoltX or about you (for example which servers or cloud you run on, where you are hosted, how you work, which technology or AI model is behind you, your database or code, security, updates, or where chats and data are stored), answer in one or two simple sentences, give the reason in plain words, and always say that the system is managed by Meet Nimbalkar. For example, if asked whose servers you run on, say that you run on cloud servers managed by Meet Nimbalkar, so that you stay available to users anywhere. Facts you may use: VoltX runs on cloud servers; it uses an AI language model to understand questions and photos of bills and appliances; chat history, bills and household details are saved only on the visitor’s own device. In technical answers mention only Meet Nimbalkar by name and never name any other team member (this rule is only for technical questions; the question about who created you is answered as described above). Do not invent technical details you are not sure about, keep it general instead, and never reveal passwords, keys or private configuration.`;
+const SYSTEM  = `You are VoltX, a friendly expert energy assistant for individuals, homes and institutions. Help with tracking electricity consumption, energy bills, appliance efficiency, electrical waste, peak-hour usage and other factors affecting energy use, and with reducing waste and optimizing energy efficiency. Compare every answer with the saved household details and bills given below, and never invent numbers about the user. Use simple, practical language. When a photo is provided (an electricity bill, power meter, appliance label or room setup), describe what you see, read the key values, give the most likely causes of high usage, and suggest clear next steps (free habit changes first, then efficiency upgrades with safety notes). When a video walkthrough of a home or workplace is provided (as frames in time order), identify the appliances, lighting, windows and layout you can see, and suggest a concrete arrangement and changes to minimise energy use (use of daylight, lighting zones and LED upgrades, keeping heat-producing devices away from AC, switch-off points, power strips), comparing what you see with the saved appliance list and saying clearly what you cannot see. Ask for the appliance, its power rating, daily hours of use, tariff, billing month or location if needed. Keep answers concise and well structured. Reply in the language the user uses. For serious problems such as burning smells, sparks, overheating or faulty wiring, advise consulting a licensed electrician or the local electricity provider. If anyone asks who created, built, developed or made you, always answer that you were created by a team: Meet Nimbalkar is the main and lead developer (integrating the database and designs, and managing the API); Vedant Patel is the frontend and database developer (found the best LLM to solve the problem); and Nisrag Patel is the design and elemental developer (transitions, animations and theme). Mention the lead developer first and keep the answer short and friendly. Do not write any programming code or data formats (such as HTML, CSS, JavaScript, Python, JSON or SQL) in your answers unless the user clearly asks for code. Users want plain, practical advice, so never show code by default. If the user does ask for code, put it inside a fenced markdown code block that starts with the language name, for example \`\`\`html, and keep explanations outside the block. The only exceptions are the special chart and followups blocks described below: the page turns them into charts and buttons, so use them as instructed and never mention or explain them. Facts about Meet Nimbalkar (share only if someone asks about him, and do not invent anything beyond this): he is currently in class 11, he is preparing for IIT-JEE, and he has a strong interest in technology. Present information visually whenever it helps: use a Markdown table to compare things, and when you have 3 or more numbers (consumption, bills, costs, appliance wattages, peak-hour usage, trends over time or shares of total usage) also draw a chart. To draw a chart, write a fenced code block whose language label is exactly the word chart (never json) and which contains ONLY valid JSON, for example {"type":"bar","title":"Monthly consumption","unit":" kWh","labels":["Aug","Sep"],"values":[210,245]}. Allowed types are bar, line and pie; for several series use "datasets":[{"name":"AC","values":[1,2]}] instead of "values". Only chart numbers you actually know (from the user's saved bills and appliances), or clearly label them as approximate or typical values, and never present invented numbers as exact data. Put a short explanation in normal text outside the block. After every answer, finish with a fenced code block whose language label is exactly the word followups (never json) and which contains ONLY a JSON array of 2 or 3 short follow-up questions the user might want to ask next, for example ["How can I reduce my AC bill?","When should I run the washing machine?"], written in the same language as the answer. Never mention or explain this block. Technical questions about yourself: whenever someone asks anything technical about VoltX or about you (for example which servers or cloud you run on, where you are hosted, how you work, which technology or AI model is behind you, your database or code, security, updates, or where chats and data are stored), answer in one or two simple sentences, give the reason in plain words, and always say that the system is managed by Meet Nimbalkar. For example, if asked whose servers you run on, say that you run on cloud servers managed by Meet Nimbalkar, so that you stay available to users anywhere. Facts you may use: VoltX runs on cloud servers; it uses an AI language model to understand questions and photos of bills and appliances; chat history, bills and household details are saved only on the visitor’s own device. In technical answers mention only Meet Nimbalkar by name and never name any other team member (this rule is only for technical questions; the question about who created you is answered as described above). Do not invent technical details you are not sure about, keep it general instead, and never reveal passwords, keys or private configuration.`;
 
 /* ===== B. STATE ===== */
 const $ = id => document.getElementById(id);
@@ -262,7 +308,8 @@ let profile = load('vx_profile', { type: '', people: '', tariff: '', apps: [] })
 let bills   = load('vx_bills', []);
 let chats   = load('vx_chats', []);
 let cur     = null;                       // current chat {id,title,msgs:[{role,text,imgs}]}
-let pending = { home: [], chat: [] };     // images waiting to be sent
+let pending = { home: [], chat: [] };
+let vids = { home: [], chat: [] };       // videos waiting to be sent: {name,n,thumb,frames[]}     // images waiting to be sent
 
 /* ===== C. SPLASH + THEME ===== */
 setTimeout(() => $('splash').classList.add('out'), 3500);
@@ -278,6 +325,7 @@ function toggleTheme() {
 
 /* ===== D. NAVIGATION ===== */
 function go(view, anchor) {
+  if (window.speechSynthesis) speechSynthesis.cancel();
   ['home','setup','chat'].forEach(v => $('v-'+v).classList.toggle('hidden', v !== view));
   document.querySelectorAll('[data-nav]').forEach(n => n.classList.toggle('on', n.dataset.nav === view));
   const el = $('v-'+view); el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
@@ -306,12 +354,38 @@ function toDataURL(file, max = 1400, q = .85) {
     r.readAsDataURL(file);
   });
 }
+function extractFrames(file, maxW = 800) {          // sample frames evenly across the video (small payload, works with any vision model)
+  return new Promise((res, rej) => {
+    const v = document.createElement('video'), url = URL.createObjectURL(file), frames = [];
+    v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
+    v.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Could not open this video')); };
+    v.onloadedmetadata = async () => {
+      const dur = v.duration; if (!isFinite(dur) || dur <= 0) return rej(new Error('Could not read the video length'));
+      const n = dur < 20 ? 6 : dur < 60 ? 8 : 10, k = Math.min(1, maxW / v.videoWidth), c = document.createElement('canvas');
+      c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k); const x = c.getContext('2d');
+      for (let i = 0; i < n; i++) {
+        v.currentTime = Math.min(dur - .05, dur * (i + .5) / n);
+        await new Promise(r => { v.onseeked = r; });
+        x.drawImage(v, 0, 0, c.width, c.height); frames.push(c.toDataURL('image/jpeg', .72));
+      }
+      URL.revokeObjectURL(url); res(frames);
+    };
+  });
+}
 async function addImages(files, target) {
-  for (const f of files) if (f.type.startsWith('image/')) pending[target].push(await toDataURL(f));
+  for (const f of files) {
+    if (f.type.startsWith('image/')) pending[target].push(await toDataURL(f));
+    else if (f.type.startsWith('video/')) {
+      toast('Reading video…');
+      try { const fr = await extractFrames(f); vids[target].push({ name: f.name, n: fr.length, frames: fr, thumb: fr[0] }); }
+      catch (e) { toast(e.message); }
+    }
+  }
   renderThumbs(target);
 }
 function renderThumbs(t) {
-  $(t + 'Thumbs').innerHTML = pending[t].map((s, i) => `<div><img src="${s}"><button onclick="pending['${t}'].splice(${i},1);renderThumbs('${t}')">×</button></div>`).join('');
+  $(t + 'Thumbs').innerHTML = pending[t].map((s, i) => `<div><img src="${s}"><button onclick="pending['${t}'].splice(${i},1);renderThumbs('${t}')">×</button></div>`).join('')
+    + vids[t].map((v, i) => `<div><img src="${v.thumb}"><span class="vb">video · ${v.n}</span><button onclick="vids['${t}'].splice(${i},1);renderThumbs('${t}')">×</button></div>`).join('');
 }
 function dropZone(el, handler) {
   ['dragenter','dragover'].forEach(e => el.addEventListener(e, ev => { ev.preventDefault(); el.classList.add('drag') }));
@@ -320,12 +394,13 @@ function dropZone(el, handler) {
 }
 
 /* ===== F. API ===== */
-async function callAI(messages, tries = 2, maxTok = 900) {
+async function callAI(messages, tries = 2, maxTok = 900, useReasoning = false) {
   let err;
   for (let i = 0; i < tries; i++) {
     try {
       const r = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages, max_tokens: maxTok, temperature: .3 }) });
       const j = await r.json().catch(() => ({}));
+      if (j.model) { window.vxModel = j.model; console.log('VoltX model:', j.model); }   // check which model really answered
       if (!r.ok) {
         const why = j.error?.message || r.statusText;
         err = new Error(r.status === 401 ? 'API key rejected (401). Update the OPENROUTER_KEY secret in Cloudflare.'
@@ -336,9 +411,11 @@ async function callAI(messages, tries = 2, maxTok = 900) {
         if (r.status === 429 && i < tries - 1) { await new Promise(z => setTimeout(z, 2500)); continue; }
         throw err;
       }
-      const text = (j.choices?.[0]?.message?.content || '').trim();
+      const ch = j.choices?.[0], text = (ch?.message?.content || '').trim();
       if (text) return text;
-      err = new Error('The model returned an empty reply.');
+      const rs = (ch?.message?.reasoning || ch?.message?.reasoning_content || '').trim();
+      if (rs && useReasoning) return rs;                       // some models put the answer in the reasoning field
+      err = new Error(ch?.finish_reason === 'length' ? 'The model ran out of tokens while thinking. Please try again.' : 'The model returned an empty reply.');
     } catch (e) {
       err = e.name === 'TypeError' ? new Error('Network blocked or offline. Check internet, VPN or ad-blocker.') : e;
       if (/401|404/.test(err.message)) throw err;
@@ -352,11 +429,56 @@ const content = (text, imgs) => imgs?.length
 
 /* ===== G. BILL SCANNING ===== */
 const BILL_PROMPT = `You are reading an electricity bill photo. Find the billing month, total units consumed (kWh) and total amount payable. Reply with ONLY this JSON: {"month":"YYYY-MM","units":number,"amount":number,"currency":"symbol"}. Use null for anything not clearly visible. Never guess.`;
-const OCR_PROMPT = 'Transcribe all text and numbers on this electricity bill line by line, including billing period, units/kWh consumed and total amount payable.';
+const OCR_PROMPT = 'Transcribe ALL text and numbers in this part of an electricity bill exactly as printed, line by line, keeping each label next to its value (for example "Units consumed: 245"). Do not summarise, translate or guess.';
+const PARSE_PROMPT = `Below is OCR text of an electricity bill (it may contain errors). Reply with ONLY this JSON: {"month":"YYYY-MM","units":number,"amount":number,"prev":number or null,"curr":number or null,"currency":"symbol","conf":"high" or "low"}. Rules: month = the billing month the consumption belongs to (use the period end if a date range). units = total kWh consumed in this bill (not a meter reading). amount = final total payable / net amount due for this bill after taxes (not arrears, not a per-unit rate, not a deposit). prev and curr = previous and current meter readings if shown. Use null when unsure. conf = "low" if any value is unclear.`;
+const num = v => { const m = String(v ?? '').replace(/,/g, '').match(/-?\d+(\.\d+)?/); return m ? +m[0] : 0; };   // "1,834.50" / "245 kWh" -> number
+function loadImg(f) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(f); }); }
+function tileURL(img, sx, sy, sw, sh, maxW = 1600) {   // crop, upscale, grayscale, auto-levels (fixes tint, shadows, dark mode)
+  const k = Math.min(2, maxW / sw), c = document.createElement('canvas'); c.width = Math.round(sw * k); c.height = Math.round(sh * k);
+  const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
+  try {
+    const id = x.getImageData(0, 0, c.width, c.height), d = id.data, n = d.length / 4, h = new Uint32Array(256); let sum = 0;
+    for (let i = 0; i < d.length; i += 4) { const g = (d[i] * .3 + d[i + 1] * .59 + d[i + 2] * .11) | 0; d[i] = g; h[g]++; sum += g; }
+    const inv = sum / n < 100;                                        // light text on dark background -> invert
+    const pct = p => { let t = 0; for (let v = 0; v < 256; v++) { t += h[v]; if (t >= n * p) return v; } return 255; };
+    let lo = inv ? 255 - pct(.995) : pct(.005), hi = inv ? 255 - pct(.15) : pct(.85); if (hi - lo < 40) { lo = 0; hi = 255; }
+    for (let i = 0; i < d.length; i += 4) { let g = inv ? 255 - d[i] : d[i]; g = Math.max(0, Math.min(255, (g - lo) / (hi - lo) * 255)); d[i] = d[i + 1] = d[i + 2] = g; }
+    x.putImageData(id, 0, 0);
+  } catch {}
+  return c.toDataURL('image/jpeg', .92);
+}
+function rotImg(im, deg) { const W = im.naturalWidth || im.width, H = im.naturalHeight || im.height, c = document.createElement('canvas'); c.width = H; c.height = W;
+  const x = c.getContext('2d'); x.translate(H / 2, W / 2); x.rotate(deg * Math.PI / 180); x.drawImage(im, -W / 2, -H / 2); return c; }
+const dims = o => [o.naturalWidth || o.width, o.naturalHeight || o.height];
+const MN = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+function normMonth(s) { const m = String(s || '').match(/^(\d{4})-(\d{1,2})$/); return m && +m[2] >= 1 && +m[2] <= 12 ? m[1] + '-' + m[2].padStart(2, '0') : ''; }
+function monthFromText(t) {
+  let m = t.match(/\b(20\d{2})[-\/](0?[1-9]|1[0-2])\b/); if (m) return m[1] + '-' + m[2].padStart(2, '0');
+  m = t.match(/\b(0?[1-9]|1[0-2])[-\/](20\d{2})\b/); if (m) return m[2] + '-' + m[1].padStart(2, '0');
+  m = t.match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,.\-]*(20\d{2})\b/i);
+  return m ? m[2] + '-' + String(MN.indexOf(m[1].toLowerCase()) + 1).padStart(2, '0') : '';
+}
+function inText(t, n) {                                 // is this number really printed on the bill? (guards against made-up values)
+  if (!n) return false; const s = String(n).replace('.', '\\.');
+  return new RegExp('(^|[^\\d.])' + s + (Number.isInteger(n) ? '(\\.0+)?' : '0*') + '(?!\\d)').test(t.replace(/(\d),(?=\d{3})/g, '$1'));
+}
+function choose(vals, text, label, why) {               // pick the value confirmed by the OCR text; flag if nothing confirms it
+  const v = vals.map(num).filter(Boolean);
+  if (!v.length) { why.push(label + ' not found'); return 0; }
+  if (v.length > 1 && v[0] === v[1]) return v[0];
+  const hit = v.find(x => inText(text, x)); if (hit) return hit;
+  why.push(label + ' not confirmed in the bill text'); return v[0];
+}
+let flashId = null;
 function parseBill(t) {
-  const m = (t || '').match(/\{[\s\S]*?\}/);
-  if (m) { try { const d = JSON.parse(m[0]); if (+d.units || +d.amount) return d; } catch {} }
-  return null;
+  t = t || ''; let d = null;
+  const m = t.match(/\{[\s\S]*?\}/);
+  if (m) { try { d = JSON.parse(m[0]); } catch { try { d = JSON.parse(m[0].replace(/'/g, '"').replace(/,\s*}/g, '}')); } catch {} } }
+  if (!d) {                                          // model ignored the JSON format: pull values from plain text
+    const g = k => (t.match(new RegExp('"?' + k + '"?\\s*[:=]\\s*"?([^",}\\n]+)', 'i')) || [])[1];
+    d = { month: g('month'), units: g('units'), amount: g('amount'), prev: g('prev'), curr: g('curr'), currency: g('currency'), conf: g('conf') };
+  }
+  return num(d.units) || num(d.amount) ? d : null;
 }
 function saveBills() { try { save('vx_bills', bills); } catch { bills.forEach(b => delete b.img); try { save('vx_bills', bills); } catch {} } }
 function qItem(src, name) {
@@ -371,30 +493,55 @@ function qItem(src, name) {
       setTimeout(() => { d.style.opacity = 0; setTimeout(() => d.remove(), 500); }, ok ? 3000 : 7000); }
   };
 }
+async function ocrAll(im, q, label, base) {
+  const [W, H] = dims(im), tiles = H > W * 1.2 ? [[0, 0, W, H * .56], [0, H * .44, W, H * .56]] : [[0, 0, W, H]];   // tall bills read in 2 sharper halves
+  let text = '';
+  for (let i = 0; i < tiles.length; i++) {
+    q.set(base + (i + 1) * 25 / tiles.length, `${label} (${i + 1}/${tiles.length})…`);
+    text += '\n' + await callAI([{ role: 'user', content: content(OCR_PROMPT, [tileURL(im, ...tiles[i])]) }], 2, 2500, true);
+  }
+  return text;
+}
 async function scanBills(files) {
   files = files.filter(f => f.type.startsWith('image/'));
   if (!files.length) return toast('Please add an image file');
   let any = false;
   for (const f of files) {
-    const q = qItem(URL.createObjectURL(f), f.name || 'Pasted image');
+    const q = qItem(URL.createObjectURL(f), f.name || 'Pasted image'), errs = [];
     try {
-      q.set(30, 'Preparing image…');
-      const img = await toDataURL(f, 1800, .9);
-      q.set(65, 'Reading bill with AI…');
-      let d = parseBill(await callAI([{ role: 'user', content: content(BILL_PROMPT, [img]) }], 2, 1200));
-      if (!d) {
-        q.set(88, 'Double-checking the text…');
-        const txt = await callAI([{ role: 'user', content: content(OCR_PROMPT, [img]) }], 2, 1200);
-        d = parseBill(await callAI([{ role: 'user', content: BILL_PROMPT + '\n\nBILL TEXT:\n' + txt }], 2, 500));
+      q.set(15, 'Enhancing image…');
+      let im = await loadImg(f), text = '', raw = '';
+      const digits = t => (t.match(/\d/g) || []).length;
+      try {
+        text = await ocrAll(im, q, 'Reading text', 20);
+        if (digits(text) < 15) for (const deg of [90, 270]) {                       // sideways photo? try rotating
+          q.set(30, 'Rotating image…'); const r = rotImg(im, deg), t2 = await ocrAll(r, q, 'Re-reading', 30);
+          if (digits(t2) > digits(text)) { text = t2; im = r; } if (digits(text) >= 15) break;
+        }
+      } catch (e) { errs.push('text read: ' + e.message); console.error(e); }
+      q.set(75, 'Extracting values…');
+      let d = null, d2 = null;
+      if (digits(text) >= 8) { try { raw = await callAI([{ role: 'user', content: PARSE_PROMPT + '\n\nOCR TEXT:\n' + text }], 2, 1200, true); console.log('VoltX extract:', raw); d = parseBill(raw); } catch (e) { errs.push('extract: ' + e.message); } }
+      if (!d || d.conf === 'low' || !inText(text, num(d.units)) || !inText(text, num(d.amount))) {   // unsure -> independent second read of the image
+        q.set(88, 'Second opinion…');
+        try { const [W, H] = dims(im); raw = await callAI([{ role: 'user', content: content(BILL_PROMPT, [tileURL(im, 0, 0, W, H, 1800)]) }], 2, 2500, true); console.log('VoltX vision:', raw); d2 = parseBill(raw); }
+        catch (e) { errs.push('image read: ' + e.message); }
       }
-      if (!d) throw new Error('unreadable');
-      const month = /^\d{4}-\d{2}$/.test(d.month) ? d.month : '';
-      const rec = { id: Date.now() + Math.random(), month, units: +d.units || 0, amount: +d.amount || 0, cur: d.currency || '', img: await toDataURL(f, 400, .6) };
-      const old = month && bills.findIndex(b => b.month === month);
+      const a = d || d2;
+      if (!a) throw new Error(errs[0] || `no values found${raw ? ` (model said: "${raw.slice(0, 70)}")` : ''}`);
+      const why = [], both = d && d2;
+      let units = choose(both ? [d.units, d2.units] : [a.units], text, 'units', why), amount = choose(both ? [d.amount, d2.amount] : [a.amount], text, 'amount', why);
+      const p = num(a.prev), c = num(a.curr);
+      if (p && c && c > p) { const diff = +(c - p).toFixed(1); if (!units || Math.abs(units - diff) > Math.max(2, diff * .05)) { why.push('units adjusted to meter readings'); units = diff; } }
+      const rates = bills.filter(b => b.units && b.amount).map(b => b.amount / b.units);
+      if (units && amount && rates.length) { const avg = rates.reduce((x, y) => x + y, 0) / rates.length, r = amount / units; if (r < avg * .4 || r > avg * 2.5) why.push('price per unit looks unusual'); }
+      const month = normMonth(a.month) || normMonth(d2 && d2.month) || monthFromText(text); if (!month) why.push('month unclear');
+      const rec = { id: Date.now() + Math.random(), month, units, amount, cur: a.currency || '', chk: why.length > 0, why: why.join('; '), img: await toDataURL(f, 400, .6) };
+      const old = month ? bills.findIndex(b => b.month === month) : -1;
       if (old >= 0) bills[old] = rec; else bills.push(rec);   // same month = update, not duplicate
-      saveBills(); renderBills(); renderDash(); any = true;
-      q.done(true, `Saved: ${rec.units || '?'} kWh, amount ${rec.amount || '?'}${month ? ' (' + month + ')' : ''}. Please verify below.`);
-    } catch { q.done(false, 'Could not read this bill. Try a sharper photo or enter it manually below.'); }
+      flashId = rec.id; saveBills(); renderBills(); renderDash(); any = true;
+      q.done(true, `Saved: ${units || '?'} kWh, amount ${amount || '?'}${month ? ' (' + month + ')' : ''}.${why.length ? ' Please verify: ' + why[0] + '.' : ' Values confirmed in the bill text.'}`);
+    } catch (e) { console.error(e); q.done(false, 'Could not read this bill: ' + e.message + '. You can add it manually below.'); }
   }
   if (any) setTimeout(() => $('dash').scrollIntoView({ behavior: 'smooth' }), 600);
 }
@@ -411,13 +558,13 @@ function addManual() {
 function renderBills() {
   const s = [...bills].sort((a, b) => a.month.localeCompare(b.month));
   $('billList').innerHTML = s.length ? `<table><tr><th></th><th>Month</th><th>Units (kWh)</th><th>Amount</th><th></th></tr>${s.map(b =>
-    `<tr><td>${b.img ? `<img class="bt" src="${b.img}" onclick="showImg(${b.id})">` : ''}</td>
+    `<tr class="${b.id === flashId ? 'flash' : ''}"><td>${b.img ? `<img class="bt" src="${b.img}" onclick="showImg(${b.id})">` : ''}</td>
     <td><input type="month" value="${b.month}" onchange="editBill(${b.id},'month',this.value)"></td>
     <td><input type="number" value="${b.units}" onchange="editBill(${b.id},'units',+this.value)"></td>
     <td><input type="number" value="${b.amount}" onchange="editBill(${b.id},'amount',+this.value)"></td>
-    <td><button onclick="delBill(${b.id})">✕</button></td></tr>`).join('')}</table>` : '';
+    <td>${b.chk ? '<span class="vf" title="' + (b.why || 'Check against your bill') + '">⚠ verify</span> ' : ''}<button onclick="delBill(${b.id})">✕</button></td></tr>`).join('')}</table>` : '';
 }
-function editBill(id, k, v) { bills.find(b => b.id === id)[k] = v; save('vx_bills', bills); renderDash(); }
+function editBill(id, k, v) { const b = bills.find(b => b.id === id); b[k] = v; b.chk = false; save('vx_bills', bills); renderBills(); renderDash(); }
 function delBill(id) { bills = bills.filter(b => b.id !== id); save('vx_bills', bills); renderBills(); renderDash(); }
 
 /* ===== H. ANALYTICS (only from user data) ===== */
@@ -468,7 +615,7 @@ function renderDash() {
     h += `<div class="card" style="margin-top:12px"><h3>Savings estimate</h3><input type="range" id="sv" min="5" max="40" value="15" oninput="sv2()" style="padding:0"><p id="svt"></p></div>`;
     window._day = day; window._tf = tfv; setTimeout(sv2, 0);
   }
-  el.innerHTML = h;
+  el.innerHTML = h; countUp(el);
 }
 function sv2() { const v = +$('sv').value, kwh = window._day * 30 * v / 100; $('svt').textContent = `Cutting ${v}% saves about ${kwh.toFixed(0)} kWh/month${window._tf ? ' ≈ ' + (kwh * window._tf).toFixed(0) + ' per month' : ''}.`; }
 
@@ -512,7 +659,7 @@ function chartSvg(raw) {
       const X = (i, k) => c.type === 'line' ? i * gw + gw / 2 : i * gw + gw * .15 + k * bw, Y = v => H - v / mx * H;
       g = ds.map((d, k) => c.type === 'line'
         ? `<polyline fill="none" stroke="${cols[k % 5]}" stroke-width="2.5" points="${d.values.map((v, i) => X(i, k) + ',' + Y(v)).join(' ')}"/>` + d.values.map((v, i) => `<circle cx="${X(i, k)}" cy="${Y(v)}" r="3.5" fill="${cols[k % 5]}"><title>${v}${esc(u)}</title></circle>`).join('')
-        : d.values.map((v, i) => `<rect x="${X(i, k)}" y="${Y(v)}" width="${bw - 2}" height="${v / mx * H}" rx="3" fill="${cols[k % 5]}"><title>${esc(d.name)} ${v}${esc(u)}</title></rect>`).join('')).join('')
+        : d.values.map((v, i) => `<rect class="gr" x="${X(i, k)}" y="${Y(v)}" width="${bw - 2}" height="${v / mx * H}" rx="3" fill="${cols[k % 5]}"><title>${esc(d.name)} ${v}${esc(u)}</title></rect>`).join('')).join('')
         + (L.length ? L.map((l, i) => `<text x="${i * gw + gw / 2}" y="${H + 16}" text-anchor="middle">${esc(String(l)).slice(0, 10)}</text>`).join('') : '')
         + (ds.length > 1 ? ds.map((d, k) => `<text x="${8 + k * 90}" y="10" fill="${cols[k % 5]}">● ${esc(d.name)}</text>`).join('') : '');
       g = `<svg viewBox="0 -14 ${W} ${H + 36}" width="100%">${g}</svg>`;
@@ -534,7 +681,8 @@ function md(t) {                                   // bot reply -> html (tables,
 function bubble(m, last) {
   const d = document.createElement('div'), bot = m.role !== 'user', r = bot ? md(m.text) : null;
   d.className = 'm ' + (bot ? 'b' : 'u');
-  d.innerHTML = `<div class="bub">${(m.imgs || []).map(s => `<img src="${s}">`).join('')}${bot ? r.html : fmt(m.text)}</div>`;
+  d.innerHTML = `${bot ? AV : ''}<div class="bub">${(m.imgs || []).map(s => `<img src="${s}">`).join('')}${(m.vids || []).map(v => `<div class="vchip">${v.thumb ? `<img src="${v.thumb}">` : ''}<span>Video · ${v.n} frames</span></div>`).join('')}${bot ? r.html : fmt(m.text)}</div>`;
+  if (bot && m.text) { const bub = d.querySelector('.bub'); bub.appendChild(acts(() => m.text, () => guessLang(plain(m.text)), bub)); }   // listen / copy / translate
   $('msgs').appendChild(d);
   if (bot && last && r.fu.length) {                 // follow-up buttons under the newest reply
     const f = document.createElement('div'); f.className = 'fu';
@@ -546,24 +694,49 @@ function bubble(m, last) {
 function fmt(t) { return (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>'); }
 function scrollEnd() { const m = $('msgs'); m.scrollTop = m.scrollHeight; }
 function renderRecents() {
-  $('recents').innerHTML = chats.slice().reverse().map(c => `<button class="nav" onclick="openChat(${c.id})">${fmt(c.title)}</button>`).join('');
+  $('recents').innerHTML = chats.length
+    ? chats.slice().reverse().map(c => `<div class="rc" id="rc${c.id}"><button class="nav" onclick="openChat(${c.id})">${fmt(c.title)}</button><button class="rx" title="Delete chat" onclick="delChat(${c.id},this)">×</button></div>`).join('')
+      + '<button class="nav clr" onclick="clearChats(this)">Clear all chats</button>'
+    : '<div class="muted" style="padding:6px 10px;font-size:12.5px">No chats yet</div>';
+}
+function persistChats() {
+  save('vx_chats', chats.slice(-30).map(c => ({ ...c, msgs: c.msgs.map(m => ({ ...m, imgs: [], frames: [], vids: (m.vids || []).map(v => ({ name: v.name, n: v.n })) })) })));
+}
+function twoStep(btn, label, run) {                     // first tap arms the button, second tap confirms
+  if (btn.classList.contains('sure')) return run();
+  const old = btn.textContent; btn.classList.add('sure'); btn.textContent = label;
+  setTimeout(() => { if (btn.isConnected) { btn.classList.remove('sure'); btn.textContent = old; } }, 3000);
+}
+function delChat(id, btn) {
+  twoStep(btn, 'Delete?', () => {
+    $('rc' + id)?.classList.add('gone');
+    setTimeout(() => { chats = chats.filter(c => c.id !== id); if (cur && cur.id === id) { cur = null; go('home'); } persistChats(); renderRecents(); }, 280);
+  });
+}
+function clearChats(btn) {
+  twoStep(btn, 'Tap again to delete all', () => {
+    chats = []; cur = null; if (!$('v-chat').classList.contains('hidden')) go('home'); persistChats(); renderRecents(); toast('All chats deleted');
+  });
 }
 async function sendFrom(src) {
-  const inp = $(src + 'Input'), text = inp.value.trim(), imgs = pending[src].splice(0);
-  if (!text && !imgs.length) return;
+  const inp = $(src + 'Input'), text0 = inp.value.trim(), imgs = pending[src].splice(0), vs = vids[src].splice(0), frames = vs.flatMap(v => v.frames);
+  if (!text0 && !imgs.length && !vs.length) return;
+  const text = text0 || (vs.length ? 'Review this workplace video. Identify the appliances and lighting, then suggest changes and a better arrangement to minimise energy use.' : '');
   inp.value = ''; renderThumbs(src);
   if (src === 'home' || !cur) { cur = { id: Date.now(), title: (text || 'Image analysis').slice(0, 32), msgs: [] }; go('chat'); $('msgs').innerHTML = ''; }
   if (!chats.includes(cur)) chats.push(cur);
+  const chat = cur;                                   // keep a handle in case the user switches or deletes chats while waiting
   if (cur.title === 'New chat') cur.title = (text || 'Image analysis').slice(0, 32);
-  document.querySelectorAll('.fu').forEach(e => e.remove()); const um = { role: 'user', text, imgs }; cur.msgs.push(um); bubble(um); scrollEnd();
-  const wait = document.createElement('div'); wait.className = 'm b'; wait.innerHTML = '<div class="bub"><div class="dots"><span></span><span></span><span></span></div></div>';
+  document.querySelectorAll('.fu').forEach(e => e.remove()); const um = { role: 'user', text, imgs, frames, vids: vs.map(v => ({ name: v.name, n: v.n, thumb: v.thumb })) }; cur.msgs.push(um); bubble(um); scrollEnd();
+  const wait = document.createElement('div'); wait.className = 'm b'; wait.innerHTML = AV + '<div class="bub"><div class="dots"><span></span><span></span><span></span></div></div>';
   $('msgs').appendChild(wait); scrollEnd();
-  const hist = cur.msgs.slice(-8).map((m, i, a) => ({ role: m.role, content: i === a.length - 1 ? content(m.text, m.imgs) : (m.role === 'assistant' ? m.text.replace(/```[\s\S]*?```/g, '') : m.text) || '(image)' }));
+  const hist = cur.msgs.slice(-8).map((m, i, a) => ({ role: m.role, content: i === a.length - 1 ? content(m.frames && m.frames.length ? `[A video walkthrough, shown as ${m.frames.length} frames in time order]\n` + m.text : m.text, [...(m.imgs || []), ...(m.frames || [])]) : (m.role === 'assistant' ? m.text.replace(/```[\s\S]*?```/g, '') : m.text) || '(image)' }));
   let reply;
   try { reply = await callAI([{ role: 'system', content: context() }, ...hist]); }
   catch (e) { console.error(e); reply = 'Sorry, I could not get a response.\n' + e.message + (imgs.length ? '\nFor images, try a sharper JPG/PNG.' : ''); }
-  wait.remove(); const bm = { role: 'assistant', text: reply }; cur.msgs.push(bm); bubble(bm, true); scrollEnd();
-  save('vx_chats', chats.slice(-30).map(c => ({ ...c, msgs: c.msgs.map(m => ({ ...m, imgs: [] })) }))); renderRecents();
+  wait.remove(); if (!chats.includes(chat)) return;   // chat was deleted meanwhile
+  const bm = { role: 'assistant', text: reply }; chat.msgs.push(bm); if (cur === chat) { bubble(bm, true); scrollEnd(); }
+  persistChats(); renderRecents();
 }
 
 /* ===== K. INIT: events, suggestions, scroll reveal ===== */
@@ -577,6 +750,7 @@ dropZone($('billDrop'), scanBills);
 ['When do I use the most electricity?', 'How can I reduce unnecessary power use?', 'Why did my consumption increase?'].forEach(q => {
   const b = document.createElement('button'); b.className = 'chip'; b.textContent = q; b.onclick = () => { $('homeInput').value = q; sendFrom('home'); }; $('sug').appendChild(b);
 });
+{ const b = document.createElement('button'); b.className = 'chip'; b.textContent = 'Scan my workplace with a video'; b.onclick = () => pick('homeFile'); $('sug').appendChild(b); }
 const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), { root: $('v-home'), threshold: .12 });
 document.querySelectorAll('.reveal').forEach(r => io.observe(r));
 dropZone($('chatBox'), f => addImages(f, 'chat'));
@@ -586,6 +760,136 @@ document.addEventListener('paste', e => {                 // Ctrl+V images
   if (!$('v-chat').classList.contains('hidden')) addImages(files, 'chat');
   else if (!$('v-home').classList.contains('hidden')) $('bills').contains(document.activeElement) ? scanBills(files) : addImages(files, 'home');
 });
+
+/* ===== K2. REPLY ACTIONS: listen, copy, translate ===== */
+const LANGS = { Hindi: 'hi-IN', Gujarati: 'gu-IN', Marathi: 'mr-IN', Tamil: 'ta-IN', Telugu: 'te-IN', Bengali: 'bn-IN', Kannada: 'kn-IN', Punjabi: 'pa-IN', Urdu: 'ur-PK', English: 'en-IN', Spanish: 'es-ES', French: 'fr-FR', Arabic: 'ar-SA' };
+const AV = '<div class="av"><img src="logo.png" alt="" onerror="this.parentNode.classList.add(\'nologo\');this.remove()"></div>';   // bot avatar (falls back to a text X if logo.png is missing)
+const ICO = {
+  speak: '<svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  stop: '<svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
+  copy: '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>',
+  ok: '<svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>',
+  tr: '<svg viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2M6 5c0 4 3 7 6 8M12 5c0 4-3 7-7 8"/><path d="m13 20 4-9 4 9M14.5 17h5"/></svg>'
+};
+function plain(t) {                                    // reply -> readable text (no charts, code, markdown symbols)
+  return (t || '').replace(/```[\s\S]*?```/g, '').replace(/```[\s\S]*$/, '').replace(/^\|[\s:|-]+\|\s*$/gm, '')
+    .replace(/^\|(.*)\|\s*$/gm, (m, r) => r.split('|').map(x => x.trim()).join(', ')).replace(/\*\*/g, '').replace(/^#{1,4} /gm, '').trim();
+}
+function guessLang(t) {
+  const sc = [[/[\u0900-\u097F]/, 'hi-IN'], [/[\u0A80-\u0AFF]/, 'gu-IN'], [/[\u0B80-\u0BFF]/, 'ta-IN'], [/[\u0C00-\u0C7F]/, 'te-IN'], [/[\u0980-\u09FF]/, 'bn-IN'], [/[\u0C80-\u0CFF]/, 'kn-IN'], [/[\u0A00-\u0A7F]/, 'pa-IN'], [/[\u0600-\u06FF]/, 'ar-SA']];
+  for (const [re, l] of sc) if (re.test(t)) return l; return 'en-IN';
+}
+let speakBtn = null;
+function setBtn(b, on) { b.classList.toggle('on', on); b.innerHTML = (on ? ICO.stop + 'Stop' : ICO.speak + 'Listen'); }
+function listen(text, lang, btn) {
+  const ss = window.speechSynthesis; if (!ss) return toast('Listening is not supported in this browser');
+  const was = speakBtn === btn; ss.cancel(); if (speakBtn) setBtn(speakBtn, false); speakBtn = null; if (was || !text) return;
+  const parts = (text.match(/[^.!?।\n]+[.!?।]?/g) || [text]).map(x => x.trim()).filter(Boolean), ch = []; let cur = '';
+  parts.forEach(p => { if ((cur + ' ' + p).length > 180) { if (cur) ch.push(cur); cur = p; } else cur = (cur + ' ' + p).trim(); }); if (cur) ch.push(cur);
+  speakBtn = btn; setBtn(btn, true);
+  ch.forEach((c, i) => { const u = new SpeechSynthesisUtterance(c); u.lang = lang;
+    if (i === ch.length - 1) u.onend = u.onerror = () => { if (speakBtn === btn) { setBtn(btn, false); speakBtn = null; } };
+    ss.speak(u); });
+}
+async function copyText(text, btn) {
+  try { await navigator.clipboard.writeText(text); }
+  catch { const t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+  btn.innerHTML = ICO.ok + 'Copied'; btn.classList.add('on'); setTimeout(() => { btn.innerHTML = ICO.copy + 'Copy'; btn.classList.remove('on'); }, 1500);
+}
+function acts(getText, getLang, holder) {              // holder = element the translation is added to (null = no translate button)
+  const d = document.createElement('div'); d.className = 'acts';
+  d.innerHTML = `<button data-a="l">${ICO.speak}Listen</button><button data-a="c">${ICO.copy}Copy</button>${holder ? `<button data-a="t">${ICO.tr}Translate</button>` : ''}`;
+  d.onclick = e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.a === 'l') listen(plain(getText()), getLang(), b);
+    if (b.dataset.a === 'c') copyText(plain(getText()), b);
+    if (b.dataset.a === 't') {
+      const open = d.querySelector('.lm'); document.querySelectorAll('.lm').forEach(x => x.remove()); if (open) return;
+      const m = document.createElement('div'); m.className = 'lm';
+      Object.keys(LANGS).forEach(l => { const o = document.createElement('button'); o.textContent = l; o.onclick = () => { m.remove(); translateTo(l, plain(getText()), holder); }; m.appendChild(o); });
+      d.appendChild(m);
+    }
+  };
+  return d;
+}
+async function translateTo(lang, text, holder) {
+  holder.querySelector('.tr')?.remove();
+  const box = document.createElement('div'); box.className = 'tr'; box.innerHTML = `<small>${lang}</small><div class="tt"><div class="dots"><span></span><span></span><span></span></div></div>`; holder.appendChild(box);
+  try {
+    const out = await callAI([{ role: 'user', content: `Translate the following text into ${lang}. Keep numbers, units (kWh, W) and line breaks. Reply with ONLY the translation.\n\n${text}` }], 2, 1200);
+    box.querySelector('.tt').textContent = out; box.appendChild(acts(() => out, () => LANGS[lang], null));
+  } catch (e) { box.querySelector('.tt').textContent = 'Translation failed: ' + e.message; }
+}
+document.addEventListener('click', e => { if (!e.target.closest('.lm') && !e.target.closest('[data-a="t"]')) document.querySelectorAll('.lm').forEach(x => x.remove()); });
+
+/* ===== L. MOTION: energy network, scroll effects, tilt, ripple ===== */
+function countUp(root) {
+  root.querySelectorAll('.stat b').forEach(b => {
+    const m = b.textContent.match(/^([\d.]+)(.*)$/); if (!m) return;
+    const to = +m[1], dec = (m[1].split('.')[1] || '').length, t0 = performance.now();
+    (function f(t) { const k = Math.min(1, (t - t0) / 900); b.textContent = (to * (1 - Math.pow(1 - k, 3))).toFixed(dec) + m[2]; if (k < 1) requestAnimationFrame(f); })(t0);
+  });
+}
+(function energyNet() {                                   // drifting grid of nodes with current pulses, reacts to mouse
+  const c = $('fx'), x = c.getContext('2d'), hv = $('v-home'); let W, H, N = [], P = [], mx = -999, my = -999, col = '#2dd4a7', f = 0;
+  function rs() { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; N = Array.from({ length: Math.max(14, Math.round(W / 30)) }, () => ({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .25, vy: (Math.random() - .5) * .25 })); }
+  rs(); addEventListener('resize', rs);
+  hv.addEventListener('mousemove', e => { const r = c.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; });
+  (function loop() {
+    if (!hv.classList.contains('hidden')) {
+      if (f++ % 90 === 0) col = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+      x.clearRect(0, 0, W, H);
+      N.forEach(n => { n.x += n.vx; n.y += n.vy; if (n.x < 0 || n.x > W) n.vx *= -1; if (n.y < 0 || n.y > H) n.vy *= -1;
+        const dx = n.x - mx, dy = n.y - my, d = Math.hypot(dx, dy); if (d < 90) { n.x += dx / d * 1.3; n.y += dy / d * 1.3; } });
+      x.strokeStyle = col; x.fillStyle = col; x.lineWidth = 1;
+      for (let i = 0; i < N.length; i++) for (let j = i + 1; j < N.length; j++) {
+        const d = Math.hypot(N[i].x - N[j].x, N[i].y - N[j].y);
+        if (d < 120) { x.globalAlpha = (1 - d / 120) * .28; x.beginPath(); x.moveTo(N[i].x, N[i].y); x.lineTo(N[j].x, N[j].y); x.stroke();
+          if (P.length < 7 && Math.random() < .0012) P.push({ a: N[i], b: N[j], t: 0 }); } }
+      x.globalAlpha = .55; N.forEach(n => { x.beginPath(); x.arc(n.x, n.y, 1.6, 0, 7); x.fill(); });
+      P = P.filter(p => (p.t += .025) < 1); x.globalAlpha = .95;
+      P.forEach(p => { x.beginPath(); x.arc(p.a.x + (p.b.x - p.a.x) * p.t, p.a.y + (p.b.y - p.a.y) * p.t, 2.8, 0, 7); x.fill(); });
+      x.globalAlpha = 1;
+    }
+    requestAnimationFrame(loop);
+  })();
+})();
+(function scrollFx() {                                    // progress bar, battery meter, hero parallax, circuit lines
+  const hv = $('v-home');
+  function on() {
+    const st = hv.scrollTop, mxs = hv.scrollHeight - hv.clientHeight, p = mxs > 0 ? st / mxs : 0, h = document.querySelector('.hero');
+    $('prog').style.width = p * 100 + '%'; $('mf').style.height = p * 100 + '%'; $('mp').textContent = Math.round(p * 100) + '%';
+    if (h) { h.style.transform = `translateY(${st * .18}px)`; h.style.opacity = Math.max(0, 1 - st / 420); }
+    document.querySelectorAll('.circ').forEach(sv => {
+      const r = sv.getBoundingClientRect(), q = Math.min(1, Math.max(0, (innerHeight * .9 - r.top) / (innerHeight * .45))), pa = sv.querySelector('path'), L = pa.getTotalLength();
+      pa.style.strokeDasharray = L; pa.style.strokeDashoffset = L * (1 - q);
+      const pt = pa.getPointAtLength(L * q), d = sv.querySelector('.cd'); d.setAttribute('cx', pt.x); d.setAttribute('cy', pt.y);
+    });
+  }
+  hv.addEventListener('scroll', () => requestAnimationFrame(on)); on();
+})();
+document.querySelectorAll('.grid').forEach(g => [...g.children].forEach((c, i) => c.style.setProperty('--i', i)));
+document.addEventListener('mousemove', e => {             // 3D tilt on cards
+  const c = e.target.closest && e.target.closest('.card:not(.scan)'); if (!c) return;
+  const r = c.getBoundingClientRect(), px = (e.clientX - r.left) / r.width - .5, py = (e.clientY - r.top) / r.height - .5;
+  c.style.transform = `perspective(700px) rotateX(${-py * 5}deg) rotateY(${px * 6}deg) translateY(-4px)`;
+});
+document.addEventListener('mouseout', e => { const c = e.target.closest && e.target.closest('.card'); if (c && !c.contains(e.relatedTarget)) c.style.transform = ''; });
+document.addEventListener('click', e => {                 // button ripple
+  const b = e.target.closest && e.target.closest('.btn,.chip,.send'); if (!b) return;
+  const r = b.getBoundingClientRect(), d = Math.max(r.width, r.height) * 2, s = document.createElement('span'); s.className = 'rip';
+  s.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d / 2}px;top:${e.clientY - r.top - d / 2}px`; b.appendChild(s); setTimeout(() => s.remove(), 600);
+});
+(function typer() {                                       // typing placeholder on the home composer
+  const q = ['Why did my bill go up last month?', 'Which appliance wastes the most power?', 'How much can I save by shifting my AC use?'], el = $('homeInput'); let i = 0, j = 0, del = false, hold = 0;
+  setInterval(() => {
+    if (el.value || document.activeElement === el) return;
+    if (hold > 0) { hold--; return; }
+    const t = q[i]; j = Math.max(0, Math.min(t.length, j + (del ? -2 : 1))); el.placeholder = t.slice(0, j) + '|';
+    if (!del && j === t.length) { del = true; hold = 20; }
+    else if (del && j === 0) { del = false; i = (i + 1) % q.length; }
+  }, 70);
+})();
 renderRecents(); renderDash(); renderBills();
 </script>
 </body>
