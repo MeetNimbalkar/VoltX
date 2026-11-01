@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -128,12 +128,47 @@ tr.flash{animation:flash 2.4s}@keyframes flash{from{background:color-mix(in srgb
 .rx{opacity:0;width:24px;height:24px;border-radius:6px;color:var(--muted);font-size:15px;flex-shrink:0;margin-right:4px}
 .rc:hover .rx,.rx.sure{opacity:1}.rx:hover{color:var(--bad);background:var(--panel2)}
 .rx.sure{width:auto;padding:0 8px;font-size:11.5px;color:var(--bad)}
-.clr{color:var(--muted)!important;font-size:12.5px!important;margin-top:6px}.clr.sure{color:var(--bad)!important}
+.clr{color:var(--bad)!important;font-size:12.5px!important;margin-top:6px}.clr:hover{background:color-mix(in srgb,var(--bad) 12%,transparent)}.clr.sure{background:color-mix(in srgb,var(--bad) 18%,transparent);font-weight:600}
 @media(hover:none){.rx{opacity:.6}}
 .av{width:30px;height:30px;border-radius:50%;overflow:hidden;flex-shrink:0;margin:2px 12px 0 0;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center}
 .av img{width:100%;height:100%;object-fit:cover}
 .av.nologo::after{content:'X';font-family:'Playfair Display',serif;font-style:italic;font-weight:600;color:var(--accent)}
 .m.b{align-items:flex-start}.fu{padding-left:70px}
+@property --ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+.composer{position:relative}
+.composer::before{content:'';position:absolute;inset:-1px;border-radius:inherit;padding:1.5px;pointer-events:none;
+  background:conic-gradient(from var(--ang),transparent 0 62%,var(--accent) 86%,#5aa9e6 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+  animation:ring 4s linear infinite}
+@keyframes ring{to{--ang:360deg}}
+/* collapsible sidebar */
+.side{overflow:hidden;transition:width .35s ease,padding .35s ease,background .5s,border-color .5s,transform .3s}
+.side>*{min-width:220px}
+.fold{display:flex;align-items:center}.fold .nav,.fold h6{flex:1}
+.cv{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:var(--muted);flex-shrink:0}.cv:hover{background:var(--panel2);color:var(--text);transform:none}
+.chev{width:7px;height:7px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(45deg);transition:transform .3s;margin-top:-3px}
+.fold.shut .chev{transform:rotate(-45deg);margin-top:0}
+.grp{display:grid;grid-template-rows:1fr;transition:grid-template-rows .3s ease,opacity .3s}
+.grp>div{overflow:hidden;min-height:0}.grp>.recents{overflow-y:auto}
+.grp.closed{grid-template-rows:0fr;opacity:0}
+.grp.grow{flex:1;min-height:0}.grp.grow.closed{flex:0}
+.det{padding:0 10px 6px 34px;font-size:12.5px;color:var(--muted)}
+.det div,.det button{display:flex;justify-content:space-between;width:100%;padding:3px 0;text-align:left}
+.det b{color:var(--text);font-weight:500}.det button:hover,.det button:hover b{color:var(--accent)}.det small{font-size:12px}
+#sideBtn:hover{transform:none}
+@media(min-width:801px){body.noside .side{width:0;min-width:0;padding:14px 0;border-right-width:0;visibility:hidden;transition:width .35s ease,padding .35s ease,visibility 0s .35s}}
+@media(max-width:800px){.side{display:flex!important;position:fixed;z-index:60;top:0;bottom:0;left:0;width:240px;transform:translateX(-102%)}body.sideopen .side{transform:none;box-shadow:0 0 40px #0008}}
+/* theme switch: "snap" dissolve */
+@property --p{syntax:'<percentage>';initial-value:-16%;inherits:false}
+html.snapping *{transition:none!important}
+html.snapping::view-transition-group(root),html.snapping::view-transition-group(dust){animation:none}
+html.snapping::view-transition-old(root),html.snapping::view-transition-new(root){animation:none;mix-blend-mode:normal}
+html.snapping::view-transition-old(root){z-index:2;animation:snapOut 1.8s linear forwards;
+  -webkit-mask-image:linear-gradient(105deg,transparent var(--p),#000 calc(var(--p) + 14%));mask-image:linear-gradient(105deg,transparent var(--p),#000 calc(var(--p) + 14%))}
+html.snapping::view-transition-new(root){z-index:1}
+html.snapping::view-transition-old(dust){display:none}
+html.snapping::view-transition-new(dust){animation:none}
+@keyframes snapOut{from{--p:-16%}to{--p:100%}}
 /* reply actions */
 .acts{display:flex;gap:2px;margin-top:6px;white-space:normal;position:relative;flex-wrap:wrap}
 .acts button{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);padding:5px 8px;border-radius:7px}
@@ -181,7 +216,7 @@ tr.flash{animation:flash 2.4s}@keyframes flash{from{background:color-mix(in srgb
 .cbox{padding:0 28px 18px}.cbox .composer{max-width:820px;margin:0 auto}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--accent);padding:10px 18px;border-radius:10px;font-size:14px;z-index:90;animation:up .3s both}
 #theme-wipe{position:fixed;inset:0;z-index:80;pointer-events:none;background:var(--bg);opacity:0;transition:opacity .35s}
-@media(max-width:800px){.side{display:none}.row{grid-template-columns:1fr 1fr}.top a{display:none}.hero h1{font-size:28px}}
+@media(max-width:800px){.row{grid-template-columns:1fr 1fr}.top a{display:none}.hero h1{font-size:28px}}
 </style>
 </head>
 <body>
@@ -189,6 +224,7 @@ tr.flash{animation:flash 2.4s}@keyframes flash{from{background:color-mix(in srgb
 <!-- ===== SPLASH ===== -->
 <div id="splash"><div><div class="logo-t">Volt<i>X</i></div><div class="bar"><b></b></div><p>Smarter energy. Lower bills.</p></div></div>
 <div id="theme-wipe"></div>
+<canvas id="dust" style="display:none;position:fixed;inset:0;width:100%;height:100%;z-index:100;pointer-events:none;view-transition-name:dust"></canvas>
 
 <div class="app">
   <!-- ===== SIDEBAR ===== -->
@@ -197,15 +233,18 @@ tr.flash{animation:flash 2.4s}@keyframes flash{from{background:color-mix(in srgb
     <button class="nav on" data-nav="home" onclick="go('home')">⌂ Home</button>
     <button class="nav" onclick="newChat()">＋ New chat</button>
     <button class="nav" data-nav="setup" onclick="go('setup')">⚙ Household / Office</button>
-    <button class="nav" onclick="go('home','dash')">▦ Dashboard</button>
-    <button class="nav" onclick="go('home','bills')">🧾 My bills</button>
-    <h6>Recent chats</h6>
-    <div class="recents" id="recents"></div>
+    <div class="fold" data-f="dash"><button class="nav" onclick="go('home','dash')">▦ Dashboard</button><button class="cv" onclick="fold('dash')" title="Show / hide"><i class="chev"></i></button></div>
+    <div class="grp" id="g-dash"><div class="det" id="sbDash"></div></div>
+    <div class="fold" data-f="bills"><button class="nav" onclick="go('home','bills')">▤ My bills</button><button class="cv" onclick="fold('bills')" title="Show / hide"><i class="chev"></i></button></div>
+    <div class="grp" id="g-bills"><div class="det" id="sbBills"></div></div>
+    <div class="fold" data-f="recent"><h6>Recent chats</h6><button class="cv" onclick="fold('recent')" title="Show / hide"><i class="chev"></i></button></div>
+    <div class="grp grow" id="g-recent"><div class="recents" id="recents"></div></div>
   </aside>
 
   <div class="main">
     <!-- ===== TOP MENU ===== -->
     <header class="top">
+      <button class="icon" id="sideBtn" onclick="toggleSide()" title="Hide / show sidebar (Ctrl+B)" style="margin-right:auto"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>
       <a onclick="go('home','about')">About Us</a>
       <a onclick="go('home','what')">What We Do</a>
       <a onclick="go('home','provide')">What We Provide</a>
@@ -313,18 +352,46 @@ let vids = { home: [], chat: [] };       // videos waiting to be sent: {name,n,t
 
 /* ===== C. SPLASH + THEME ===== */
 setTimeout(() => $('splash').classList.add('out'), 3500);
+function applyTheme(t) { document.documentElement.dataset.theme = t; localStorage.setItem('vx_theme_v2', t); $('themeBtn').textContent = t === 'dark' ? '☾' : '☀'; }
 function toggleTheme() {
-  const w = $('theme-wipe'); w.style.opacity = 1;
-  setTimeout(() => {
-    const d = document.documentElement, t = d.dataset.theme === 'dark' ? 'light' : 'dark';
-    d.dataset.theme = t; localStorage.setItem('vx_theme', t); $('themeBtn').textContent = t === 'dark' ? '☾' : '☀';
-    w.style.opacity = 0;
-  }, 350);
+  const d = document.documentElement, next = d.dataset.theme === 'dark' ? 'light' : 'dark';
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return applyTheme(next);
+  if (!document.startViewTransition) {                       // older browsers: simple fade
+    const w = $('theme-wipe'); w.style.opacity = 1; setTimeout(() => { applyTheme(next); w.style.opacity = 0; }, 350); return;
+  }
+  const cs = getComputedStyle(d), cols = ['--bg', '--panel', '--panel2', '--text', '--accent', '--muted'].map(v => cs.getPropertyValue(v).trim());
+  const cv = $('dust'); cv.width = innerWidth; cv.height = innerHeight; cv.style.display = 'block';
+  d.classList.add('snapping');
+  const vt = document.startViewTransition(() => applyTheme(next));      // browser snapshots the old page; CSS dissolves it
+  vt.ready.then(() => snapDust(cols));
+  vt.finished.finally(() => { d.classList.remove('snapping'); cv.style.display = 'none'; });
 }
-(function(){ const t = localStorage.getItem('vx_theme') || 'dark'; document.documentElement.dataset.theme = t; $('themeBtn').textContent = t === 'dark' ? '☾' : '☀'; })();
+const SNAP_MS = 1800;
+function snapDust(cols) {                                     // dust grains drift off the dissolving edge (synced with the CSS mask sweep)
+  const c = $('dust'), x = c.getContext('2d'), W = c.width, H = c.height, th = 105 * Math.PI / 180, sx = Math.sin(th), sy = -Math.cos(th);
+  const L = Math.abs(W * sx) + Math.abs(H * Math.cos(th)), P = [], t0 = performance.now();
+  (function f(now) {
+    const k = Math.min(1, (now - t0) / SNAP_MS), p = -.16 + 1.16 * k;       // same range as the CSS --p keyframes
+    x.clearRect(0, 0, W, H);
+    for (let i = 0; i < 700 && k < 1 && P.length < 7000; i++) {
+      const px = Math.random() * W, py = Math.random() * H, t = ((px - W / 2) * sx + (py - H / 2) * sy) / L + .5;
+      if (t > p - .02 && t < p + .15 && Math.random() < .4) P.push({ x: px, y: py, vx: 1.2 + Math.random() * 4, vy: -Math.random() * 2.4 - .2, s: 1 + Math.random() * 2.6, a: 1, d: .012 + Math.random() * .02, c: cols[(Math.random() * cols.length) | 0] });
+    }
+    for (let i = P.length - 1; i >= 0; i--) {
+      const q = P[i]; q.x += q.vx; q.y += q.vy; q.vx += .05; q.vy -= .015; q.a -= q.d;
+      if (q.a <= 0) { P.splice(i, 1); continue; }
+      x.globalAlpha = q.a; x.fillStyle = q.c; x.fillRect(q.x, q.y, q.s, q.s);
+    }
+    x.globalAlpha = 1;
+    if (k < 1 || P.length) requestAnimationFrame(f); else x.clearRect(0, 0, W, H);
+  })(t0);
+}
+(function () { applyTheme(localStorage.getItem('vx_theme_v2') || 'light'); })();
+
 
 /* ===== D. NAVIGATION ===== */
 function go(view, anchor) {
+  document.body.classList.remove('sideopen');
   if (window.speechSynthesis) speechSynthesis.cancel();
   ['home','setup','chat'].forEach(v => $('v-'+v).classList.toggle('hidden', v !== view));
   document.querySelectorAll('[data-nav]').forEach(n => n.classList.toggle('on', n.dataset.nav === view));
@@ -390,7 +457,7 @@ function renderThumbs(t) {
 function dropZone(el, handler) {
   ['dragenter','dragover'].forEach(e => el.addEventListener(e, ev => { ev.preventDefault(); el.classList.add('drag') }));
   ['dragleave','drop'].forEach(e => el.addEventListener(e, ev => { ev.preventDefault(); el.classList.remove('drag') }));
-  el.addEventListener('drop', ev => handler([...ev.dataTransfer.files]));
+  el.addEventListener('drop', ev => { ev.stopPropagation(); handler([...ev.dataTransfer.files]); });   // stop the drop reaching a parent drop zone (caused double uploads)
 }
 
 /* ===== F. API ===== */
@@ -556,6 +623,7 @@ function addManual() {
   ['mMonth','mUnits','mAmt'].forEach(i => $(i).value = ''); renderBills(); renderDash();
 }
 function renderBills() {
+  renderSide();
   const s = [...bills].sort((a, b) => a.month.localeCompare(b.month));
   $('billList').innerHTML = s.length ? `<table><tr><th></th><th>Month</th><th>Units (kWh)</th><th>Amount</th><th></th></tr>${s.map(b =>
     `<tr class="${b.id === flashId ? 'flash' : ''}"><td>${b.img ? `<img class="bt" src="${b.img}" onclick="showImg(${b.id})">` : ''}</td>
@@ -587,6 +655,7 @@ function barChart(vals, labels, spikeAt = Infinity) {
     <text x="${i * bw + bw / 2}" y="${H + 15}" text-anchor="middle">${labels[i]}</text>`; }).join('')}</svg>`;
 }
 function renderDash() {
+  renderSide();
   const el = $('dashBody'), apps = profile.apps.filter(a => +a.watts && +a.hours), sb = [...bills].sort((a, b) => a.month.localeCompare(b.month));
   if (!apps.length && !sb.length) { el.innerHTML = `<div class="empty">No data yet. Upload your bills or add your appliances and VoltX will build your dashboard here.<br><br><button class="btn" onclick="go('setup')">Add household details</button></div>`; return; }
   let h = '<div class="grid" style="margin-bottom:16px">';
@@ -890,6 +959,31 @@ document.addEventListener('click', e => {                 // button ripple
     else if (del && j === 0) { del = false; i = (i + 1) % q.length; }
   }, 70);
 })();
+
+/* ===== M. SIDEBAR: hide/show, collapsible sections, live summaries ===== */
+const ui = load('vx_ui', {});
+function applyUI() {
+  document.body.classList.toggle('noside', !!ui.noside);
+  document.querySelectorAll('.fold').forEach(h => { const c = !!ui['c_' + h.dataset.f]; h.classList.toggle('shut', c); $('g-' + h.dataset.f).classList.toggle('closed', c); });
+}
+function toggleSide() {
+  if (matchMedia('(max-width:800px)').matches) return document.body.classList.toggle('sideopen');
+  ui.noside = !ui.noside; save('vx_ui', ui); applyUI();
+}
+function fold(k) { ui['c_' + k] = !ui['c_' + k]; save('vx_ui', ui); applyUI(); }
+document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') { e.preventDefault(); toggleSide(); } });
+function renderSide() {                                   // real data only, nothing invented
+  const apps = profile.apps.filter(a => +a.watts && +a.hours), sb = [...bills].sort((a, b) => a.month.localeCompare(b.month));
+  const row = (k, v) => `<div><span>${k}</span><b>${v}</b></div>`;
+  $('sbDash').innerHTML = (apps.length || sb.length)
+    ? [apps.length ? row('Appliances', apps.length) : '', apps.length ? row('Est. daily use', apps.reduce((t, a) => t + appKwhDay(a), 0).toFixed(1) + ' kWh') : '',
+       sb.length ? row('Bills added', sb.length) : '', sb.length ? row('Avg per bill', (sb.reduce((t, b) => t + b.units, 0) / sb.length).toFixed(0) + ' kWh') : ''].join('')
+    : '<small>No data yet</small>';
+  $('sbBills').innerHTML = sb.length
+    ? sb.slice(-6).reverse().map(b => `<button onclick="go('home','bills')"><span>${b.month || 'No month'}</span><b>${b.units} kWh</b></button>`).join('')
+    : '<small>No bills yet</small>';
+}
+applyUI();
 renderRecents(); renderDash(); renderBills();
 </script>
 </body>
