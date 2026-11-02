@@ -461,7 +461,7 @@ function dropZone(el, handler) {
 }
 
 /* ===== F. API ===== */
-async function callAI(messages, tries = 2, maxTok = 900, useReasoning = false) {
+async function callAI(messages, tries = 2, maxTok = 2000, useReasoning = false) {
   let err;
   for (let i = 0; i < tries; i++) {
     try {
@@ -482,6 +482,7 @@ async function callAI(messages, tries = 2, maxTok = 900, useReasoning = false) {
       if (text) return text;
       const rs = (ch?.message?.reasoning || ch?.message?.reasoning_content || '').trim();
       if (rs && useReasoning) return rs;                       // some models put the answer in the reasoning field
+      if (ch?.finish_reason === 'length') maxTok = Math.min(maxTok * 2, 3000);   // thinking used the budget: retry with more room
       err = new Error(ch?.finish_reason === 'length' ? 'The model ran out of tokens while thinking. Please try again.' : 'The model returned an empty reply.');
     } catch (e) {
       err = e.name === 'TypeError' ? new Error('Network blocked or offline. Check internet, VPN or ad-blocker.') : e;
@@ -885,7 +886,7 @@ async function translateTo(lang, text, holder) {
   holder.querySelector('.tr')?.remove();
   const box = document.createElement('div'); box.className = 'tr'; box.innerHTML = `<small>${lang}</small><div class="tt"><div class="dots"><span></span><span></span><span></span></div></div>`; holder.appendChild(box);
   try {
-    const out = await callAI([{ role: 'user', content: `Translate the following text into ${lang}. Keep numbers, units (kWh, W) and line breaks. Reply with ONLY the translation.\n\n${text}` }], 2, 1200);
+    const out = await callAI([{ role: 'user', content: `Translate the following text into ${lang}. Keep numbers, units (kWh, W) and line breaks. Reply with ONLY the translation.\n\n${text}` }], 2, 2000);
     box.querySelector('.tt').textContent = out; box.appendChild(acts(() => out, () => LANGS[lang], null));
   } catch (e) { box.querySelector('.tt').textContent = 'Translation failed: ' + e.message; }
 }
