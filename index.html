@@ -275,10 +275,9 @@ html.snapping::view-transition-new(dust){animation:none}
           <div class="drop" id="billDrop" tabindex="0" onclick="pick('billFile')">Drag &amp; drop, click to browse, or paste (Ctrl+V) bill photos<br><small>VoltX reads units, amount and month automatically</small></div>
           <input type="file" id="billFile" accept="image/*" multiple class="hidden">
           <div id="scanQ"></div><div id="billList"></div>
-          <details style="margin-top:12px"><summary class="muted" style="cursor:pointer">Enter a bill manually</summary>
-            <div class="row" style="grid-template-columns:1fr 1fr 1fr auto;margin-top:10px">
-              <input id="mMonth" type="month"><input id="mUnits" type="number" placeholder="Units (kWh)"><input id="mAmt" type="number" placeholder="Amount"><button class="btn" onclick="addManual()">Add</button>
-            </div></details>
+          <details style="margin-top:12px"><summary class="muted" style="cursor:pointer">Enter a bill manually (instant)</summary>
+            <div class="row" style="grid-template-columns:repeat(3,1fr);margin-top:10px"><input id="mMonth" type="month" title="Billing month"><input id="mUnits" type="number" placeholder="Units (kWh)"><input id="mAmt" type="number" placeholder="Total amount"></div>
+            <div class="row" style="grid-template-columns:repeat(3,1fr) auto;margin-top:8px"><input id="mDue" type="date" title="Due date"><input id="mRate" type="number" step="0.01" placeholder="Rate per unit"><input id="mProv" placeholder="Provider"><button class="btn" onclick="addManual()">Add bill</button></div></details>
         </div>
 
         <div class="sec reveal" id="dash"><h2>Your dashboard</h2><div id="dashBody"></div></div>
@@ -466,8 +465,9 @@ async function callAI(messages, tries = 2, maxTok = 2000, useReasoning = false, 
   let err;
   for (let i = 0; i < tries; i++) {
     try {
-      const r = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages, max_tokens: maxTok, temperature: .3, task }) });
-      const j = await r.json().catch(() => ({}));
+      const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), task === 'bill' ? 50000 : 90000);   // never hang forever
+      const r = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages, max_tokens: maxTok, temperature: .3, task }), signal: ctl.signal }).catch(e => { clearTimeout(to); throw e; });
+      const j = await r.json().catch(() => ({})); clearTimeout(to);
       if (j.model) { window.vxModel = j.model; console.log('VoltX model:', j.model); }   // check which model really answered
       if (!r.ok) {
         const why = j.error?.message || r.statusText;
@@ -486,7 +486,7 @@ async function callAI(messages, tries = 2, maxTok = 2000, useReasoning = false, 
       if (ch?.finish_reason === 'length') maxTok = Math.min(maxTok * 2, 3000);   // thinking used the budget: retry with more room
       err = new Error(ch?.finish_reason === 'length' ? 'The model ran out of tokens while thinking. Please try again.' : 'The model returned an empty reply.');
     } catch (e) {
-      err = e.name === 'TypeError' ? new Error('Network blocked or offline. Check internet, VPN or ad-blocker.') : e;
+      err = e.name === 'AbortError' ? new Error('The model took too long. Please try again.') : e.name === 'TypeError' ? new Error('Network blocked or offline. Check internet, VPN or ad-blocker.') : e;
       if (/401|404/.test(err.message)) throw err;
     }
   }
@@ -497,7 +497,7 @@ const content = (text, imgs) => imgs?.length
   : text;
 
 /* ===== G. BILL SCANNING ===== */
-const BILL_FIELDS = `Reply with ONLY this JSON (no other text): {"month":"YYYY-MM","bill_date":"YYYY-MM-DD" or null,"period_start":"YYYY-MM-DD" or null,"period_end":"YYYY-MM-DD" or null,"due_date":"YYYY-MM-DD" or null,"units":number,"amount":number,"rate":number or null,"energy_charge":number or null,"fixed_charge":number or null,"tax":number or null,"prev":number or null,"curr":number or null,"provider":"name" or null,"currency":"symbol","conf":"high" or "low"}. Rules: month = the billing month the consumption belongs to (use the period end if a date range). units = total kWh consumed in this bill (not a meter reading). amount = final total payable / net amount due for this bill after taxes (not arrears, not a per-unit rate, not a deposit). rate = price per unit if printed. energy_charge / fixed_charge / tax = those line items if printed. prev and curr = previous and current meter readings. All dates in YYYY-MM-DD. Use null for anything not clearly visible; never guess. Do NOT include names, addresses or account/consumer numbers. conf = "low" if any value is unclear.`;
+const BILL_FIELDS = `Reply with ONLY this JSON (no other text): {"month":"YYYY-MM","bill_date":"YYYY-MM-DD" or null,"period_start":"YYYY-MM-DD" or null,"period_end":"YYYY-MM-DD" or null,"due_date":"YYYY-MM-DD" or null,"units":number,"amount":number,"rate":number or null,"energy_charge":number or null,"fixed_charge":number or null,"tax":number or null,"prev":number or null,"curr":number or null,"provider":"name" or null,"currency":"symbol","conf":"high" or "low"}. Rules: month = the billing month the consumption belongs to (use the period end if a date range). units = total kWh consumed in this bill (not a meter reading). amount = final total payable / net amount due for this bill after taxes (not arrears, not a per-unit rate, not a deposit). rate = price per unit if printed. energy_charge / fixed_charge / tax = those line items if printed. prev and curr = previous and current meter readings. All dates in YYYY-MM-DD. Fill in EVERY field that is visible on the bill; use null only for fields that are not printed. Do not guess. Do NOT include names, addresses or account/consumer numbers. conf = "low" if any value is unclear.`;
 const BILL_PROMPT = 'You are reading a photo of an electricity bill. ' + BILL_FIELDS;
 const OCR_PROMPT = 'Transcribe ALL text and numbers in this part of an electricity bill exactly as printed, line by line, keeping each label next to its value (for example "Units consumed: 245"). Do not summarise, translate or guess.';
 const PARSE_PROMPT = 'Below is OCR text of an electricity bill (it may contain errors). ' + BILL_FIELDS;
@@ -555,12 +555,12 @@ function qItem(src, name) {
   const d = document.createElement('div'); d.className = 'card scan';
   d.innerHTML = `<img src="${src}"><div class="si"><b>${fmt(name)}</b><div class="pbar"><i></i></div><small class="muted">Preparing…</small></div>`;
   $('scanQ').prepend(d);
-  const bar = d.querySelector('i'), st = d.querySelector('small'); let p = 0, cap = 15;
-  const tick = setInterval(() => { if (p < cap) { p += (cap - p) * .08 + .3; bar.style.width = p + '%'; } }, 120);
+  const bar = d.querySelector('i'), st = d.querySelector('small'), t0 = Date.now(); let p = 0, cap = 15, label = 'Preparing…';
+  const tick = setInterval(() => { if (p < cap) { p += (cap - p) * .04 + .1; bar.style.width = p + '%'; } st.textContent = label + ' · ' + Math.floor((Date.now() - t0) / 1000) + 's'; }, 150);
   return {
-    set(pct, txt) { cap = pct; st.textContent = txt; },
+    set(pct, txt) { cap = pct; label = txt; },
     done(ok, txt) { clearInterval(tick); bar.style.width = '100%'; bar.style.background = ok ? 'var(--accent)' : 'var(--bad)'; st.textContent = txt;
-      setTimeout(() => { d.style.opacity = 0; setTimeout(() => d.remove(), 500); }, ok ? 3000 : 7000); }
+      setTimeout(() => { d.style.opacity = 0; setTimeout(() => d.remove(), 500); }, ok ? 4000 : 8000); }
   };
 }
 async function ocrAll(im, q, label, base) {
@@ -572,60 +572,62 @@ async function ocrAll(im, q, label, base) {
   }
   return text;
 }
+async function scanOne(f) {
+  const q = qItem(URL.createObjectURL(f), f.name || 'Pasted image'), errs = [];
+  try {
+    q.set(25, 'Preparing image…');
+    const im = await loadImg(f), [W, H] = dims(im);
+    let d = null, d2 = null, text = '', raw = '';
+    q.set(80, 'Reading bill…');                                           // FAST PATH: one call reads every field
+    try { raw = await callAI([{ role: 'user', content: content(BILL_PROMPT, [tileURL(im, 0, 0, W, H, 1400)]) }], 1, 1500, true, 'bill'); console.log('VoltX bill:', raw); d = parseBill(raw); }
+    catch (e) { errs.push(e.message); console.error(e); }
+    if (!d || !num(d.units) || !num(d.amount)) {                           // missing key values -> slower text pass
+      q.set(85, 'Looking closer…');
+      try {
+        text = await ocrAll(im, q, 'Reading text', 60);
+        raw = await callAI([{ role: 'user', content: PARSE_PROMPT + '\n\nOCR TEXT:\n' + text }], 1, 1500, true, 'bill'); console.log('VoltX bill (text):', raw); d2 = parseBill(raw);
+      } catch (e) { errs.push(e.message); console.error(e); }
+    }
+    if (!d && !d2) throw new Error(errs[0] || `no values found${raw ? ` (model said: "${raw.slice(0, 70)}")` : ''}`);
+    const has = v => v !== null && v !== undefined && v !== '';
+    const a = { ...(d2 || {}), ...Object.fromEntries(Object.entries(d || {}).filter(([, v]) => has(v))) };   // values from the first read win; the second fills gaps
+    const hasText = text.length > 20, why = [];
+    let units, amount;
+    if (hasText) { const both = d && d2; units = choose(both ? [d.units, d2.units] : [a.units], text, 'units', why); amount = choose(both ? [d.amount, d2.amount] : [a.amount], text, 'amount', why); }
+    else { units = num(a.units); amount = num(a.amount); if (!units) why.push('units not found'); if (!amount) why.push('amount not found'); if (a.conf === 'low') why.push('AI was unsure'); }
+    const p = num(a.prev), c = num(a.curr);
+    if (p && c && c > p) { const diff = +(c - p).toFixed(1); if (!units || Math.abs(units - diff) > Math.max(2, diff * .05)) { why.push('units adjusted to meter readings'); units = diff; } }
+    const rates = bills.filter(b => b.units && b.amount).map(b => b.amount / b.units);
+    if (units && amount && rates.length) { const avg = rates.reduce((x, y) => x + y, 0) / rates.length, r = amount / units; if (r < avg * .4 || r > avg * 2.5) why.push('price per unit looks unusual'); }
+    const iso = x => /^\d{4}-\d{2}-\d{2}$/.test(String(x || '')) ? x : '', nn = k => num(a[k]) || 0;
+    const month = normMonth(a.month) || iso(a.period_end).slice(0, 7) || iso(a.bill_date).slice(0, 7) || monthFromText(text); if (!month) why.push('month unclear');
+    const rec = { id: Date.now() + Math.random(), month, units, amount, cur: a.currency || '', bill_date: iso(a.bill_date), due: iso(a.due_date), period: [iso(a.period_start), iso(a.period_end)],
+      rate: nn('rate'), energy: nn('energy_charge'), fixed: nn('fixed_charge'), tax: nn('tax'), provider: String(a.provider || '').slice(0, 40), chk: why.length > 0, why: why.join('; '), img: await toDataURL(f, 400, .6) };
+    const old = month ? bills.findIndex(b => b.month === month) : -1;
+    if (old >= 0) bills[old] = rec; else bills.push(rec);               // same month = update, not duplicate
+    flashId = rec.id; saveBills(); renderBills(); renderDash();
+    q.done(true, `Saved: ${units || '?'} kWh, amount ${amount || '?'}${month ? ' (' + month + ')' : ''}.${why.length ? ' Please verify: ' + why[0] + '.' : ''}`);
+    return true;
+  } catch (e) { console.error(e); q.done(false, 'Could not read this bill: ' + e.message + '. Use "Enter a bill manually" below.'); return false; }
+}
 async function scanBills(files) {
   files = files.filter(f => f.type.startsWith('image/'));
   if (!files.length) return toast('Please add an image file');
-  let any = false;
-  for (const f of files) {
-    const q = qItem(URL.createObjectURL(f), f.name || 'Pasted image'), errs = [];
-    try {
-      q.set(15, 'Enhancing image…');
-      let im = await loadImg(f), text = '', raw = '';
-      const digits = t => (t.match(/\d/g) || []).length;
-      try {
-        text = await ocrAll(im, q, 'Reading text', 20);
-        if (digits(text) < 15) for (const deg of [90, 270]) {                       // sideways photo? try rotating
-          q.set(30, 'Rotating image…'); const r = rotImg(im, deg), t2 = await ocrAll(r, q, 'Re-reading', 30);
-          if (digits(t2) > digits(text)) { text = t2; im = r; } if (digits(text) >= 15) break;
-        }
-      } catch (e) { errs.push('text read: ' + e.message); console.error(e); }
-      q.set(75, 'Extracting values…');
-      let d = null, d2 = null;
-      if (digits(text) >= 8) { try { raw = await callAI([{ role: 'user', content: PARSE_PROMPT + '\n\nOCR TEXT:\n' + text }], 2, 1200, true, 'bill'); console.log('VoltX extract:', raw); d = parseBill(raw); } catch (e) { errs.push('extract: ' + e.message); } }
-      if (!d || d.conf === 'low' || !inText(text, num(d.units)) || !inText(text, num(d.amount))) {   // unsure -> independent second read of the image
-        q.set(88, 'Second opinion…');
-        try { const [W, H] = dims(im); raw = await callAI([{ role: 'user', content: content(BILL_PROMPT, [tileURL(im, 0, 0, W, H, 1800)]) }], 2, 2500, true, 'bill'); console.log('VoltX vision:', raw); d2 = parseBill(raw); }
-        catch (e) { errs.push('image read: ' + e.message); }
-      }
-      const a = d || d2;
-      if (!a) throw new Error(errs[0] || `no values found${raw ? ` (model said: "${raw.slice(0, 70)}")` : ''}`);
-      const why = [], both = d && d2;
-      let units = choose(both ? [d.units, d2.units] : [a.units], text, 'units', why), amount = choose(both ? [d.amount, d2.amount] : [a.amount], text, 'amount', why);
-      const p = num(a.prev), c = num(a.curr);
-      if (p && c && c > p) { const diff = +(c - p).toFixed(1); if (!units || Math.abs(units - diff) > Math.max(2, diff * .05)) { why.push('units adjusted to meter readings'); units = diff; } }
-      const rates = bills.filter(b => b.units && b.amount).map(b => b.amount / b.units);
-      if (units && amount && rates.length) { const avg = rates.reduce((x, y) => x + y, 0) / rates.length, r = amount / units; if (r < avg * .4 || r > avg * 2.5) why.push('price per unit looks unusual'); }
-      const iso = x => /^\d{4}-\d{2}-\d{2}$/.test(String(x || '')) ? x : '', pick = k => iso(a[k]) || iso(d2 && d2[k]);
-      const month = normMonth(a.month) || pick('period_end').slice(0, 7) || pick('bill_date').slice(0, 7) || normMonth(d2 && d2.month) || monthFromText(text); if (!month) why.push('month unclear');
-      const nn = k => num(a[k]) || num(d2 && d2[k]) || 0;
-      const rec = { id: Date.now() + Math.random(), month, units, amount, cur: a.currency || '', bill_date: pick('bill_date'), due: pick('due_date'), period: [pick('period_start'), pick('period_end')], rate: nn('rate'), energy: nn('energy_charge'), fixed: nn('fixed_charge'), tax: nn('tax'), provider: String(a.provider || (d2 && d2.provider) || '').slice(0, 40), chk: why.length > 0, why: why.join('; '), img: await toDataURL(f, 400, .6) };
-      const old = month ? bills.findIndex(b => b.month === month) : -1;
-      if (old >= 0) bills[old] = rec; else bills.push(rec);   // same month = update, not duplicate
-      flashId = rec.id; saveBills(); renderBills(); renderDash(); any = true;
-      q.done(true, `Saved: ${units || '?'} kWh, amount ${amount || '?'}${month ? ' (' + month + ')' : ''}.${why.length ? ' Please verify: ' + why[0] + '.' : ' Values confirmed in the bill text.'}`);
-    } catch (e) { console.error(e); q.done(false, 'Could not read this bill: ' + e.message + '. You can add it manually below.'); }
-  }
-  if (any) setTimeout(() => $('dash').scrollIntoView({ behavior: 'smooth' }), 600);
+  const queue = [...files]; let any = false;
+  await Promise.all([0, 1].map(async () => { while (queue.length) { if (await scanOne(queue.shift())) any = true; } }));   // 2 bills at a time
+  if (any) setTimeout(() => $('dash').scrollIntoView({ behavior: 'smooth' }), 400);
 }
 function showImg(id) {
   const b = bills.find(x => x.id === id); if (!b?.img) return;
   const l = document.createElement('div'); l.className = 'lb'; l.onclick = () => l.remove(); l.innerHTML = `<img src="${b.img}">`; document.body.appendChild(l);
 }
 function addManual() {
-  const month = $('mMonth').value, units = +$('mUnits').value, amount = +$('mAmt').value;
+  const g = id => $(id).value.trim(), month = g('mMonth'), units = +g('mUnits'), amount = +g('mAmt');
   if (!month || (!units && !amount)) return toast('Enter month and units or amount');
-  bills.push({ id: Date.now(), month, units, amount, cur: '' }); save('vx_bills', bills);
-  ['mMonth','mUnits','mAmt'].forEach(i => $(i).value = ''); renderBills(); renderDash();
+  const rec = { id: Date.now(), month, units, amount, cur: '', due: g('mDue'), rate: +g('mRate') || 0, provider: g('mProv').slice(0, 40), period: ['', ''] };
+  const old = bills.findIndex(b => b.month === month); if (old >= 0) bills[old] = rec; else bills.push(rec);
+  flashId = rec.id; saveBills(); ['mMonth', 'mUnits', 'mAmt', 'mDue', 'mRate', 'mProv'].forEach(i => $(i).value = ''); renderBills(); renderDash();
+  setTimeout(() => $('dash').scrollIntoView({ behavior: 'smooth' }), 300);
 }
 function detailsHtml(b) {                          // extra values read from the bill (only those that were found)
   const p = [], cu = b.cur || '';
