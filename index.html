@@ -119,6 +119,7 @@ table{width:100%;border-collapse:collapse;font-size:13.5px}td,th{padding:8px;bor
 .bar-r{transform-box:fill-box;transform-origin:50% 100%;animation:grow .9s cubic-bezier(.2,.8,.2,1) backwards}.gr{transform-box:fill-box;transform-origin:50% 100%;animation:grow .9s cubic-bezier(.2,.8,.2,1) backwards}
 @keyframes grow{from{transform:scaleY(0)}}
 tr.flash{animation:flash 2.4s}@keyframes flash{from{background:color-mix(in srgb,var(--accent) 28%,transparent)}}
+.dt td{font-size:12px;color:var(--muted);padding-top:0}
 .vf{font-size:11px;color:var(--warn);white-space:nowrap}
 @media(max-width:800px){.meter{display:none}}
 .vb{position:absolute;left:4px;bottom:4px;font-size:10px;background:#000a;color:#fff;padding:1px 5px;border-radius:5px}
@@ -461,11 +462,11 @@ function dropZone(el, handler) {
 }
 
 /* ===== F. API ===== */
-async function callAI(messages, tries = 2, maxTok = 2000, useReasoning = false) {
+async function callAI(messages, tries = 2, maxTok = 2000, useReasoning = false, task = '') {
   let err;
   for (let i = 0; i < tries; i++) {
     try {
-      const r = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages, max_tokens: maxTok, temperature: .3 }) });
+      const r = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages, max_tokens: maxTok, temperature: .3, task }) });
       const j = await r.json().catch(() => ({}));
       if (j.model) { window.vxModel = j.model; console.log('VoltX model:', j.model); }   // check which model really answered
       if (!r.ok) {
@@ -496,9 +497,10 @@ const content = (text, imgs) => imgs?.length
   : text;
 
 /* ===== G. BILL SCANNING ===== */
-const BILL_PROMPT = `You are reading an electricity bill photo. Find the billing month, total units consumed (kWh) and total amount payable. Reply with ONLY this JSON: {"month":"YYYY-MM","units":number,"amount":number,"currency":"symbol"}. Use null for anything not clearly visible. Never guess.`;
+const BILL_FIELDS = `Reply with ONLY this JSON (no other text): {"month":"YYYY-MM","bill_date":"YYYY-MM-DD" or null,"period_start":"YYYY-MM-DD" or null,"period_end":"YYYY-MM-DD" or null,"due_date":"YYYY-MM-DD" or null,"units":number,"amount":number,"rate":number or null,"energy_charge":number or null,"fixed_charge":number or null,"tax":number or null,"prev":number or null,"curr":number or null,"provider":"name" or null,"currency":"symbol","conf":"high" or "low"}. Rules: month = the billing month the consumption belongs to (use the period end if a date range). units = total kWh consumed in this bill (not a meter reading). amount = final total payable / net amount due for this bill after taxes (not arrears, not a per-unit rate, not a deposit). rate = price per unit if printed. energy_charge / fixed_charge / tax = those line items if printed. prev and curr = previous and current meter readings. All dates in YYYY-MM-DD. Use null for anything not clearly visible; never guess. Do NOT include names, addresses or account/consumer numbers. conf = "low" if any value is unclear.`;
+const BILL_PROMPT = 'You are reading a photo of an electricity bill. ' + BILL_FIELDS;
 const OCR_PROMPT = 'Transcribe ALL text and numbers in this part of an electricity bill exactly as printed, line by line, keeping each label next to its value (for example "Units consumed: 245"). Do not summarise, translate or guess.';
-const PARSE_PROMPT = `Below is OCR text of an electricity bill (it may contain errors). Reply with ONLY this JSON: {"month":"YYYY-MM","units":number,"amount":number,"prev":number or null,"curr":number or null,"currency":"symbol","conf":"high" or "low"}. Rules: month = the billing month the consumption belongs to (use the period end if a date range). units = total kWh consumed in this bill (not a meter reading). amount = final total payable / net amount due for this bill after taxes (not arrears, not a per-unit rate, not a deposit). prev and curr = previous and current meter readings if shown. Use null when unsure. conf = "low" if any value is unclear.`;
+const PARSE_PROMPT = 'Below is OCR text of an electricity bill (it may contain errors). ' + BILL_FIELDS;
 const num = v => { const m = String(v ?? '').replace(/,/g, '').match(/-?\d+(\.\d+)?/); return m ? +m[0] : 0; };   // "1,834.50" / "245 kWh" -> number
 function loadImg(f) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(f); }); }
 function tileURL(img, sx, sy, sw, sh, maxW = 1600) {   // crop, upscale, grayscale, auto-levels (fixes tint, shadows, dark mode)
@@ -544,7 +546,7 @@ function parseBill(t) {
   if (m) { try { d = JSON.parse(m[0]); } catch { try { d = JSON.parse(m[0].replace(/'/g, '"').replace(/,\s*}/g, '}')); } catch {} } }
   if (!d) {                                          // model ignored the JSON format: pull values from plain text
     const g = k => (t.match(new RegExp('"?' + k + '"?\\s*[:=]\\s*"?([^",}\\n]+)', 'i')) || [])[1];
-    d = { month: g('month'), units: g('units'), amount: g('amount'), prev: g('prev'), curr: g('curr'), currency: g('currency'), conf: g('conf') };
+    d = { month: g('month'), units: g('units'), amount: g('amount'), prev: g('prev'), curr: g('curr'), currency: g('currency'), conf: g('conf'), bill_date: g('bill_date'), due_date: g('due_date'), rate: g('rate') };
   }
   return num(d.units) || num(d.amount) ? d : null;
 }
@@ -566,7 +568,7 @@ async function ocrAll(im, q, label, base) {
   let text = '';
   for (let i = 0; i < tiles.length; i++) {
     q.set(base + (i + 1) * 25 / tiles.length, `${label} (${i + 1}/${tiles.length})…`);
-    text += '\n' + await callAI([{ role: 'user', content: content(OCR_PROMPT, [tileURL(im, ...tiles[i])]) }], 2, 2500, true);
+    text += '\n' + await callAI([{ role: 'user', content: content(OCR_PROMPT, [tileURL(im, ...tiles[i])]) }], 2, 2500, true, 'bill');
   }
   return text;
 }
@@ -589,10 +591,10 @@ async function scanBills(files) {
       } catch (e) { errs.push('text read: ' + e.message); console.error(e); }
       q.set(75, 'Extracting values…');
       let d = null, d2 = null;
-      if (digits(text) >= 8) { try { raw = await callAI([{ role: 'user', content: PARSE_PROMPT + '\n\nOCR TEXT:\n' + text }], 2, 1200, true); console.log('VoltX extract:', raw); d = parseBill(raw); } catch (e) { errs.push('extract: ' + e.message); } }
+      if (digits(text) >= 8) { try { raw = await callAI([{ role: 'user', content: PARSE_PROMPT + '\n\nOCR TEXT:\n' + text }], 2, 1200, true, 'bill'); console.log('VoltX extract:', raw); d = parseBill(raw); } catch (e) { errs.push('extract: ' + e.message); } }
       if (!d || d.conf === 'low' || !inText(text, num(d.units)) || !inText(text, num(d.amount))) {   // unsure -> independent second read of the image
         q.set(88, 'Second opinion…');
-        try { const [W, H] = dims(im); raw = await callAI([{ role: 'user', content: content(BILL_PROMPT, [tileURL(im, 0, 0, W, H, 1800)]) }], 2, 2500, true); console.log('VoltX vision:', raw); d2 = parseBill(raw); }
+        try { const [W, H] = dims(im); raw = await callAI([{ role: 'user', content: content(BILL_PROMPT, [tileURL(im, 0, 0, W, H, 1800)]) }], 2, 2500, true, 'bill'); console.log('VoltX vision:', raw); d2 = parseBill(raw); }
         catch (e) { errs.push('image read: ' + e.message); }
       }
       const a = d || d2;
@@ -603,8 +605,10 @@ async function scanBills(files) {
       if (p && c && c > p) { const diff = +(c - p).toFixed(1); if (!units || Math.abs(units - diff) > Math.max(2, diff * .05)) { why.push('units adjusted to meter readings'); units = diff; } }
       const rates = bills.filter(b => b.units && b.amount).map(b => b.amount / b.units);
       if (units && amount && rates.length) { const avg = rates.reduce((x, y) => x + y, 0) / rates.length, r = amount / units; if (r < avg * .4 || r > avg * 2.5) why.push('price per unit looks unusual'); }
-      const month = normMonth(a.month) || normMonth(d2 && d2.month) || monthFromText(text); if (!month) why.push('month unclear');
-      const rec = { id: Date.now() + Math.random(), month, units, amount, cur: a.currency || '', chk: why.length > 0, why: why.join('; '), img: await toDataURL(f, 400, .6) };
+      const iso = x => /^\d{4}-\d{2}-\d{2}$/.test(String(x || '')) ? x : '', pick = k => iso(a[k]) || iso(d2 && d2[k]);
+      const month = normMonth(a.month) || pick('period_end').slice(0, 7) || pick('bill_date').slice(0, 7) || normMonth(d2 && d2.month) || monthFromText(text); if (!month) why.push('month unclear');
+      const nn = k => num(a[k]) || num(d2 && d2[k]) || 0;
+      const rec = { id: Date.now() + Math.random(), month, units, amount, cur: a.currency || '', bill_date: pick('bill_date'), due: pick('due_date'), period: [pick('period_start'), pick('period_end')], rate: nn('rate'), energy: nn('energy_charge'), fixed: nn('fixed_charge'), tax: nn('tax'), provider: String(a.provider || (d2 && d2.provider) || '').slice(0, 40), chk: why.length > 0, why: why.join('; '), img: await toDataURL(f, 400, .6) };
       const old = month ? bills.findIndex(b => b.month === month) : -1;
       if (old >= 0) bills[old] = rec; else bills.push(rec);   // same month = update, not duplicate
       flashId = rec.id; saveBills(); renderBills(); renderDash(); any = true;
@@ -623,6 +627,16 @@ function addManual() {
   bills.push({ id: Date.now(), month, units, amount, cur: '' }); save('vx_bills', bills);
   ['mMonth','mUnits','mAmt'].forEach(i => $(i).value = ''); renderBills(); renderDash();
 }
+function detailsHtml(b) {                          // extra values read from the bill (only those that were found)
+  const p = [], cu = b.cur || '';
+  if (b.period && (b.period[0] || b.period[1])) p.push('Period ' + b.period.filter(Boolean).join(' → '));
+  if (b.bill_date) p.push('Bill date ' + b.bill_date);
+  if (b.due) p.push('Due ' + b.due);
+  if (b.rate) p.push(`Rate ${cu}${b.rate}/unit`); else if (b.units && b.amount) p.push(`Effective ${cu}${(b.amount / b.units).toFixed(2)}/unit`);
+  if (b.energy) p.push(`Energy ${cu}${b.energy}`); if (b.fixed) p.push(`Fixed ${cu}${b.fixed}`); if (b.tax) p.push(`Tax ${cu}${b.tax}`);
+  if (b.provider) p.push(esc(b.provider));
+  return p.length ? `<tr class="dt"><td></td><td colspan="4">${p.join(' · ')}</td></tr>` : '';
+}
 function renderBills() {
   renderSide();
   const s = [...bills].sort((a, b) => a.month.localeCompare(b.month));
@@ -631,7 +645,7 @@ function renderBills() {
     <td><input type="month" value="${b.month}" onchange="editBill(${b.id},'month',this.value)"></td>
     <td><input type="number" value="${b.units}" onchange="editBill(${b.id},'units',+this.value)"></td>
     <td><input type="number" value="${b.amount}" onchange="editBill(${b.id},'amount',+this.value)"></td>
-    <td>${b.chk ? '<span class="vf" title="' + (b.why || 'Check against your bill') + '">⚠ verify</span> ' : ''}<button onclick="delBill(${b.id})">✕</button></td></tr>`).join('')}</table>` : '';
+    <td>${b.chk ? '<span class="vf" title="' + (b.why || 'Check against your bill') + '">⚠ verify</span> ' : ''}<button onclick="delBill(${b.id})">✕</button></td></tr>${detailsHtml(b)}`).join('')}</table>` : '';
 }
 function editBill(id, k, v) { const b = bills.find(b => b.id === id); b[k] = v; b.chk = false; save('vx_bills', bills); renderBills(); renderDash(); }
 function delBill(id) { bills = bills.filter(b => b.id !== id); save('vx_bills', bills); renderBills(); renderDash(); }
@@ -707,7 +721,7 @@ function saveSetup() { profile.people = $('people').value; profile.tariff = $('t
 /* ===== J. CHAT ===== */
 function context() {
   const apps = profile.apps.map(a => `${a.name || a.type} ${a.size || ''} ${a.watts}W x ${a.hours}h/day`).join('; ');
-  const b = [...bills].sort((a, c) => a.month.localeCompare(c.month)).map(x => `${x.month}: ${x.units}kWh, ${x.amount}`).join('; ');
+  const b = [...bills].sort((a, c) => a.month.localeCompare(c.month)).map(x => `${x.month}: ${x.units}kWh, ${x.amount}${x.rate ? ', rate ' + x.rate : ''}${x.due ? ', due ' + x.due : ''}`).join('; ');
   return `${SYSTEM}\nPROFILE: ${profile.type || 'unknown'}, people: ${profile.people || 'unknown'}. APPLIANCES: ${apps || 'none saved'}. BILLS: ${b || 'none saved'}.`;
 }
 function newChat() { cur = { id: Date.now(), title: 'New chat', msgs: [] }; go('chat'); $('msgs').innerHTML = ''; $('chatInput').focus(); }
