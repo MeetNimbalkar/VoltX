@@ -257,7 +257,7 @@ body{-webkit-font-smoothing:antialiased}
 .st:hover .sn{transform:scale(1.1)}
 .st b{display:block;font-size:13.5px;font-weight:600}.st span{display:block;font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
 .st em{display:block;font-style:normal;font-size:11.5px;color:var(--accent);margin-top:6px;min-height:14px}
-.mods{margin-bottom:30px}.mod p{margin-bottom:2px}
+.mods{margin:38px 0 0}.mod p{margin-bottom:2px}
 .mod dl{display:grid;grid-template-columns:58px 1fr;gap:7px 10px;margin:14px 0 16px;font-size:12.5px;line-height:1.45}.mod dt{color:var(--muted)}.mod dd{margin:0}
 .mlabel{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px 2px}
 .li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--line);font-size:13.5px}.li b{font-weight:500;color:var(--muted);white-space:nowrap}
@@ -308,17 +308,6 @@ body{-webkit-font-smoothing:antialiased}
         <div class="hero"><small>AI energy workflow</small><h1>From bills and rooms to <span>lower energy use</span></h1>
           <p class="hsub">VoltX reads your electricity bills and room videos, builds your energy profile, and recommends how to cut waste.</p></div>
         <div class="flow" id="flow"></div>
-        <div class="grid mods">
-          <div class="card mod"><h3>Bill Reader</h3><p>Photograph or upload your electricity bills.</p>
-            <dl><dt>Input</dt><dd>Bill photos</dd><dt>AI step</dt><dd>Vision model reads every value</dd><dt>Output</dt><dd>Month, kWh, amount, rate and due date saved to your dashboard</dd></dl>
-            <button class="btn" onclick="go('billchat')">Open Bill Reader</button></div>
-          <div class="card mod"><h3>Room Scanner</h3><p>Film your home or workplace.</p>
-            <dl><dt>Input</dt><dd>Room video or photos</dd><dt>AI step</dt><dd>Vision model finds appliances and lighting</dd><dt>Output</dt><dd>Layout and efficiency recommendations on your dashboard</dd></dl>
-            <button class="btn" onclick="go('room')">Open Room Scanner</button></div>
-          <div class="card mod"><h3>Ask VoltX</h3><p>An assistant that knows your data.</p>
-            <dl><dt>Input</dt><dd>Your question</dd><dt>AI step</dt><dd>Chat model with your bills, appliances and scans as context</dd><dt>Output</dt><dd>Personal answers and savings tips</dd></dl>
-            <button class="btn" onclick="newChat()">Start a chat</button></div>
-        </div>
         <div class="mlabel">Ask VoltX anything about your energy use</div>
         <div class="composer" id="homeComposer">
           <div class="thumbs" id="homeThumbs"></div>
@@ -332,6 +321,17 @@ body{-webkit-font-smoothing:antialiased}
         </div>
         <input type="file" id="homeFile" accept="image/*,video/*" multiple class="hidden">
         <div class="sug" id="sug"></div>
+        <div class="grid mods">
+          <div class="card mod"><h3>Bill Reader</h3><p>Photograph or upload your electricity bills.</p>
+            <dl><dt>Input</dt><dd>Bill photos</dd><dt>AI step</dt><dd>Vision model reads every value</dd><dt>Output</dt><dd>Month, kWh, amount, rate and due date saved to your dashboard</dd></dl>
+            <button class="btn" onclick="go('billchat')">Open Bill Reader</button></div>
+          <div class="card mod"><h3>Room Scanner</h3><p>Film your home or workplace.</p>
+            <dl><dt>Input</dt><dd>Room video or photos</dd><dt>AI step</dt><dd>Vision model finds appliances and lighting</dd><dt>Output</dt><dd>Layout and efficiency recommendations on your dashboard</dd></dl>
+            <button class="btn" onclick="go('room')">Open Room Scanner</button></div>
+          <div class="card mod"><h3>Ask VoltX</h3><p>An assistant that knows your data.</p>
+            <dl><dt>Input</dt><dd>Your question</dd><dt>AI step</dt><dd>Chat model with your bills, appliances and scans as context</dd><dt>Output</dt><dd>Personal answers and savings tips</dd></dl>
+            <button class="btn" onclick="newChat()">Start a chat</button></div>
+        </div>
 
         <div class="sec reveal" id="bills">
           <h2>Upload previous electricity bills</h2>
