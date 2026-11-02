@@ -170,6 +170,10 @@ html.snapping::view-transition-new(root){z-index:1}
 html.snapping::view-transition-old(dust){display:none}
 html.snapping::view-transition-new(dust){animation:none}
 @keyframes snapOut{from{--p:-16%}to{--p:100%}}
+.bwel{max-width:520px;margin:9vh auto 0;text-align:center;padding:0 24px;animation:up .5s both}.bwel h2{font-family:'Space Grotesk';font-size:26px;margin-bottom:8px}
+.bstat{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin-bottom:8px;white-space:normal}.bstat .dots{margin:0}
+.bsave{margin-top:12px;padding:12px 14px;border:1px solid var(--accent);border-radius:12px;background:var(--panel2);font-size:14px;white-space:normal;animation:up .4s both}
+.bsave div{margin-top:4px}.bsave .bact{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.bsave.warn{border-color:var(--warn)}
 /* reply actions */
 .acts{display:flex;gap:2px;margin-top:6px;white-space:normal;position:relative;flex-wrap:wrap}
 .acts button{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);padding:5px 8px;border-radius:7px}
@@ -233,6 +237,7 @@ html.snapping::view-transition-new(dust){animation:none}
     <div class="logo" onclick="go('home')"><img src="logo.png" alt="" onerror="this.style.display='none'"><span class="logo-t">Volt<i>X</i></span></div>
     <button class="nav on" data-nav="home" onclick="go('home')">⌂ Home</button>
     <button class="nav" onclick="newChat()">＋ New chat</button>
+    <button class="nav" data-nav="billchat" onclick="go('billchat')">▣ Bill Reader</button>
     <button class="nav" data-nav="setup" onclick="go('setup')">⚙ Household / Office</button>
     <div class="fold" data-f="dash"><button class="nav" onclick="go('home','dash')">▦ Dashboard</button><button class="cv" onclick="fold('dash')" title="Show / hide"><i class="chev"></i></button></div>
     <div class="grp" id="g-dash"><div class="det" id="sbDash"></div></div>
@@ -272,7 +277,7 @@ html.snapping::view-transition-new(dust){animation:none}
 
         <div class="sec reveal" id="bills">
           <h2>Upload previous electricity bills</h2>
-          <div class="drop" id="billDrop" tabindex="0" onclick="pick('billFile')">Drag &amp; drop, click to browse, or paste (Ctrl+V) bill photos<br><small>VoltX reads units, amount and month automatically</small></div>
+          <div class="drop" id="billDrop" tabindex="0" onclick="pick('billFile')">Drag &amp; drop, click to browse, or paste (Ctrl+V) bill photos (opens the Bill Reader)<br><small>VoltX reads units, amount and month automatically</small></div>
           <input type="file" id="billFile" accept="image/*" multiple class="hidden">
           <div id="scanQ"></div><div id="billList"></div>
           <details style="margin-top:12px"><summary class="muted" style="cursor:pointer">Enter a bill manually (instant)</summary>
@@ -331,6 +336,19 @@ html.snapping::view-transition-new(dust){animation:none}
         </div><input type="file" id="chatFile" accept="image/*,video/*" multiple class="hidden"></div>
       </div>
     </section>
+
+    <!-- ===== BILL READER VIEW ===== -->
+    <section class="view hidden" id="v-billchat" style="overflow:hidden">
+      <div class="chat" id="billChatBox">
+        <div class="chead"><button class="chip" onclick="go('home')">⌂ Home</button><button class="chip" onclick="newBillChat()">＋ New bill chat</button><button class="chip" onclick="newChat()">Open main chatbot →</button><span class="sp"></span><span class="logo-t" style="font-size:17px">Bill<i>Reader</i></span></div>
+        <div class="msgs" id="bmsgs"></div>
+        <div class="cbox"><div class="composer" id="bcComposer">
+          <div class="thumbs" id="bcThumbs"></div>
+          <textarea id="bcInput" rows="1" placeholder="Add your electricity bill photos, then press send (optional note)…"></textarea>
+          <div class="crow"><button class="chip" onclick="pick('bcFile')">＋ Add bill photos</button><span class="sp"></span><button class="send" onclick="sendBills()">↑</button></div>
+        </div><input type="file" id="bcFile" accept="image/*" multiple class="hidden"></div>
+      </div>
+    </section>
   </div>
 </div>
 
@@ -346,9 +364,10 @@ const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
 let profile = load('vx_profile', { type: '', people: '', tariff: '', apps: [] });
 let bills   = load('vx_bills', []);
 let chats   = load('vx_chats', []);
+let billMsgs = [], billCtl = null;       // Bill Reader conversation (memory only) + running request
 let cur     = null;                       // current chat {id,title,msgs:[{role,text,imgs}]}
-let pending = { home: [], chat: [] };
-let vids = { home: [], chat: [] };       // videos waiting to be sent: {name,n,thumb,frames[]}     // images waiting to be sent
+let pending = { home: [], chat: [], bc: [] };
+let vids = { home: [], chat: [], bc: [] };       // videos waiting to be sent: {name,n,thumb,frames[]}     // images waiting to be sent
 
 /* ===== C. SPLASH + THEME ===== */
 setTimeout(() => $('splash').classList.add('out'), 3500);
@@ -393,11 +412,12 @@ function snapDust(cols) {                                     // dust grains dri
 function go(view, anchor) {
   document.body.classList.remove('sideopen');
   if (window.speechSynthesis) speechSynthesis.cancel();
-  ['home','setup','chat'].forEach(v => $('v-'+v).classList.toggle('hidden', v !== view));
+  ['home','setup','chat','billchat'].forEach(v => $('v-'+v).classList.toggle('hidden', v !== view));
   document.querySelectorAll('[data-nav]').forEach(n => n.classList.toggle('on', n.dataset.nav === view));
   const el = $('v-'+view); el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
   if (view === 'home') { renderDash(); renderBills(); if (anchor) setTimeout(() => $(anchor).scrollIntoView({ behavior: 'smooth' }), 80); else el.scrollTop = 0; }
   if (view === 'setup') renderSetup();
+  if (view === 'billchat' && !billMsgs.length) renderBillWelcome();
 }
 function toast(t) { const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2800); }
 function pick(id) { $(id).click(); }
@@ -497,125 +517,14 @@ const content = (text, imgs) => imgs?.length
   : text;
 
 /* ===== G. BILL SCANNING ===== */
-const BILL_FIELDS = `Reply with ONLY this JSON (no other text): {"month":"YYYY-MM","bill_date":"YYYY-MM-DD" or null,"period_start":"YYYY-MM-DD" or null,"period_end":"YYYY-MM-DD" or null,"due_date":"YYYY-MM-DD" or null,"units":number,"amount":number,"rate":number or null,"energy_charge":number or null,"fixed_charge":number or null,"tax":number or null,"prev":number or null,"curr":number or null,"provider":"name" or null,"currency":"symbol","conf":"high" or "low"}. Rules: month = the billing month the consumption belongs to (use the period end if a date range). units = total kWh consumed in this bill (not a meter reading). amount = final total payable / net amount due for this bill after taxes (not arrears, not a per-unit rate, not a deposit). rate = price per unit if printed. energy_charge / fixed_charge / tax = those line items if printed. prev and curr = previous and current meter readings. All dates in YYYY-MM-DD. Fill in EVERY field that is visible on the bill; use null only for fields that are not printed. Do not guess. Do NOT include names, addresses or account/consumer numbers. conf = "low" if any value is unclear.`;
-const BILL_PROMPT = 'You are reading a photo of an electricity bill. ' + BILL_FIELDS;
-const OCR_PROMPT = 'Transcribe ALL text and numbers in this part of an electricity bill exactly as printed, line by line, keeping each label next to its value (for example "Units consumed: 245"). Do not summarise, translate or guess.';
-const PARSE_PROMPT = 'Below is OCR text of an electricity bill (it may contain errors). ' + BILL_FIELDS;
 const num = v => { const m = String(v ?? '').replace(/,/g, '').match(/-?\d+(\.\d+)?/); return m ? +m[0] : 0; };   // "1,834.50" / "245 kWh" -> number
-function loadImg(f) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(f); }); }
-function tileURL(img, sx, sy, sw, sh, maxW = 1600) {   // crop, upscale, grayscale, auto-levels (fixes tint, shadows, dark mode)
-  const k = Math.min(2, maxW / sw), c = document.createElement('canvas'); c.width = Math.round(sw * k); c.height = Math.round(sh * k);
-  const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, sx, sy, sw, sh, 0, 0, c.width, c.height);
-  try {
-    const id = x.getImageData(0, 0, c.width, c.height), d = id.data, n = d.length / 4, h = new Uint32Array(256); let sum = 0;
-    for (let i = 0; i < d.length; i += 4) { const g = (d[i] * .3 + d[i + 1] * .59 + d[i + 2] * .11) | 0; d[i] = g; h[g]++; sum += g; }
-    const inv = sum / n < 100;                                        // light text on dark background -> invert
-    const pct = p => { let t = 0; for (let v = 0; v < 256; v++) { t += h[v]; if (t >= n * p) return v; } return 255; };
-    let lo = inv ? 255 - pct(.995) : pct(.005), hi = inv ? 255 - pct(.15) : pct(.85); if (hi - lo < 40) { lo = 0; hi = 255; }
-    for (let i = 0; i < d.length; i += 4) { let g = inv ? 255 - d[i] : d[i]; g = Math.max(0, Math.min(255, (g - lo) / (hi - lo) * 255)); d[i] = d[i + 1] = d[i + 2] = g; }
-    x.putImageData(id, 0, 0);
-  } catch {}
-  return c.toDataURL('image/jpeg', .92);
-}
-function rotImg(im, deg) { const W = im.naturalWidth || im.width, H = im.naturalHeight || im.height, c = document.createElement('canvas'); c.width = H; c.height = W;
-  const x = c.getContext('2d'); x.translate(H / 2, W / 2); x.rotate(deg * Math.PI / 180); x.drawImage(im, -W / 2, -H / 2); return c; }
-const dims = o => [o.naturalWidth || o.width, o.naturalHeight || o.height];
-const MN = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
 function normMonth(s) { const m = String(s || '').match(/^(\d{4})-(\d{1,2})$/); return m && +m[2] >= 1 && +m[2] <= 12 ? m[1] + '-' + m[2].padStart(2, '0') : ''; }
-function monthFromText(t) {
-  let m = t.match(/\b(20\d{2})[-\/](0?[1-9]|1[0-2])\b/); if (m) return m[1] + '-' + m[2].padStart(2, '0');
-  m = t.match(/\b(0?[1-9]|1[0-2])[-\/](20\d{2})\b/); if (m) return m[2] + '-' + m[1].padStart(2, '0');
-  m = t.match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*[\s,.\-]*(20\d{2})\b/i);
-  return m ? m[2] + '-' + String(MN.indexOf(m[1].toLowerCase()) + 1).padStart(2, '0') : '';
-}
-function inText(t, n) {                                 // is this number really printed on the bill? (guards against made-up values)
-  if (!n) return false; const s = String(n).replace('.', '\\.');
-  return new RegExp('(^|[^\\d.])' + s + (Number.isInteger(n) ? '(\\.0+)?' : '0*') + '(?!\\d)').test(t.replace(/(\d),(?=\d{3})/g, '$1'));
-}
-function choose(vals, text, label, why) {               // pick the value confirmed by the OCR text; flag if nothing confirms it
-  const v = vals.map(num).filter(Boolean);
-  if (!v.length) { why.push(label + ' not found'); return 0; }
-  if (v.length > 1 && v[0] === v[1]) return v[0];
-  const hit = v.find(x => inText(text, x)); if (hit) return hit;
-  why.push(label + ' not confirmed in the bill text'); return v[0];
-}
 let flashId = null;
-function parseBill(t) {
-  t = t || ''; let d = null;
-  const m = t.match(/\{[\s\S]*?\}/);
-  if (m) { try { d = JSON.parse(m[0]); } catch { try { d = JSON.parse(m[0].replace(/'/g, '"').replace(/,\s*}/g, '}')); } catch {} } }
-  if (!d) {                                          // model ignored the JSON format: pull values from plain text
-    const g = k => (t.match(new RegExp('"?' + k + '"?\\s*[:=]\\s*"?([^",}\\n]+)', 'i')) || [])[1];
-    d = { month: g('month'), units: g('units'), amount: g('amount'), prev: g('prev'), curr: g('curr'), currency: g('currency'), conf: g('conf'), bill_date: g('bill_date'), due_date: g('due_date'), rate: g('rate') };
-  }
-  return num(d.units) || num(d.amount) ? d : null;
-}
 function saveBills() { try { save('vx_bills', bills); } catch { bills.forEach(b => delete b.img); try { save('vx_bills', bills); } catch {} } }
-function qItem(src, name) {
-  const d = document.createElement('div'); d.className = 'card scan';
-  d.innerHTML = `<img src="${src}"><div class="si"><b>${fmt(name)}</b><div class="pbar"><i></i></div><small class="muted">Preparing…</small></div>`;
-  $('scanQ').prepend(d);
-  const bar = d.querySelector('i'), st = d.querySelector('small'), t0 = Date.now(); let p = 0, cap = 15, label = 'Preparing…';
-  const tick = setInterval(() => { if (p < cap) { p += (cap - p) * .04 + .1; bar.style.width = p + '%'; } st.textContent = label + ' · ' + Math.floor((Date.now() - t0) / 1000) + 's'; }, 150);
-  return {
-    set(pct, txt) { cap = pct; label = txt; },
-    done(ok, txt) { clearInterval(tick); bar.style.width = '100%'; bar.style.background = ok ? 'var(--accent)' : 'var(--bad)'; st.textContent = txt;
-      setTimeout(() => { d.style.opacity = 0; setTimeout(() => d.remove(), 500); }, ok ? 4000 : 8000); }
-  };
-}
-async function ocrAll(im, q, label, base) {
-  const [W, H] = dims(im), tiles = H > W * 1.2 ? [[0, 0, W, H * .56], [0, H * .44, W, H * .56]] : [[0, 0, W, H]];   // tall bills read in 2 sharper halves
-  let text = '';
-  for (let i = 0; i < tiles.length; i++) {
-    q.set(base + (i + 1) * 25 / tiles.length, `${label} (${i + 1}/${tiles.length})…`);
-    text += '\n' + await callAI([{ role: 'user', content: content(OCR_PROMPT, [tileURL(im, ...tiles[i])]) }], 2, 2500, true, 'bill');
-  }
-  return text;
-}
-async function scanOne(f) {
-  const q = qItem(URL.createObjectURL(f), f.name || 'Pasted image'), errs = [];
-  try {
-    q.set(25, 'Preparing image…');
-    const im = await loadImg(f), [W, H] = dims(im);
-    let d = null, d2 = null, text = '', raw = '';
-    q.set(80, 'Reading bill…');                                           // FAST PATH: one call reads every field
-    try { raw = await callAI([{ role: 'user', content: content(BILL_PROMPT, [tileURL(im, 0, 0, W, H, 1400)]) }], 1, 1500, true, 'bill'); console.log('VoltX bill:', raw); d = parseBill(raw); }
-    catch (e) { errs.push(e.message); console.error(e); }
-    if (!d || !num(d.units) || !num(d.amount)) {                           // missing key values -> slower text pass
-      q.set(85, 'Looking closer…');
-      try {
-        text = await ocrAll(im, q, 'Reading text', 60);
-        raw = await callAI([{ role: 'user', content: PARSE_PROMPT + '\n\nOCR TEXT:\n' + text }], 1, 1500, true, 'bill'); console.log('VoltX bill (text):', raw); d2 = parseBill(raw);
-      } catch (e) { errs.push(e.message); console.error(e); }
-    }
-    if (!d && !d2) throw new Error(errs[0] || `no values found${raw ? ` (model said: "${raw.slice(0, 70)}")` : ''}`);
-    const has = v => v !== null && v !== undefined && v !== '';
-    const a = { ...(d2 || {}), ...Object.fromEntries(Object.entries(d || {}).filter(([, v]) => has(v))) };   // values from the first read win; the second fills gaps
-    const hasText = text.length > 20, why = [];
-    let units, amount;
-    if (hasText) { const both = d && d2; units = choose(both ? [d.units, d2.units] : [a.units], text, 'units', why); amount = choose(both ? [d.amount, d2.amount] : [a.amount], text, 'amount', why); }
-    else { units = num(a.units); amount = num(a.amount); if (!units) why.push('units not found'); if (!amount) why.push('amount not found'); if (a.conf === 'low') why.push('AI was unsure'); }
-    const p = num(a.prev), c = num(a.curr);
-    if (p && c && c > p) { const diff = +(c - p).toFixed(1); if (!units || Math.abs(units - diff) > Math.max(2, diff * .05)) { why.push('units adjusted to meter readings'); units = diff; } }
-    const rates = bills.filter(b => b.units && b.amount).map(b => b.amount / b.units);
-    if (units && amount && rates.length) { const avg = rates.reduce((x, y) => x + y, 0) / rates.length, r = amount / units; if (r < avg * .4 || r > avg * 2.5) why.push('price per unit looks unusual'); }
-    const iso = x => /^\d{4}-\d{2}-\d{2}$/.test(String(x || '')) ? x : '', nn = k => num(a[k]) || 0;
-    const month = normMonth(a.month) || iso(a.period_end).slice(0, 7) || iso(a.bill_date).slice(0, 7) || monthFromText(text); if (!month) why.push('month unclear');
-    const rec = { id: Date.now() + Math.random(), month, units, amount, cur: a.currency || '', bill_date: iso(a.bill_date), due: iso(a.due_date), period: [iso(a.period_start), iso(a.period_end)],
-      rate: nn('rate'), energy: nn('energy_charge'), fixed: nn('fixed_charge'), tax: nn('tax'), provider: String(a.provider || '').slice(0, 40), chk: why.length > 0, why: why.join('; '), img: await toDataURL(f, 400, .6) };
-    const old = month ? bills.findIndex(b => b.month === month) : -1;
-    if (old >= 0) bills[old] = rec; else bills.push(rec);               // same month = update, not duplicate
-    flashId = rec.id; saveBills(); renderBills(); renderDash();
-    q.done(true, `Saved: ${units || '?'} kWh, amount ${amount || '?'}${month ? ' (' + month + ')' : ''}.${why.length ? ' Please verify: ' + why[0] + '.' : ''}`);
-    return true;
-  } catch (e) { console.error(e); q.done(false, 'Could not read this bill: ' + e.message + '. Use "Enter a bill manually" below.'); return false; }
-}
-async function scanBills(files) {
+function scanBills(files) {                      // bill photos from the home page open the Bill Reader and are read there
   files = files.filter(f => f.type.startsWith('image/'));
   if (!files.length) return toast('Please add an image file');
-  const queue = [...files]; let any = false;
-  await Promise.all([0, 1].map(async () => { while (queue.length) { if (await scanOne(queue.shift())) any = true; } }));   // 2 bills at a time
-  if (any) setTimeout(() => $('dash').scrollIntoView({ behavior: 'smooth' }), 400);
+  go('billchat'); addImages(files, 'bc').then(() => sendBills());
 }
 function showImg(id) {
   const b = bills.find(x => x.id === id); if (!b?.img) return;
@@ -826,9 +735,9 @@ async function sendFrom(src) {
 }
 
 /* ===== K. INIT: events, suggestions, scroll reveal ===== */
-['home', 'chat'].forEach(t => {
+['home', 'chat', 'bc'].forEach(t => {
   $(t + 'File').addEventListener('change', e => { addImages([...e.target.files], t); e.target.value = ''; });
-  $(t + 'Input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendFrom(t); } });
+  $(t + 'Input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); t === 'bc' ? sendBills() : sendFrom(t); } });
   dropZone($(t + 'Composer'), f => addImages(f, t));
 });
 $('billFile').addEventListener('change', e => { scanBills([...e.target.files]); e.target.value = ''; });
@@ -840,10 +749,12 @@ dropZone($('billDrop'), scanBills);
 const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), { root: $('v-home'), threshold: .12 });
 document.querySelectorAll('.reveal').forEach(r => io.observe(r));
 dropZone($('chatBox'), f => addImages(f, 'chat'));
+dropZone($('billChatBox'), f => addImages(f, 'bc'));
 document.addEventListener('paste', e => {                 // Ctrl+V images
   const files = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith('image/'));
   if (!files.length) return; e.preventDefault();
-  if (!$('v-chat').classList.contains('hidden')) addImages(files, 'chat');
+  if (!$('v-billchat').classList.contains('hidden')) addImages(files, 'bc');
+  else if (!$('v-chat').classList.contains('hidden')) addImages(files, 'chat');
   else if (!$('v-home').classList.contains('hidden')) $('bills').contains(document.activeElement) ? scanBills(files) : addImages(files, 'home');
 });
 
@@ -907,6 +818,96 @@ async function translateTo(lang, text, holder) {
   } catch (e) { box.querySelector('.tt').textContent = 'Translation failed: ' + e.message; }
 }
 document.addEventListener('click', e => { if (!e.target.closest('.lm') && !e.target.closest('[data-a="t"]')) document.querySelectorAll('.lm').forEach(x => x.remove()); });
+
+/* ===== N. BILL READER: its own chat, own model, saves what it reads ===== */
+const BILL_ASK = `Here are my electricity bills (images attached). Read every bill carefully and extract all the details you can see: billing month, bill date, billing period, due date, units consumed (kWh), total amount payable, rate per unit, energy charge, fixed charge, taxes and other charges, previous and current meter readings, and the provider name. Use your knowledge of how electricity bills work to complete any missing value, but only by calculating it from other values printed on the bill (for example units = current reading - previous reading); never invent anything else, use null instead. Do not include my name, address or account number. First write a short plain-language summary (one line per bill: month, kWh, amount, anything unusual). Then end your reply with ONE json code block in exactly this shape, one object per bill: {"bills":[{"month":"YYYY-MM","bill_date":null,"period_start":null,"period_end":null,"due_date":null,"units":null,"amount":null,"rate":null,"energy_charge":null,"fixed_charge":null,"tax":null,"prev":null,"curr":null,"provider":null,"currency":null}]} with all dates as YYYY-MM-DD.`;
+const BILL_SYS = 'You are VoltX Bill Reader. You read electricity bills accurately. Quote only values printed on the bill, never invent numbers, and keep replies short.';
+const view = t => md(t.replace(/```[\s\S]*?```/g, '').replace(/```[\s\S]*$/, '')).html;      // hide the JSON block from the reader
+
+async function streamAI(messages, maxTok, onText, signal, onThink) {   // shows the reply as it arrives (falls back to plain JSON)
+  const ctl = new AbortController(), kill = setTimeout(() => ctl.abort(), 240000);
+  signal.addEventListener('abort', () => ctl.abort());
+  try {
+    const r = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages, max_tokens: maxTok, temperature: .2, task: 'bill', stream: true }), signal: ctl.signal });
+    if (!(r.headers.get('content-type') || '').includes('event-stream')) {
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || j.error) throw new Error(j.error?.message || 'Server error ' + r.status);
+      const t = (j.choices?.[0]?.message?.content || '').trim(); if (!t) throw new Error('The model returned an empty reply.'); onText(t); return t;
+    }
+    const rd = r.body.getReader(), dec = new TextDecoder(); let buf = '', out = '';
+    for (;;) {
+      const { done, value } = await rd.read(); if (done) break;
+      buf += dec.decode(value, { stream: true }); const lines = buf.split('\n'); buf = lines.pop();
+      for (const ln of lines) {
+        if (!ln.startsWith('data:')) continue; const p = ln.slice(5).trim(); if (!p || p === '[DONE]') continue;
+        try { const j = JSON.parse(p); if (j.error) throw new Error(j.error.message); const dl = j.choices?.[0]?.delta;
+          if (dl?.content) { out += dl.content; onText(out); } else if (dl?.reasoning || dl?.reasoning_content) onThink && onThink(); }
+        catch (e) { if (e.message && !/JSON|Unexpected/.test(e.message)) throw e; }
+      }
+    }
+    if (!out.trim()) throw new Error('The model returned an empty reply.');
+    return out;
+  } finally { clearTimeout(kill); }
+}
+function thumbOf(src, w = 400) {
+  return new Promise(res => { const i = new Image(); i.onload = () => { const k = Math.min(1, w / i.width), c = document.createElement('canvas'); c.width = i.width * k; c.height = i.height * k;
+    c.getContext('2d').drawImage(i, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', .6)); }; i.onerror = () => res(''); i.src = src; });
+}
+function extractBills(text) {
+  const m = text.match(/```(?:json)?\s*([\s\S]*?)```/), raw = m ? m[1] : (text.match(/\{[\s\S]*\}/) || [])[0];
+  try { const j = JSON.parse(raw); return (Array.isArray(j) ? j : j.bills || (j.units || j.amount ? [j] : [])).filter(b => b && (num(b.units) || num(b.amount))); } catch { return []; }
+}
+function billRecord(a, img) {                                // clean + sanity-check one bill read by the model
+  const iso = x => /^\d{4}-\d{2}-\d{2}$/.test(String(x || '')) ? x : '', nn = k => num(a[k]) || 0, why = [], amount = num(a.amount), p = num(a.prev), c = num(a.curr);
+  let units = num(a.units);
+  if (p && c && c > p) { const d = +(c - p).toFixed(1); if (!units || Math.abs(units - d) > Math.max(2, d * .05)) { if (units) why.push('units adjusted to meter readings'); units = d; } }
+  if (!units) why.push('units not found'); if (!amount) why.push('amount not found');
+  const rates = bills.filter(b => b.units && b.amount).map(b => b.amount / b.units);
+  if (units && amount && rates.length) { const avg = rates.reduce((x, y) => x + y, 0) / rates.length, r = amount / units; if (r < avg * .4 || r > avg * 2.5) why.push('price per unit looks unusual'); }
+  const month = normMonth(a.month) || iso(a.period_end).slice(0, 7) || iso(a.bill_date).slice(0, 7); if (!month) why.push('month unclear');
+  return { id: Date.now() + Math.random(), month, units, amount, cur: String(a.currency || '').slice(0, 4), bill_date: iso(a.bill_date), due: iso(a.due_date), period: [iso(a.period_start), iso(a.period_end)],
+    rate: nn('rate'), energy: nn('energy_charge'), fixed: nn('fixed_charge'), tax: nn('tax'), provider: String(a.provider || '').slice(0, 40), chk: why.length > 0, why: why.join('; '), img: img || '' };
+}
+function renderBillWelcome() {
+  $('bmsgs').innerHTML = '<div class="bwel"><h2>Bill Reader</h2><p class="muted">Add photos of your electricity bills. VoltX reads every value on them and saves the details to your dashboard on this device. Nothing is made up.</p><p class="muted" style="margin-top:10px">Drop, paste or attach the images below, then press send.</p></div>';
+}
+function newBillChat() { billMsgs = []; go('billchat'); renderBillWelcome(); }
+function bBubble(role, html) {
+  const d = document.createElement('div'); d.className = 'm ' + (role === 'user' ? 'u' : 'b'); d.innerHTML = (role === 'user' ? '' : AV) + '<div class="bub">' + html + '</div>';
+  $('bmsgs').appendChild(d); $('bmsgs').scrollTop = $('bmsgs').scrollHeight; return d.querySelector('.bub');
+}
+async function sendBills() {
+  if (billCtl) return toast('Still reading. Press Stop to cancel.');
+  const inp = $('bcInput'), note = inp.value.trim(), imgs = pending.bc.splice(0);
+  if (!imgs.length && !note) return;
+  inp.value = ''; renderThumbs('bc'); if (!billMsgs.length) $('bmsgs').innerHTML = '';
+  const shown = imgs.length ? (imgs.length > 1 ? `Here are my ${imgs.length} electricity bills.` : 'Here is my electricity bill.') + (note ? ' ' + note : '') : note;
+  billMsgs.push({ role: 'user', text: imgs.length ? BILL_ASK + (note ? '\n\nExtra note from me: ' + note : '') : note, imgs });
+  bBubble('user', imgs.map(s => `<img src="${s}">`).join('') + fmt(shown));
+  const bub = bBubble('bot', '<div class="bstat"><div class="dots"><span></span><span></span><span></span></div><span class="bt">Reading… 0s</span><button class="chip" id="bstop">Stop</button></div><div class="btxt"></div>');
+  const t0 = Date.now(), bt = bub.querySelector('.bt'), box = bub.querySelector('.btxt'); let phase = 'Reading';
+  const tick = setInterval(() => { bt.textContent = `${phase}… ${Math.floor((Date.now() - t0) / 1000)}s`; }, 500);
+  billCtl = new AbortController(); $('bstop').onclick = () => billCtl && billCtl.abort();
+  const hist = billMsgs.slice(-6).map((m, i, a) => ({ role: m.role, content: (i === a.length - 1 && m.imgs?.length) ? content(m.text, m.imgs) : (m.imgs?.length ? '[bill images were sent earlier] ' : '') + m.text }));
+  let out = '', err = '';
+  try { out = await streamAI([{ role: 'system', content: BILL_SYS }, ...hist], 2500, t => { out = t; phase = 'Writing'; box.innerHTML = view(t); $('bmsgs').scrollTop = $('bmsgs').scrollHeight; }, billCtl.signal, () => { phase = 'Thinking'; }); }
+  catch (e) { err = e.name === 'AbortError' ? 'Stopped (or it took too long).' : e.message; }
+  clearInterval(tick); billCtl = null; bub.querySelector('.bstat').remove();
+  billMsgs.push({ role: 'assistant', text: out || err });
+  box.innerHTML = out ? view(out) : `<span class="muted">${esc(err || 'No reply received.')}</span>`;
+  const found = out ? extractBills(out) : [];
+  if (found.length) {                                         // save to this user's database (browser storage) and refresh the dashboard
+    const recs = []; for (let i = 0; i < found.length; i++) recs.push(billRecord(found[i], imgs.length === found.length ? await thumbOf(imgs[i]) : ''));
+    recs.forEach(r => { const o = r.month ? bills.findIndex(b => b.month === r.month) : -1; if (o >= 0) bills[o] = r; else bills.push(r); });
+    flashId = recs[recs.length - 1].id; saveBills(); renderBills(); renderDash();
+    box.insertAdjacentHTML('beforeend', `<div class="bsave"><b>Saved ${recs.length} bill${recs.length > 1 ? 's' : ''} to your dashboard</b>${recs.map(r =>
+      `<div>${r.month || 'Month unclear'} · ${r.units || '?'} kWh · ${esc(r.cur)}${r.amount || '?'}${r.chk ? ` <span class="vf" title="${esc(r.why)}">⚠ verify</span>` : ''}</div>`).join('')}
+      <div class="bact"><button class="btn" onclick="go('home','dash')">View dashboard</button><button class="btn ghost" onclick="newChat()">Open main chatbot</button></div></div>`);
+  } else if (imgs.length && out) {
+    box.insertAdjacentHTML('beforeend', '<div class="bsave warn">I could not pull structured values from that reply. Ask me to "list the details as JSON", try a clearer photo, or <button class="chip" onclick="go(\'home\',\'bills\')">enter the bill manually</button></div>');
+  }
+  $('bmsgs').scrollTop = $('bmsgs').scrollHeight;
+}
 
 /* ===== L. MOTION: energy network, scroll effects, tilt, ripple ===== */
 function countUp(root) {
