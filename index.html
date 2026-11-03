@@ -307,6 +307,14 @@ body{-webkit-font-smoothing:antialiased}
 .pg-bar i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 55%,#fff),var(--accent));background-size:200% 100%;animation:pgs 1.6s linear infinite}
 .prog.fin .pg-bar i{animation:none;background:var(--accent)}.prog.err .pg-bar i{animation:none;background:var(--bad)}.prog.err .pg-lab{color:var(--bad)}
 @keyframes pgs{to{background-position:200% 0}}
+/* keep workflow pages inside the screen */
+.view{overflow-x:hidden}
+.wf-grid{grid-template-columns:minmax(300px,380px) minmax(0,1fr)}
+@media(max-width:900px){.wf-grid{grid-template-columns:minmax(0,1fr)}}
+.wf,.wf-in,.wf-out,.report,.rp,.prog,.pvi{min-width:0;max-width:100%}
+.rp-sum,.kv b,.rp .alert,.rp li{overflow-wrap:anywhere;word-break:break-word}
+.rp-cards{grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr))}
+.rp pre{max-width:100%;overflow-x:auto}
 </style>
 </head>
 <body>
@@ -899,7 +907,17 @@ document.addEventListener('click', e => { if (!e.target.closest('.lm') && !e.tar
 /* ===== N. BILL READER: its own chat, own model, saves what it reads ===== */
 const BILL_ASK = `Here are my electricity bills (images attached). Read every bill carefully and extract all the details you can see: billing month, bill date, billing period, due date, units consumed (kWh), total amount payable, rate per unit, energy charge, fixed charge, taxes and other charges, previous and current meter readings, and the provider name. Use your knowledge of how electricity bills work to complete any missing value, but only by calculating it from other values printed on the bill (for example units = current reading - previous reading); never invent anything else, use null instead. Do not include my name, address or account number. First write a short plain-language summary (one line per bill: month, kWh, amount, anything unusual). Then end your reply with ONE json code block in exactly this shape, one object per bill: {"bills":[{"month":"YYYY-MM","bill_date":null,"period_start":null,"period_end":null,"due_date":null,"units":null,"amount":null,"rate":null,"energy_charge":null,"fixed_charge":null,"tax":null,"prev":null,"curr":null,"provider":null,"currency":null}]} with all dates as YYYY-MM-DD.`;
 const BILL_SYS = 'You are VoltX Bill Reader. You read electricity bills accurately. Quote only values printed on the bill, never invent numbers, and keep replies short.';
-const view = t => md(t.replace(/```[\s\S]*?```/g, '').replace(/```[\s\S]*$/, '')).html;      // hide the JSON block from the reader
+function stripJson(t) {                                       // remove JSON the model printed inline (with or without a code fence)
+  t = t.replace(/```[\s\S]*?```/g, '').replace(/```[\s\S]*$/, '');
+  for (const k of ['{"bills"', '{"room"']) {
+    const i = t.indexOf(k); if (i < 0) continue; let d = 0, j = i;
+    for (; j < t.length; j++) { if (t[j] === '{') d++; else if (t[j] === '}' && --d === 0) { j++; break; } }
+    t = t.slice(0, i) + t.slice(j);
+  }
+  const m = t.lastIndexOf('["'); if (m >= 0 && /^\[\s*"[\s\S]*"\s*\]\s*$/.test(t.slice(m))) t = t.slice(0, m);     // trailing follow-up suggestions
+  return t.trim();
+}
+const view = t => md(stripJson(t)).html;      // hide the JSON block from the reader
 
 async function streamAI(messages, maxTok, onText, signal, onThink) {   // shows the reply as it arrives (falls back to plain JSON)
   const ctl = new AbortController(), kill = setTimeout(() => ctl.abort(), 240000);
@@ -1104,8 +1122,8 @@ async function runBills(key, P, note) {
     <div class="bact"><button class="btn" onclick="go('home','dash')">View dashboard</button><button class="btn ghost" onclick="wfReset('bc')">Read more bills</button><button class="btn ghost" onclick="newChat()">Ask the chatbot</button></div></div>`;
   P.done('Complete');
   try {                                                                  // advisor runs after the report is already on screen
-    const adv = await callAI([{ role: 'system', content: context() }, { role: 'user', content: 'Using my saved bills and appliances, give exactly 3 short, specific tips to reduce my electricity cost, and mention anything unusual in my latest bill. Under 110 words, plain text, no code blocks.' }], 2, 900);
-    $('bcAdv').classList.remove('muted'); $('bcAdv').innerHTML = md(adv).html;
+    const adv = await callAI([{ role: 'system', content: 'You are VoltX, an energy advisor. Reply in plain text only: no JSON, no code blocks, no follow-up questions.\n' + 'PROFILE:' + context().split('\nPROFILE:')[1] }, { role: 'user', content: 'Using my saved bills and appliances, give exactly 3 short, specific tips to reduce my electricity cost, and mention anything unusual in my latest bill. Under 110 words, plain text, no code blocks.' }], 2, 900);
+    $('bcAdv').classList.remove('muted'); $('bcAdv').innerHTML = md(stripJson(adv)).html;
   } catch (e) { $('bcAdv').textContent = 'Personalised advice is unavailable right now. Use the chatbot for tips.'; }
 }
 async function runRoom(key, P, note) {
