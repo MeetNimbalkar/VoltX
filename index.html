@@ -265,6 +265,41 @@ body{-webkit-font-smoothing:antialiased}
 .seg button{display:flex;align-items:center;justify-content:center;gap:10px}
 .ti{width:20px;height:20px;fill:none;stroke:var(--accent);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:800px){.flow{grid-template-columns:1fr;gap:14px}.st{display:grid;grid-template-columns:30px 1fr;text-align:left;column-gap:12px}.st::before{display:none}.sn{margin:0;grid-row:span 3}}
+/* AI workflow pages */
+.wf{max-width:1120px;margin:0 auto;padding:30px 28px 90px}
+.wf-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:24px}
+.wf-head h2{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-bottom:6px}.wf-head p{max-width:560px;line-height:1.55;font-size:14px}
+.wf-actions{display:flex;gap:8px;flex-shrink:0}
+.wf-grid{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:26px;align-items:start}
+@media(max-width:900px){.wf-grid{grid-template-columns:1fr}.wf-head{flex-direction:column}}
+.view.drag .drop{border-color:var(--accent);background:var(--panel2);color:var(--accent)}
+.pv{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin:12px 0}
+.pvi{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel);animation:up .3s both}
+.pvi img{width:100%;height:100px;object-fit:cover;display:block;cursor:zoom-in;transition:transform .3s}.pvi img:hover{transform:scale(1.04)}
+.pvi.vid{grid-column:1/-1}.pvi video{width:100%;max-height:230px;display:block;background:#000;object-fit:contain}
+.pvi button{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:#000b;color:#fff;font-size:13px;z-index:2}
+.pvi small{display:block;padding:6px 9px;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wf textarea{width:100%;min-height:62px;resize:vertical;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;color:var(--text);font:inherit;font-size:13.5px;outline:0}
+.wf textarea:focus{border-color:var(--muted)}
+.wf-btns{display:flex;gap:8px;margin-top:12px}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}.btn.stopb{background:var(--bad);color:#fff}
+.steps{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:4px 20px}
+.stp{display:grid;grid-template-columns:24px 1fr auto;gap:14px;padding:13px 0;border-bottom:1px solid var(--line);align-items:start;transition:opacity .3s}.stp:last-child{border:0}
+.sd{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;font-weight:600;color:var(--muted);transition:all .3s}
+.stp.run .sd{border-color:var(--accent);border-top-color:transparent;animation:spin .8s linear infinite}
+.stp.ok .sd{background:var(--accent);border-color:var(--accent);color:#fff}.stp.warn .sd{background:var(--warn);border-color:var(--warn);color:#fff}.stp.err .sd{background:var(--bad);border-color:var(--bad);color:#fff}
+[data-theme=dark] .stp.ok .sd,[data-theme=dark] .stp.warn .sd{color:#07140f}
+.stp b{font-size:14px;font-weight:600}.stp.idle b{color:var(--muted)}.stp .sdt{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.45}.stp .tm{font-size:12px;color:var(--muted);min-width:24px;text-align:right}
+.stp.err .sdt{color:var(--bad)}
+.fs{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.fs img{height:46px;border-radius:6px;border:1px solid var(--line)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.report{margin-top:20px}.rp{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:22px 24px;animation:up .5s both}
+.rp h3{font-size:17px;font-weight:600;margin-bottom:12px}.rp h4{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;margin:22px 0 8px}
+.rp-sum{font-size:14.5px;line-height:1.65;white-space:pre-wrap}.rp.fail{border-color:var(--warn)}
+.rp-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-top:16px}
+.bcard{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--bg);animation:up .4s both}
+.bcard .bh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:15px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:4px 0;font-size:13px;border-top:1px solid var(--line)}.kv span{color:var(--muted)}.kv b{font-weight:500;text-align:right}
+.rp .bact{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}.rp .alert{margin-top:14px}
 </style>
 </head>
 <body>
@@ -398,31 +433,9 @@ body{-webkit-font-smoothing:antialiased}
       </div>
     </section>
 
-    <!-- ===== BILL READER VIEW ===== -->
-    <section class="view hidden" id="v-billchat" style="overflow:hidden">
-      <div class="chat" id="billChatBox">
-        <div class="chead"><button class="chip" onclick="go('home')">Home</button><button class="chip" onclick="newBillChat()">New bill chat</button><button class="chip" onclick="newChat()">Open main chatbot →</button><span class="sp"></span><span class="logo-t" style="font-size:17px">Bill<i>Reader</i></span></div>
-        <div class="msgs" id="bmsgs"></div>
-        <div class="cbox"><div class="composer" id="bcComposer">
-          <div class="thumbs" id="bcThumbs"></div>
-          <textarea id="bcInput" rows="1" placeholder="Add your electricity bill photos, then press send (optional note)…"></textarea>
-          <div class="crow"><button class="chip" onclick="pick('bcFile')">Add bill photos</button><span class="sp"></span><button class="send" onclick="sendBills()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button></div>
-        </div><input type="file" id="bcFile" accept="image/*" multiple class="hidden"></div>
-      </div>
-    </section>
-
-    <!-- ===== ROOM SCANNER VIEW ===== -->
-    <section class="view hidden" id="v-room" style="overflow:hidden">
-      <div class="chat" id="roomChatBox">
-        <div class="chead"><button class="chip" onclick="go('home')">Home</button><button class="chip" onclick="newRoomChat()">New room scan</button><button class="chip" onclick="newChat()">Open main chatbot →</button><span class="sp"></span><span class="logo-t" style="font-size:17px">Room<i>Scanner</i></span></div>
-        <div class="msgs" id="rmsgs"></div>
-        <div class="cbox"><div class="composer" id="rmComposer">
-          <div class="thumbs" id="rmThumbs"></div>
-          <textarea id="rmInput" rows="1" placeholder="Add a room video or photos, then press send (optional note, e.g. 'office, 10 people')…"></textarea>
-          <div class="crow"><button class="chip" onclick="pick('rmFile')">Add video / photos</button><span class="sp"></span><button class="send" onclick="sendRoom()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button></div>
-        </div><input type="file" id="rmFile" accept="video/*,image/*" multiple class="hidden"></div>
-      </div>
-    </section>
+    <!-- ===== AI WORKFLOW PAGES (built by initWf) ===== -->
+    <section class="view hidden" id="v-billchat"></section>
+    <section class="view hidden" id="v-room"></section>
   </div>
 </div>
 
@@ -473,8 +486,6 @@ function go(view, anchor) {
   const el = $('v-'+view); el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
   if (view === 'home') { renderDash(); renderBills(); if (anchor) setTimeout(() => $(anchor).scrollIntoView({ behavior: 'smooth' }), 80); else el.scrollTop = 0; }
   if (view === 'setup') renderSetup();
-  if (view === 'billchat' && !READERS.bc.msgs.length) renderWelcome('bc');
-  if (view === 'room' && !READERS.rm.msgs.length) renderWelcome('rm');
 }
 function toast(t) { const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2800); }
 function pick(id) { $(id).click(); }
@@ -581,7 +592,7 @@ function saveBills() { try { save('vx_bills', bills); } catch { bills.forEach(b 
 function scanBills(files) {                      // bill photos from the home page open the Bill Reader and are read there
   files = files.filter(f => f.type.startsWith('image/'));
   if (!files.length) return toast('Please add an image file');
-  go('billchat'); addImages(files, 'bc').then(() => sendBills());
+  go('billchat'); wfAdd('bc', files); runWf('bc');
 }
 function showImg(id) {
   const b = bills.find(x => x.id === id); if (!b?.img) return;
@@ -794,9 +805,9 @@ async function sendFrom(src) {
 }
 
 /* ===== K. INIT: events, suggestions, scroll reveal ===== */
-['home', 'chat', 'bc', 'rm'].forEach(t => {
+['home', 'chat'].forEach(t => {
   $(t + 'File').addEventListener('change', e => { addImages([...e.target.files], t); e.target.value = ''; });
-  $(t + 'Input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); t === 'bc' ? sendBills() : t === 'rm' ? sendRoom() : sendFrom(t); } });
+  $(t + 'Input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendFrom(t); } });
   dropZone($(t + 'Composer'), f => addImages(f, t));
 });
 $('billFile').addEventListener('change', e => { scanBills([...e.target.files]); e.target.value = ''; });
@@ -808,13 +819,11 @@ dropZone($('billDrop'), scanBills);
 const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), { root: $('v-home'), threshold: .12 });
 document.querySelectorAll('.reveal').forEach(r => io.observe(r));
 dropZone($('chatBox'), f => addImages(f, 'chat'));
-dropZone($('billChatBox'), f => addImages(f, 'bc'));
-dropZone($('roomChatBox'), f => addImages(f, 'rm'));
 document.addEventListener('paste', e => {                 // Ctrl+V images
   const files = [...(e.clipboardData?.files || [])].filter(f => f.type.startsWith('image/'));
   if (!files.length) return; e.preventDefault();
-  if (!$('v-room').classList.contains('hidden')) addImages(files, 'rm');
-  else if (!$('v-billchat').classList.contains('hidden')) addImages(files, 'bc');
+  if (!$('v-room').classList.contains('hidden')) wfAdd('rm', files);
+  else if (!$('v-billchat').classList.contains('hidden')) wfAdd('bc', files);
   else if (!$('v-chat').classList.contains('hidden')) addImages(files, 'chat');
   else if (!$('v-home').classList.contains('hidden')) $('bills').contains(document.activeElement) ? scanBills(files) : addImages(files, 'home');
 });
@@ -929,54 +938,6 @@ function billRecord(a, img) {                                // clean + sanity-c
   return { id: Date.now() + Math.random(), month, units, amount, cur: String(a.currency || '').slice(0, 4), bill_date: iso(a.bill_date), due: iso(a.due_date), period: [iso(a.period_start), iso(a.period_end)],
     rate: nn('rate'), energy: nn('energy_charge'), fixed: nn('fixed_charge'), tax: nn('tax'), provider: String(a.provider || '').slice(0, 40), chk: why.length > 0, why: why.join('; '), img: img || '' };
 }
-function renderWelcome(key) {
-  const R = READERS[key];
-  $(R.box).innerHTML = `<div class="bwel"><h2>${R.welcome[0]}</h2><p class="muted">${R.welcome[1]}</p><p class="muted" style="margin-top:10px">Drop, paste or attach the files below, then press send.</p></div>`;
-}
-function newBillChat() { READERS.bc.msgs = []; go('billchat'); renderWelcome('bc'); }
-function newRoomChat() { READERS.rm.msgs = []; go('room'); renderWelcome('rm'); }
-function sendBills() { return sendReader('bc'); }
-function sendRoom() { return sendReader('rm'); }
-function bBubble(box, role, html) {
-  const d = document.createElement('div'); d.className = 'm ' + (role === 'user' ? 'u' : 'b'); d.innerHTML = (role === 'user' ? '' : AV) + '<div class="bub">' + html + '</div>';
-  $(box).appendChild(d); $(box).scrollTop = $(box).scrollHeight; return d.querySelector('.bub');
-}
-async function sendReader(key) {                             // one engine for both AI readers (bills / rooms)
-  const R = READERS[key];
-  if (R.ctl) return toast('Still working. Press Stop to cancel.');
-  const inp = $(key + 'Input'), note = inp.value.trim(), imgs = pending[key].splice(0), vs = vids[key].splice(0), frames = vs.flatMap(v => v.frames), media = [...imgs, ...frames];
-  if (!media.length && !note) return;
-  inp.value = ''; renderThumbs(key); const list = $(R.box); if (!R.msgs.length) list.innerHTML = '';
-  const vnote = frames.length ? `[A video walkthrough, shown as ${frames.length} frames in time order]\n` : '';
-  R.msgs.push({ role: 'user', text: media.length ? vnote + R.ask + (note ? '\n\nExtra note from me: ' + note : '') : note, media });
-  bBubble(R.box, 'user', imgs.map(s => `<img src="${s}">`).join('') + vs.map(v => `<div class="vchip"><img src="${v.thumb}"><span>Video · ${v.n} frames</span></div>`).join('') + fmt(media.length ? R.say(imgs.length, vs.length, note) : note));
-  const bub = bBubble(R.box, 'bot', `<div class="bstat"><div class="dots"><span></span><span></span><span></span></div><span class="bt">${R.busy}… 0s</span><button class="chip bstop">Stop</button></div><div class="btxt"></div>`);
-  const t0 = Date.now(), bt = bub.querySelector('.bt'), box = bub.querySelector('.btxt'); let phase = R.busy;
-  const tick = setInterval(() => { bt.textContent = `${phase}… ${Math.floor((Date.now() - t0) / 1000)}s`; }, 500);
-  R.ctl = new AbortController(); bub.querySelector('.bstop').onclick = () => R.ctl && R.ctl.abort();
-  const hist = R.msgs.slice(-6).map((m, i, a) => ({ role: m.role, content: (i === a.length - 1 && m.media?.length) ? content(m.text, m.media) : (m.media?.length ? '[images were sent earlier] ' : '') + m.text }));
-  let out = '', err = '';
-  try { out = await streamAI([{ role: 'system', content: R.sys }, ...hist], 2500, t => { out = t; phase = 'Writing'; box.innerHTML = view(t); list.scrollTop = list.scrollHeight; }, R.ctl.signal, () => { phase = 'Thinking'; }, R.task); }
-  catch (e) { err = e.name === 'AbortError' ? 'Stopped (or it took too long).' : e.message; }
-  clearInterval(tick); R.ctl = null; bub.querySelector('.bstat').remove();
-  R.msgs.push({ role: 'assistant', text: out || err });
-  box.innerHTML = out ? view(out) : `<span class="muted">${esc(err || 'No reply received.')}</span>`;
-  if (out) await R.done(out, media, box);
-  list.scrollTop = list.scrollHeight;
-}
-async function afterBills(out, imgs, box) {                 // save every bill the model read, refresh dashboard
-  const found = extractBills(out);
-  if (found.length) {
-    const recs = []; for (let i = 0; i < found.length; i++) recs.push(billRecord(found[i], imgs.length === found.length ? await thumbOf(imgs[i]) : ''));
-    recs.forEach(r => { const o = r.month ? bills.findIndex(b => b.month === r.month) : -1; if (o >= 0) bills[o] = r; else bills.push(r); });
-    flashId = recs[recs.length - 1].id; saveBills(); renderBills(); renderDash();
-    box.insertAdjacentHTML('beforeend', `<div class="bsave"><b>Saved ${recs.length} bill${recs.length > 1 ? 's' : ''} to your dashboard</b>${recs.map(r =>
-      `<div>${r.month || 'Month unclear'} · ${r.units || '?'} kWh · ${esc(r.cur)}${r.amount || '?'}${r.chk ? ` <span class="vf" title="${esc(r.why)}">⚠ verify</span>` : ''}</div>`).join('')}
-      <div class="bact"><button class="btn" onclick="go('home','dash')">View dashboard</button><button class="btn ghost" onclick="newChat()">Open main chatbot</button></div></div>`);
-  } else if (imgs.length) {
-    box.insertAdjacentHTML('beforeend', '<div class="bsave warn">I could not pull structured values from that reply. Ask me to "list the details as JSON", try a clearer photo, or <button class="chip" onclick="go(\'home\',\'bills\')">enter the bill manually</button></div>');
-  }
-}
 function extractScan(text) {
   const m = text.match(/```(?:json)?\s*([\s\S]*?)```/), raw = m ? m[1] : (text.match(/\{[\s\S]*\}/) || [])[0];
   try {
@@ -988,29 +949,24 @@ function extractScan(text) {
   } catch { return null; }
 }
 function saveScans() { try { save('vx_scans', scans); } catch { scans.forEach(x => x.thumb = ''); try { save('vx_scans', scans); } catch {} } }
-async function afterRoom(out, media, box) {
-  const sc = extractScan(out);
-  if (!sc) { if (media.length) box.insertAdjacentHTML('beforeend', '<div class="bsave warn">I could not pull structured findings from that reply. Try again, or ask me to "list the appliances and recommendations as JSON".</div>'); return; }
-  sc.thumb = media.length ? await thumbOf(media[0]) : ''; scans.push(sc); scans = scans.slice(-5); saveScans(); renderDash();
-  box.insertAdjacentHTML('beforeend', `<div class="bsave"><b>Saved to your dashboard</b><div>${sc.appliances.length} appliance type${sc.appliances.length === 1 ? '' : 's'} detected · ${sc.recs.length} recommendation${sc.recs.length === 1 ? '' : 's'}</div>
-    <div class="bact"><button class="btn" onclick="go('home','dash')">View dashboard</button><button class="btn ghost" onclick="addScanAppliances()">Add detected appliances to my list</button><button class="btn ghost" onclick="newChat()">Open main chatbot</button></div></div>`);
-}
 function addScanAppliances() {                               // user-confirmed: copy detected appliances into the profile (wattage = typical estimate, editable)
   const sc = scans[scans.length - 1]; if (!sc) return; let n = 0;
   sc.appliances.forEach(a => { if (profile.apps.some(p => (p.name || '').toLowerCase() === a.name.toLowerCase())) return;
     profile.apps.push({ type: a.type, name: a.count > 1 ? `${a.name} (x${a.count})` : a.name, size: '', watts: a.est_watts ? a.est_watts * a.count : '', hours: '', start: '' }); n++; });
   save('vx_profile', profile); toast(n ? `Added ${n} appliance${n > 1 ? 's' : ''}. Set hours of use and check the estimated watts.` : 'Those appliances are already in your list.'); go('setup');
 }
-function scanHtml() {
-  if (!scans.length) return '';
-  const sc = scans[scans.length - 1];
-  return `<div class="card" style="margin-top:14px"><h3>Room scan insights${sc.room ? ' · ' + esc(sc.room) : ''} <span class="muted" style="font-weight:400">(${sc.date})</span></h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px;margin-top:10px">
+function scanBody(sc) {
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px;margin-top:10px">
       <div><div class="muted" style="margin-bottom:4px">Detected in the room</div>${sc.appliances.map(a => `<div class="li"><span>${esc(a.name)}${a.count > 1 ? ' ×' + a.count : ''}</span><b>${a.est_watts ? '~' + a.est_watts + ' W' : ''}</b></div>`).join('') || '<small class="muted">Nothing detected</small>'}
         ${sc.lighting.type || sc.lighting.daylight ? `<div class="li"><span>Lighting</span><b>${esc([sc.lighting.type, sc.lighting.daylight && 'daylight ' + sc.lighting.daylight].filter(Boolean).join(', '))}</b></div>` : ''}
         <small class="muted" style="display:block;margin-top:6px">Watts are typical ratings (estimates), not measurements.</small></div>
       <div><div class="muted" style="margin-bottom:4px">Recommendations</div>${sc.recs.map(r => `<div class="li"><span>${esc(r.action)}</span><b class="imp ${r.impact}">${r.saving ? '~' + r.saving + '% · ' : ''}${esc(r.impact)}</b></div>`).join('') || '<small class="muted">None</small>'}</div></div>
-    ${sc.issues.length ? `<div class="alert">${sc.issues.map(esc).join(' · ')}</div>` : ''}
+    ${sc.issues.length ? `<div class="alert">${sc.issues.map(esc).join(' · ')}</div>` : ''}`;
+}
+function scanHtml() {
+  if (!scans.length) return '';
+  const sc = scans[scans.length - 1];
+  return `<div class="card" style="margin-top:14px"><h3>Room scan insights${sc.room ? ' · ' + esc(sc.room) : ''} <span class="muted" style="font-weight:400">(${sc.date})</span></h3>${scanBody(sc)}
     <div style="margin-top:12px"><button class="btn ghost" onclick="addScanAppliances()">Add detected appliances to my list</button></div></div>`;
 }
 function scanCtx() { const sc = scans[scans.length - 1]; return sc ? ` LATEST ROOM SCAN (${sc.date}${sc.room ? ', ' + sc.room : ''}): saw ${sc.appliances.map(a => a.name + (a.count > 1 ? ' x' + a.count : '')).join(', ') || 'nothing listed'}; suggestions: ${sc.recs.map(r => r.action).join('; ') || 'none'}.` : ''; }
@@ -1027,14 +983,150 @@ function renderFlow() {                                      // live workflow tr
 
 const ROOM_ASK = `Here is a video of my room or workplace (frames shown in time order). Identify every electrical appliance and light fixture you can see, note windows and daylight, and look for energy waste. Then suggest practical changes and a better arrangement to minimise energy use. Write a short plain-language summary first (4 to 6 lines). Then end your reply with ONE json code block in exactly this shape: {"room":"office","appliances":[{"name":"","count":1,"type":"ac","est_watts":null}],"lighting":{"type":"","daylight":"good"},"issues":[""],"recommendations":[{"action":"","impact":"high","est_saving_percent":null}]}. type is one of ac, tv, light, fan, computer, fridge, heater, other. est_watts is only a typical rating for that kind of appliance (an estimate), or null. impact is low, medium or high. List only what you can actually see; do not invent items.`;
 const ROOM_SYS = 'You are VoltX Room Scanner, an energy efficiency expert. Describe only what is visible, say clearly what you cannot see, and keep replies short and practical.';
-const READERS = {
-  bc: { box: 'bmsgs', ask: BILL_ASK, sys: BILL_SYS, task: 'bill', msgs: [], ctl: null, busy: 'Reading', done: afterBills,
-        welcome: ['Bill Reader', 'Add photos of your electricity bills. VoltX reads every value on them and saves the details to your dashboard on this device. Nothing is made up.'],
-        say: (n, v, note) => (n > 1 ? `Here are my ${n} electricity bills.` : 'Here is my electricity bill.') + (note ? ' ' + note : '') },
-  rm: { box: 'rmsgs', ask: ROOM_ASK, sys: ROOM_SYS, task: '', msgs: [], ctl: null, busy: 'Scanning', done: afterRoom,
-        welcome: ['Room Scanner', 'Film your home or workplace, or add photos. VoltX spots appliances and lighting and suggests changes to use less energy. Results are saved to your dashboard.'],
-        say: (n, v, note) => (v ? 'Here is a video of my room.' : 'Here are photos of my room.') + (note ? ' ' + note : '') }
+/* ===== N2. AI WORKFLOWS: agent pipelines that read, validate, save and report (no chat) ===== */
+const OKI = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>';
+const WF = {
+  bc: { page: 'v-billchat', title: 'Bill Reader', video: false, accept: 'image/*', task: 'bill', files: [], ctl: null, busy: false, run: runBills,
+        sub: 'Add photos of your electricity bills. An AI agent reads every value, validates it, saves it to your dashboard and writes your report.',
+        drop: 'Drop, paste or click to add bill photos', hint: 'JPG or PNG, one or many bills', note: 'Optional note, e.g. "these are my last 3 months"',
+        steps: [['Prepare images', 'Resize and compress the photos'], ['AI reads the bills', 'Vision model extracts every printed value'], ['Validate values', 'Cross-check units, meter readings, rate and dates'],
+                ['Save to database', 'Store the bills on this device'], ['Generate report', 'Summary and key figures'], ['Personalised advice', 'Tips based on your saved bills and appliances']] },
+  rm: { page: 'v-room', title: 'Room Scanner', video: true, accept: 'video/*,image/*', task: '', files: [], ctl: null, busy: false, run: runRoom,
+        sub: 'Add a short video or photos of a room. An AI agent finds the appliances and lighting, checks the result, saves it and writes your recommendations.',
+        drop: 'Drop, paste or click to add a video or photos', hint: 'A slow 10 to 60 second walkthrough works best', note: 'Optional note, e.g. "office, 10 people, AC runs all day"',
+        steps: [['Prepare frames', 'Sample frames across the video'], ['AI analyses the room', 'Vision model finds appliances, lighting and waste'], ['Validate findings', 'Check that the result is structured and usable'],
+                ['Save to database', 'Store the scan on this device'], ['Generate report', 'Findings and recommendations']] }
 };
+const fmtSize = b => b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+function lightbox(src) { const l = document.createElement('div'); l.className = 'lb'; l.onclick = () => l.remove(); l.innerHTML = `<img src="${src}">`; document.body.appendChild(l); }
+function initWf() {
+  for (const k of Object.keys(WF)) {
+    const W = WF[k];
+    $(W.page).innerHTML = `<div class="wf"><div class="wf-head"><div><h2>${W.title}</h2><p class="muted">${W.sub}</p></div>
+      <div class="wf-actions"><button class="chip" onclick="go('home')">Home</button><button class="chip" onclick="newChat()">Open main chatbot →</button></div></div>
+      <div class="wf-grid"><div class="wf-in">
+        <div class="drop" id="${k}Drop" tabindex="0" onclick="pick('${k}File')">${W.drop}<br><small>${W.hint}</small></div>
+        <input type="file" id="${k}File" accept="${W.accept}" multiple class="hidden">
+        <div class="pv" id="${k}Preview"></div><textarea id="${k}Note" placeholder="${W.note}"></textarea>
+        <div class="wf-btns"><button class="btn" id="${k}Run" onclick="wfBtn('${k}')" disabled>Run workflow</button><button class="chip" onclick="wfReset('${k}')">Clear</button></div></div>
+        <div class="wf-out"><div class="steps" id="${k}Steps"></div><div class="report" id="${k}Report"></div></div></div></div>`;
+    $(k + 'File').addEventListener('change', e => { wfAdd(k, [...e.target.files]); e.target.value = ''; });
+    dropZone($(W.page), f => wfAdd(k, f));
+    renderSteps(k);
+  }
+}
+function wfAdd(key, files) {
+  const W = WF[key];
+  for (const f of files) {
+    const v = f.type.startsWith('video/'); if (!(f.type.startsWith('image/') || (v && W.video))) continue;
+    W.files.push({ f, v, url: URL.createObjectURL(f) });
+  }
+  renderPreview(key);
+}
+function renderPreview(key) {                                  // real previews: images (click to enlarge) and a playable video
+  const W = WF[key];
+  $(key + 'Preview').innerHTML = W.files.map((x, i) => x.v
+    ? `<div class="pvi vid"><video src="${x.url}" controls playsinline preload="metadata"></video><button onclick="wfDel('${key}',${i})" title="Remove">×</button><small>${esc(x.f.name)} · ${fmtSize(x.f.size)}</small></div>`
+    : `<div class="pvi"><img src="${x.url}" onclick="lightbox('${x.url}')" alt=""><button onclick="wfDel('${key}',${i})" title="Remove">×</button><small>${esc(x.f.name)} · ${fmtSize(x.f.size)}</small></div>`).join('');
+  $(key + 'Run').disabled = !W.files.length && !W.busy;
+}
+function wfDel(key, i) { const W = WF[key]; URL.revokeObjectURL(W.files[i].url); W.files.splice(i, 1); renderPreview(key); }
+function wfReset(key) { const W = WF[key]; if (W.busy) return; W.files.forEach(x => URL.revokeObjectURL(x.url)); W.files = []; renderPreview(key); renderSteps(key); $(key + 'Report').innerHTML = ''; $(key + 'Note').value = ''; }
+function wfBtn(key) { const W = WF[key]; W.busy ? W.ctl.abort() : runWf(key); }
+function renderSteps(key) {
+  $(key + 'Steps').innerHTML = WF[key].steps.map((s, i) => `<div class="stp idle" id="${key}S${i}"><div class="sd">${i + 1}</div><div><b>${s[0]}</b><div class="sdt">${s[1]}</div><div class="sx"></div></div><span class="tm"></span></div>`).join('');
+}
+function stepper(key) {
+  const t0 = {}, el = i => $(`${key}S${i}`);
+  const tick = setInterval(() => { for (const i in t0) { const e = el(i); if (e) e.querySelector('.tm').textContent = Math.floor((Date.now() - t0[i]) / 1000) + 's'; } }, 400);
+  return {
+    set(i, state, detail) { const e = el(i); e.className = 'stp ' + state;
+      e.querySelector('.sd').innerHTML = state === 'ok' ? OKI : state === 'warn' ? '!' : state === 'err' ? '×' : state === 'run' ? '' : i + 1;
+      if (detail) e.querySelector('.sdt').textContent = detail;
+      if (state === 'run') t0[i] = Date.now(); else if (t0[i]) { e.querySelector('.tm').textContent = Math.floor((Date.now() - t0[i]) / 1000) + 's'; delete t0[i]; } },
+    detail(i, txt) { el(i).querySelector('.sdt').textContent = txt; },
+    extra(i, html) { el(i).querySelector('.sx').innerHTML = html; },
+    stop() { clearInterval(tick); }
+  };
+}
+async function runWf(key) {
+  const W = WF[key]; if (W.busy || !W.files.length) return;
+  W.busy = true; W.ctl = new AbortController(); renderSteps(key); $(key + 'Report').innerHTML = '';
+  const btn = $(key + 'Run'); btn.textContent = 'Stop'; btn.classList.add('stopb'); btn.disabled = false;
+  const S = stepper(key), note = $(key + 'Note').value.trim();
+  try { await W.run(key, S, note); }
+  catch (e) {
+    const cur = document.querySelector(`#${key}Steps .stp.run`), msg = e.name === 'AbortError' ? 'Stopped' : e.message;
+    if (cur) S.set(+cur.id.slice((key + 'S').length), 'err', msg);
+    $(key + 'Report').innerHTML = `<div class="rp fail"><h3>The workflow did not finish</h3><p class="rp-sum">${esc(msg)}</p><div class="bact"><button class="btn" onclick="runWf('${key}')">Try again</button>${key === 'bc' ? `<button class="btn ghost" onclick="go('home','bills')">Enter a bill manually</button>` : ''}</div></div>`;
+  } finally { S.stop(); W.busy = false; W.ctl = null; btn.textContent = 'Run workflow'; btn.classList.remove('stopb'); btn.disabled = !W.files.length; }
+}
+const billCard = r => {
+  const cu = esc(r.cur), kv = (k, v) => v ? `<div class="kv"><span>${k}</span><b>${v}</b></div>` : '';
+  const rate = r.rate ? `${cu}${r.rate}/unit` : (r.units && r.amount ? `${cu}${(r.amount / r.units).toFixed(2)}/unit (effective)` : '');
+  return `<div class="bcard"><div class="bh"><b>${r.month || 'Month unclear'}</b>${r.chk ? `<span class="vf" title="${esc(r.why)}">⚠ verify</span>` : ''}</div>${kv('Units', r.units ? r.units + ' kWh' : '')}${kv('Amount', r.amount ? cu + r.amount : '')}${kv('Rate', rate)}${kv('Due date', r.due)}${kv('Period', (r.period || []).filter(Boolean).join(' → '))}${kv('Energy charge', r.energy ? cu + r.energy : '')}${kv('Fixed charge', r.fixed ? cu + r.fixed : '')}${kv('Tax', r.tax ? cu + r.tax : '')}${kv('Provider', esc(r.provider))}</div>`;
+};
+async function runBills(key, S, note) {
+  const W = WF[key], n = W.files.length, imgs = []; let out = '';
+  S.set(0, 'run', `Compressing ${n} image${n > 1 ? 's' : ''}…`);
+  for (const x of W.files) imgs.push(await toDataURL(x.f, 1400, .85));
+  S.set(0, 'ok', `${n} image${n > 1 ? 's' : ''} ready`);
+  S.set(1, 'run', 'Sending the bills to the vision model…');
+  out = await streamAI([{ role: 'system', content: BILL_SYS }, { role: 'user', content: content(BILL_ASK + (note ? '\n\nExtra note from me: ' + note : ''), imgs) }], 2500,
+    () => S.detail(1, 'The model is writing the extracted values…'), W.ctl.signal, () => S.detail(1, 'The model is thinking…'), 'bill');
+  S.set(1, 'ok', 'Bills read');
+  S.set(2, 'run', 'Cross-checking the extracted values…');
+  const found = extractBills(out);
+  if (!found.length) {
+    S.set(2, 'err', 'No structured values were found in the reply');
+    $(key + 'Report').innerHTML = `<div class="rp fail"><h3>I could not extract the values</h3><div class="rp-sum">${view(out)}</div><div class="bact"><button class="btn" onclick="runWf('${key}')">Run again</button><button class="btn ghost" onclick="go('home','bills')">Enter a bill manually</button></div></div>`; return;
+  }
+  const recs = []; for (let i = 0; i < found.length; i++) recs.push(billRecord(found[i], imgs.length === found.length ? await thumbOf(imgs[i]) : ''));
+  const flagged = recs.filter(r => r.chk).length;
+  S.set(2, flagged ? 'warn' : 'ok', flagged ? `${flagged} bill${flagged > 1 ? 's' : ''} need a quick check (marked "verify")` : 'All checks passed');
+  S.set(3, 'run', 'Saving to your database…');
+  recs.forEach(r => { const o = r.month ? bills.findIndex(b => b.month === r.month) : -1; if (o >= 0) bills[o] = r; else bills.push(r); });
+  flashId = recs[recs.length - 1].id; saveBills(); renderBills(); renderDash();
+  S.set(3, 'ok', `Saved ${recs.length} bill${recs.length > 1 ? 's' : ''}; your dashboard is updated`);
+  S.set(4, 'run', 'Building your report…');
+  const all = [...bills].sort((a, b) => a.month.localeCompare(b.month)), last = all[all.length - 1], prev = all[all.length - 2]; let trend = '';
+  if (last && prev && prev.units) { const d = (last.units - prev.units) / prev.units * 100; trend = `<div class="alert ${d > 15 ? 'bad' : 'ok'}">Your latest bill (${last.month}) is ${Math.abs(d).toFixed(0)}% ${d >= 0 ? 'higher' : 'lower'} than ${prev.month}: ${last.units} vs ${prev.units} kWh.</div>`; }
+  $(key + 'Report').innerHTML = `<div class="rp"><h3>Your bill report</h3><div class="rp-sum">${view(out)}</div><div class="rp-cards">${recs.map(billCard).join('')}</div>${trend}
+    <h4>Recommendations</h4><div class="rp-sum muted" id="bcAdv">Preparing personalised advice…</div>
+    <div class="bact"><button class="btn" onclick="go('home','dash')">View dashboard</button><button class="btn ghost" onclick="wfReset('bc')">Read more bills</button><button class="btn ghost" onclick="newChat()">Ask the chatbot</button></div></div>`;
+  S.set(4, 'ok', 'Report ready');
+  S.set(5, 'run', 'Writing tips from your saved data…');                 // second agent: advisor (runs after the report is shown)
+  try {
+    const adv = await callAI([{ role: 'system', content: context() }, { role: 'user', content: 'Using my saved bills and appliances, give exactly 3 short, specific tips to reduce my electricity cost, and mention anything unusual in my latest bill. Under 110 words, plain text, no code blocks.' }], 2, 900);
+    $('bcAdv').classList.remove('muted'); $('bcAdv').innerHTML = md(adv).html; S.set(5, 'ok', 'Advice ready');
+  } catch (e) { $('bcAdv').textContent = 'Personalised advice is unavailable right now. Use the chatbot for tips.'; S.set(5, 'warn', e.message); }
+}
+async function runRoom(key, S, note) {
+  const W = WF[key], media = []; let out = '';
+  S.set(0, 'run', 'Preparing your video and photos…');
+  for (const x of W.files) { if (x.v) media.push(...await extractFrames(x.f)); else media.push(await toDataURL(x.f, 1000, .8)); }
+  S.set(0, 'ok', `${media.length} frame${media.length > 1 ? 's' : ''} prepared`); S.extra(0, `<div class="fs">${media.slice(0, 10).map(m => `<img src="${m}" alt="">`).join('')}</div>`);
+  S.set(1, 'run', 'Sending the frames to the vision model…');
+  const vnote = W.files.some(x => x.v) ? `[A video walkthrough, shown as ${media.length} frames in time order]\n` : '';
+  out = await streamAI([{ role: 'system', content: ROOM_SYS }, { role: 'user', content: content(vnote + ROOM_ASK + (note ? '\n\nExtra note from me: ' + note : ''), media) }], 2500,
+    () => S.detail(1, 'The model is writing its findings…'), W.ctl.signal, () => S.detail(1, 'The model is thinking…'), '');
+  S.set(1, 'ok', 'Room analysed');
+  S.set(2, 'run', 'Checking the findings…');
+  const sc = extractScan(out);
+  if (!sc) {
+    S.set(2, 'err', 'The reply had no structured findings');
+    $(key + 'Report').innerHTML = `<div class="rp fail"><h3>I could not structure the findings</h3><div class="rp-sum">${view(out)}</div><div class="bact"><button class="btn" onclick="runWf('${key}')">Run again</button></div></div>`; return;
+  }
+  S.set(2, 'ok', `${sc.appliances.length} appliance type${sc.appliances.length === 1 ? '' : 's'} and ${sc.recs.length} recommendation${sc.recs.length === 1 ? '' : 's'} found`);
+  S.set(3, 'run', 'Saving to your database…');
+  sc.thumb = await thumbOf(media[0]); scans.push(sc); scans = scans.slice(-5); saveScans(); renderDash();
+  S.set(3, 'ok', 'Scan saved; your dashboard is updated');
+  S.set(4, 'run', 'Building your report…');
+  $(key + 'Report').innerHTML = `<div class="rp"><h3>Your room report${sc.room ? ' · ' + esc(sc.room) : ''}</h3><div class="rp-sum">${view(out)}</div>${scanBody(sc)}
+    <div class="bact"><button class="btn" onclick="go('home','dash')">View dashboard</button><button class="btn ghost" onclick="addScanAppliances()">Add detected appliances to my list</button><button class="btn ghost" onclick="wfReset('rm')">Scan another room</button><button class="btn ghost" onclick="newChat()">Ask the chatbot</button></div></div>`;
+  S.set(4, 'ok', 'Report ready');
+}
+initWf();
 
 /* ===== L. MOTION: energy network, scroll effects, tilt, ripple ===== */
 function countUp(root) {
