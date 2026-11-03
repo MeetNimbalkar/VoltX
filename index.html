@@ -300,6 +300,13 @@ body{-webkit-font-smoothing:antialiased}
 .bcard .bh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:15px}
 .kv{display:flex;justify-content:space-between;gap:12px;padding:4px 0;font-size:13px;border-top:1px solid var(--line)}.kv span{color:var(--muted)}.kv b{font-weight:500;text-align:right}
 .rp .bact{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}.rp .alert{margin-top:14px}
+.prog{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:20px 22px;animation:up .4s both}
+.pg-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}.pg-lab{font-size:14px;color:var(--muted)}
+.pg-pct{font-size:28px;font-weight:600;letter-spacing:-.02em}
+.pg-bar{height:6px;border-radius:6px;background:var(--panel2);overflow:hidden}
+.pg-bar i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 55%,#fff),var(--accent));background-size:200% 100%;animation:pgs 1.6s linear infinite}
+.prog.fin .pg-bar i{animation:none;background:var(--accent)}.prog.err .pg-bar i{animation:none;background:var(--bad)}.prog.err .pg-lab{color:var(--bad)}
+@keyframes pgs{to{background-position:200% 0}}
 </style>
 </head>
 <body>
@@ -509,14 +516,14 @@ function toDataURL(file, max = 1400, q = .85) {
     r.readAsDataURL(file);
   });
 }
-function extractFrames(file, maxW = 800) {          // sample frames evenly across the video (small payload, works with any vision model)
+function extractFrames(file, maxW = 720) {          // sample frames evenly across the video (small payload, works with any vision model)
   return new Promise((res, rej) => {
     const v = document.createElement('video'), url = URL.createObjectURL(file), frames = [];
     v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url;
     v.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Could not open this video')); };
     v.onloadedmetadata = async () => {
       const dur = v.duration; if (!isFinite(dur) || dur <= 0) return rej(new Error('Could not read the video length'));
-      const n = dur < 20 ? 6 : dur < 60 ? 8 : 10, k = Math.min(1, maxW / v.videoWidth), c = document.createElement('canvas');
+      const n = 6, k = Math.min(1, maxW / v.videoWidth), c = document.createElement('canvas');
       c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k); const x = c.getContext('2d');
       for (let i = 0; i < n; i++) {
         v.currentTime = Math.min(dur - .05, dur * (i + .5) / n);
@@ -894,11 +901,11 @@ const BILL_ASK = `Here are my electricity bills (images attached). Read every bi
 const BILL_SYS = 'You are VoltX Bill Reader. You read electricity bills accurately. Quote only values printed on the bill, never invent numbers, and keep replies short.';
 const view = t => md(t.replace(/```[\s\S]*?```/g, '').replace(/```[\s\S]*$/, '')).html;      // hide the JSON block from the reader
 
-async function streamAI(messages, maxTok, onText, signal, onThink, task = 'bill') {   // shows the reply as it arrives (falls back to plain JSON)
+async function streamAI(messages, maxTok, onText, signal, onThink) {   // shows the reply as it arrives (falls back to plain JSON)
   const ctl = new AbortController(), kill = setTimeout(() => ctl.abort(), 240000);
   signal.addEventListener('abort', () => ctl.abort());
   try {
-    const r = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages, max_tokens: maxTok, temperature: .2, task, stream: true }), signal: ctl.signal });
+    const r = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages, max_tokens: maxTok, temperature: .2, stream: true, fast: true }), signal: ctl.signal });
     if (!(r.headers.get('content-type') || '').includes('event-stream')) {
       const j = await r.json().catch(() => ({}));
       if (!r.ok || j.error) throw new Error(j.error?.message || 'Server error ' + r.status);
@@ -981,7 +988,7 @@ function renderFlow() {                                      // live workflow tr
   $('flow').innerHTML = S.map((x, i) => `<div class="st ${x.done ? 'done' : ''}" style="--i:${i}" onclick="${x.go}"><div class="sn">${x.done ? '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>' : i + 1}</div><b>${x.t}</b><span>${x.d}</span><em>${x.n || (x.done ? 'Done' : 'Not started')}</em></div>`).join('');
 }
 
-const ROOM_ASK = `Here is a video of my room or workplace (frames shown in time order). Identify every electrical appliance and light fixture you can see, note windows and daylight, and look for energy waste. Then suggest practical changes and a better arrangement to minimise energy use. Write a short plain-language summary first (4 to 6 lines). Then end your reply with ONE json code block in exactly this shape: {"room":"office","appliances":[{"name":"","count":1,"type":"ac","est_watts":null}],"lighting":{"type":"","daylight":"good"},"issues":[""],"recommendations":[{"action":"","impact":"high","est_saving_percent":null}]}. type is one of ac, tv, light, fan, computer, fridge, heater, other. est_watts is only a typical rating for that kind of appliance (an estimate), or null. impact is low, medium or high. List only what you can actually see; do not invent items.`;
+const ROOM_ASK = `Here is a video of my room or workplace (frames shown in time order). Identify every electrical appliance and light fixture you can see, note windows and daylight, and look for energy waste. Then suggest practical changes and a better arrangement to minimise energy use. Write a short plain-language summary first (3 to 4 lines). Then end your reply with ONE json code block in exactly this shape: {"room":"office","appliances":[{"name":"","count":1,"type":"ac","est_watts":null}],"lighting":{"type":"","daylight":"good"},"issues":[""],"recommendations":[{"action":"","impact":"high","est_saving_percent":null}]}. type is one of ac, tv, light, fan, computer, fridge, heater, other. est_watts is only a typical rating for that kind of appliance (an estimate), or null. impact is low, medium or high. List only what you can actually see; do not invent items.`;
 const ROOM_SYS = 'You are VoltX Room Scanner, an energy efficiency expert. Describe only what is visible, say clearly what you cannot see, and keep replies short and practical.';
 /* ===== N2. AI WORKFLOWS: agent pipelines that read, validate, save and report (no chat) ===== */
 const OKI = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>';
@@ -1009,10 +1016,9 @@ function initWf() {
         <input type="file" id="${k}File" accept="${W.accept}" multiple class="hidden">
         <div class="pv" id="${k}Preview"></div><textarea id="${k}Note" placeholder="${W.note}"></textarea>
         <div class="wf-btns"><button class="btn" id="${k}Run" onclick="wfBtn('${k}')" disabled>Run workflow</button><button class="chip" onclick="wfReset('${k}')">Clear</button></div></div>
-        <div class="wf-out"><div class="steps" id="${k}Steps"></div><div class="report" id="${k}Report"></div></div></div></div>`;
+        <div class="wf-out"><div class="prog hidden" id="${k}Prog"><div class="pg-top"><span class="pg-lab" id="${k}Lab">Starting…</span><b class="pg-pct" id="${k}Pct">0%</b></div><div class="pg-bar"><i id="${k}Bar"></i></div></div><div class="report" id="${k}Report"></div></div></div></div>`;
     $(k + 'File').addEventListener('change', e => { wfAdd(k, [...e.target.files]); e.target.value = ''; });
     dropZone($(W.page), f => wfAdd(k, f));
-    renderSteps(k);
   }
 }
 function wfAdd(key, files) {
@@ -1031,100 +1037,96 @@ function renderPreview(key) {                                  // real previews:
   $(key + 'Run').disabled = !W.files.length && !W.busy;
 }
 function wfDel(key, i) { const W = WF[key]; URL.revokeObjectURL(W.files[i].url); W.files.splice(i, 1); renderPreview(key); }
-function wfReset(key) { const W = WF[key]; if (W.busy) return; W.files.forEach(x => URL.revokeObjectURL(x.url)); W.files = []; renderPreview(key); renderSteps(key); $(key + 'Report').innerHTML = ''; $(key + 'Note').value = ''; }
+function wfReset(key) { const W = WF[key]; if (W.busy) return; W.files.forEach(x => URL.revokeObjectURL(x.url)); W.files = []; renderPreview(key); $(key + 'Prog').classList.add('hidden'); $(key + 'Report').innerHTML = ''; $(key + 'Note').value = ''; }
 function wfBtn(key) { const W = WF[key]; W.busy ? W.ctl.abort() : runWf(key); }
-function renderSteps(key) {
-  $(key + 'Steps').innerHTML = WF[key].steps.map((s, i) => `<div class="stp idle" id="${key}S${i}"><div class="sd">${i + 1}</div><div><b>${s[0]}</b><div class="sdt">${s[1]}</div><div class="sx"></div></div><span class="tm"></span></div>`).join('');
-}
-function stepper(key) {
-  const t0 = {}, el = i => $(`${key}S${i}`);
-  const tick = setInterval(() => { for (const i in t0) { const e = el(i); if (e) e.querySelector('.tm').textContent = Math.floor((Date.now() - t0[i]) / 1000) + 's'; } }, 400);
+function progressUI(key) {                                     // the only thing the user sees while the agent works in the background
+  const box = $(key + 'Prog'), bar = $(key + 'Bar'), pct = $(key + 'Pct'), lab = $(key + 'Lab'); let cur = 0, target = 0, cap = 0;
+  box.classList.remove('hidden', 'err', 'fin'); bar.style.width = '0%'; pct.textContent = '0%'; lab.textContent = 'Starting…';
+  const tick = setInterval(() => {
+    if (cap > target) target += (cap - target) * .012 + .04;            // slow creep while the AI is working
+    cur += (target - cur) * .25; if (target - cur < .4) cur = target;
+    bar.style.width = cur + '%'; pct.textContent = Math.round(cur) + '%';
+  }, 100);
   return {
-    set(i, state, detail) { const e = el(i); e.className = 'stp ' + state;
-      e.querySelector('.sd').innerHTML = state === 'ok' ? OKI : state === 'warn' ? '!' : state === 'err' ? '×' : state === 'run' ? '' : i + 1;
-      if (detail) e.querySelector('.sdt').textContent = detail;
-      if (state === 'run') t0[i] = Date.now(); else if (t0[i]) { e.querySelector('.tm').textContent = Math.floor((Date.now() - t0[i]) / 1000) + 's'; delete t0[i]; } },
-    detail(i, txt) { el(i).querySelector('.sdt').textContent = txt; },
-    extra(i, html) { el(i).querySelector('.sx').innerHTML = html; },
-    stop() { clearInterval(tick); }
+    at(p, text, creepTo) { target = Math.max(target, p); cap = creepTo ?? p; if (text) lab.textContent = text; },
+    done(text) { target = 100; cap = 100; lab.textContent = text; box.classList.add('fin'); },
+    fail(text) { cap = target; box.classList.add('err'); lab.textContent = text; },
+    stop() { setTimeout(() => clearInterval(tick), 3500); }
   };
+}
+async function aiRead(P, messages, W) {                           // streamed read; if the model returns nothing, one plain retry (worker removes thinking)
+  try {
+    return await streamAI(messages, 1800, () => P.at(60, 'Writing the result…', 86), W.ctl.signal, () => P.at(30, 'Reading…', 80));
+  } catch (e) {
+    if (e.name === 'AbortError') throw e;
+    P.at(35, 'Retrying…', 80);
+    return await callAI(messages, 1, 2500);
+  }
 }
 async function runWf(key) {
   const W = WF[key]; if (W.busy || !W.files.length) return;
-  W.busy = true; W.ctl = new AbortController(); renderSteps(key); $(key + 'Report').innerHTML = '';
+  W.busy = true; W.ctl = new AbortController(); $(key + 'Report').innerHTML = '';
   const btn = $(key + 'Run'); btn.textContent = 'Stop'; btn.classList.add('stopb'); btn.disabled = false;
-  const S = stepper(key), note = $(key + 'Note').value.trim();
-  try { await W.run(key, S, note); }
+  const P = progressUI(key), note = $(key + 'Note').value.trim();
+  try { await W.run(key, P, note); }
   catch (e) {
-    const cur = document.querySelector(`#${key}Steps .stp.run`), msg = e.name === 'AbortError' ? 'Stopped' : e.message;
-    if (cur) S.set(+cur.id.slice((key + 'S').length), 'err', msg);
+    const msg = e.name === 'AbortError' ? 'Stopped' : e.message;
+    P.fail(msg);
     $(key + 'Report').innerHTML = `<div class="rp fail"><h3>The workflow did not finish</h3><p class="rp-sum">${esc(msg)}</p><div class="bact"><button class="btn" onclick="runWf('${key}')">Try again</button>${key === 'bc' ? `<button class="btn ghost" onclick="go('home','bills')">Enter a bill manually</button>` : ''}</div></div>`;
-  } finally { S.stop(); W.busy = false; W.ctl = null; btn.textContent = 'Run workflow'; btn.classList.remove('stopb'); btn.disabled = !W.files.length; }
+  } finally { P.stop(); W.busy = false; W.ctl = null; btn.textContent = 'Run workflow'; btn.classList.remove('stopb'); btn.disabled = !W.files.length; }
 }
 const billCard = r => {
   const cu = esc(r.cur), kv = (k, v) => v ? `<div class="kv"><span>${k}</span><b>${v}</b></div>` : '';
   const rate = r.rate ? `${cu}${r.rate}/unit` : (r.units && r.amount ? `${cu}${(r.amount / r.units).toFixed(2)}/unit (effective)` : '');
   return `<div class="bcard"><div class="bh"><b>${r.month || 'Month unclear'}</b>${r.chk ? `<span class="vf" title="${esc(r.why)}">⚠ verify</span>` : ''}</div>${kv('Units', r.units ? r.units + ' kWh' : '')}${kv('Amount', r.amount ? cu + r.amount : '')}${kv('Rate', rate)}${kv('Due date', r.due)}${kv('Period', (r.period || []).filter(Boolean).join(' → '))}${kv('Energy charge', r.energy ? cu + r.energy : '')}${kv('Fixed charge', r.fixed ? cu + r.fixed : '')}${kv('Tax', r.tax ? cu + r.tax : '')}${kv('Provider', esc(r.provider))}</div>`;
 };
-async function runBills(key, S, note) {
-  const W = WF[key], n = W.files.length, imgs = []; let out = '';
-  S.set(0, 'run', `Compressing ${n} image${n > 1 ? 's' : ''}…`);
-  for (const x of W.files) imgs.push(await toDataURL(x.f, 1400, .85));
-  S.set(0, 'ok', `${n} image${n > 1 ? 's' : ''} ready`);
-  S.set(1, 'run', 'Sending the bills to the vision model…');
-  out = await streamAI([{ role: 'system', content: BILL_SYS }, { role: 'user', content: content(BILL_ASK + (note ? '\n\nExtra note from me: ' + note : ''), imgs) }], 2500,
-    () => S.detail(1, 'The model is writing the extracted values…'), W.ctl.signal, () => S.detail(1, 'The model is thinking…'), 'bill');
-  S.set(1, 'ok', 'Bills read');
-  S.set(2, 'run', 'Cross-checking the extracted values…');
+async function runBills(key, P, note) {
+  const W = WF[key], n = W.files.length, imgs = [];
+  P.at(4, 'Preparing your bill…', 12);
+  for (const x of W.files) imgs.push(await toDataURL(x.f, 1200, .8));
+  P.at(15, 'Reading your bill…', 78);
+  const out = await aiRead(P, [{ role: 'system', content: BILL_SYS }, { role: 'user', content: content(BILL_ASK + (note ? '\n\nExtra note from me: ' + note : ''), imgs) }], W);   // fixed prompt, never shown to the user
+  P.at(88, 'Checking the values…', 90);
   const found = extractBills(out);
   if (!found.length) {
-    S.set(2, 'err', 'No structured values were found in the reply');
+    P.fail('Could not extract the values');
     $(key + 'Report').innerHTML = `<div class="rp fail"><h3>I could not extract the values</h3><div class="rp-sum">${view(out)}</div><div class="bact"><button class="btn" onclick="runWf('${key}')">Run again</button><button class="btn ghost" onclick="go('home','bills')">Enter a bill manually</button></div></div>`; return;
   }
   const recs = []; for (let i = 0; i < found.length; i++) recs.push(billRecord(found[i], imgs.length === found.length ? await thumbOf(imgs[i]) : ''));
-  const flagged = recs.filter(r => r.chk).length;
-  S.set(2, flagged ? 'warn' : 'ok', flagged ? `${flagged} bill${flagged > 1 ? 's' : ''} need a quick check (marked "verify")` : 'All checks passed');
-  S.set(3, 'run', 'Saving to your database…');
+  P.at(94, 'Saving to your dashboard…', 96);
   recs.forEach(r => { const o = r.month ? bills.findIndex(b => b.month === r.month) : -1; if (o >= 0) bills[o] = r; else bills.push(r); });
   flashId = recs[recs.length - 1].id; saveBills(); renderBills(); renderDash();
-  S.set(3, 'ok', `Saved ${recs.length} bill${recs.length > 1 ? 's' : ''}; your dashboard is updated`);
-  S.set(4, 'run', 'Building your report…');
+  P.at(98, 'Building your report…');
   const all = [...bills].sort((a, b) => a.month.localeCompare(b.month)), last = all[all.length - 1], prev = all[all.length - 2]; let trend = '';
   if (last && prev && prev.units) { const d = (last.units - prev.units) / prev.units * 100; trend = `<div class="alert ${d > 15 ? 'bad' : 'ok'}">Your latest bill (${last.month}) is ${Math.abs(d).toFixed(0)}% ${d >= 0 ? 'higher' : 'lower'} than ${prev.month}: ${last.units} vs ${prev.units} kWh.</div>`; }
   $(key + 'Report').innerHTML = `<div class="rp"><h3>Your bill report</h3><div class="rp-sum">${view(out)}</div><div class="rp-cards">${recs.map(billCard).join('')}</div>${trend}
     <h4>Recommendations</h4><div class="rp-sum muted" id="bcAdv">Preparing personalised advice…</div>
     <div class="bact"><button class="btn" onclick="go('home','dash')">View dashboard</button><button class="btn ghost" onclick="wfReset('bc')">Read more bills</button><button class="btn ghost" onclick="newChat()">Ask the chatbot</button></div></div>`;
-  S.set(4, 'ok', 'Report ready');
-  S.set(5, 'run', 'Writing tips from your saved data…');                 // second agent: advisor (runs after the report is shown)
-  try {
+  P.done('Complete');
+  try {                                                                  // advisor runs after the report is already on screen
     const adv = await callAI([{ role: 'system', content: context() }, { role: 'user', content: 'Using my saved bills and appliances, give exactly 3 short, specific tips to reduce my electricity cost, and mention anything unusual in my latest bill. Under 110 words, plain text, no code blocks.' }], 2, 900);
-    $('bcAdv').classList.remove('muted'); $('bcAdv').innerHTML = md(adv).html; S.set(5, 'ok', 'Advice ready');
-  } catch (e) { $('bcAdv').textContent = 'Personalised advice is unavailable right now. Use the chatbot for tips.'; S.set(5, 'warn', e.message); }
+    $('bcAdv').classList.remove('muted'); $('bcAdv').innerHTML = md(adv).html;
+  } catch (e) { $('bcAdv').textContent = 'Personalised advice is unavailable right now. Use the chatbot for tips.'; }
 }
-async function runRoom(key, S, note) {
-  const W = WF[key], media = []; let out = '';
-  S.set(0, 'run', 'Preparing your video and photos…');
+async function runRoom(key, P, note) {
+  const W = WF[key], media = [];
+  P.at(4, 'Preparing your video…', 14);
   for (const x of W.files) { if (x.v) media.push(...await extractFrames(x.f)); else media.push(await toDataURL(x.f, 1000, .8)); }
-  S.set(0, 'ok', `${media.length} frame${media.length > 1 ? 's' : ''} prepared`); S.extra(0, `<div class="fs">${media.slice(0, 10).map(m => `<img src="${m}" alt="">`).join('')}</div>`);
-  S.set(1, 'run', 'Sending the frames to the vision model…');
+  P.at(18, 'Analysing the room…', 80);
   const vnote = W.files.some(x => x.v) ? `[A video walkthrough, shown as ${media.length} frames in time order]\n` : '';
-  out = await streamAI([{ role: 'system', content: ROOM_SYS }, { role: 'user', content: content(vnote + ROOM_ASK + (note ? '\n\nExtra note from me: ' + note : ''), media) }], 2500,
-    () => S.detail(1, 'The model is writing its findings…'), W.ctl.signal, () => S.detail(1, 'The model is thinking…'), '');
-  S.set(1, 'ok', 'Room analysed');
-  S.set(2, 'run', 'Checking the findings…');
+  const out = await aiRead(P, [{ role: 'system', content: ROOM_SYS }, { role: 'user', content: content(vnote + ROOM_ASK + (note ? '\n\nExtra note from me: ' + note : ''), media) }], W);
+  P.at(88, 'Checking the findings…', 90);
   const sc = extractScan(out);
   if (!sc) {
-    S.set(2, 'err', 'The reply had no structured findings');
+    P.fail('Could not structure the findings');
     $(key + 'Report').innerHTML = `<div class="rp fail"><h3>I could not structure the findings</h3><div class="rp-sum">${view(out)}</div><div class="bact"><button class="btn" onclick="runWf('${key}')">Run again</button></div></div>`; return;
   }
-  S.set(2, 'ok', `${sc.appliances.length} appliance type${sc.appliances.length === 1 ? '' : 's'} and ${sc.recs.length} recommendation${sc.recs.length === 1 ? '' : 's'} found`);
-  S.set(3, 'run', 'Saving to your database…');
+  P.at(94, 'Saving to your dashboard…', 96);
   sc.thumb = await thumbOf(media[0]); scans.push(sc); scans = scans.slice(-5); saveScans(); renderDash();
-  S.set(3, 'ok', 'Scan saved; your dashboard is updated');
-  S.set(4, 'run', 'Building your report…');
+  P.at(98, 'Building your report…');
   $(key + 'Report').innerHTML = `<div class="rp"><h3>Your room report${sc.room ? ' · ' + esc(sc.room) : ''}</h3><div class="rp-sum">${view(out)}</div>${scanBody(sc)}
     <div class="bact"><button class="btn" onclick="go('home','dash')">View dashboard</button><button class="btn ghost" onclick="addScanAppliances()">Add detected appliances to my list</button><button class="btn ghost" onclick="wfReset('rm')">Scan another room</button><button class="btn ghost" onclick="newChat()">Ask the chatbot</button></div></div>`;
-  S.set(4, 'ok', 'Report ready');
+  P.done('Complete');
 }
 initWf();
 
