@@ -1196,7 +1196,7 @@ function countUp(root) {
     const st = hv.scrollTop, mxs = hv.scrollHeight - hv.clientHeight, p = mxs > 0 ? st / mxs : 0, h = document.querySelector('.hero');
     $('prog').style.width = p * 100 + '%'; $('mf').style.height = p * 100 + '%'; $('mp').textContent = Math.round(p * 100) + '%';
     if (h) { h.style.transform = `translateY(${st * .18}px)`; h.style.opacity = Math.max(0, 1 - st / 420); }
-    document.querySelectorAll('.sec3d').forEach(el => { const r = el.getBoundingClientRect(); el.style.setProperty('--p', Math.min(1, Math.max(0, (innerHeight * .95 - r.top) / (innerHeight * .55))).toFixed(3)); });
+    document.querySelectorAll('.sec3d').forEach(el => { const r = el.getBoundingClientRect(); el.style.setProperty('--p', Math.min(1, Math.max(0, (innerHeight * .95 - r.top) / Math.min(innerHeight * .55, Math.max(120, r.height * .8)))).toFixed(3)); });   // short last section still reaches 1 at the page bottom
     document.querySelectorAll('.circ').forEach(sv => {
       const r = sv.getBoundingClientRect(), q = Math.min(1, Math.max(0, (innerHeight * .9 - r.top) / (innerHeight * .45))), pa = sv.querySelector('path'), L = pa.getTotalLength();
       pa.style.strokeDasharray = L; pa.style.strokeDashoffset = L * (1 - q);
