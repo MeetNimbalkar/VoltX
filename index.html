@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VoltX – Smart Energy Assistant</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=Playfair+Display:ital,wght@1,600&family=Archivo+Black&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=Playfair+Display:ital,wght@1,600&family=Archivo+Black&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 /* ===== 1. THEME TOKENS ===== */
-:root{--bg:#0f1113;--panel:#15181a;--panel2:#1a1e21;--line:#25292c;--text:#e6e9ea;--muted:#8b9497;--accent:#3dbf93;--accent-d:#2fa37c;--user:#1c2225;--warn:#d9a443;--bad:#d9645c}
+:root{--bg:#000000;--panel:#0b0c0d;--panel2:#131516;--line:#232628;--text:#e6e9ea;--muted:#8b9497;--accent:#3dbf93;--accent-d:#2fa37c;--user:#1c2225;--warn:#d9a443;--bad:#d9645c}
 [data-theme=light]{--bg:#f7f8f8;--panel:#ffffff;--panel2:#f1f3f3;--line:#e1e5e5;--text:#1a2123;--muted:#667376;--accent:#0e8a6b;--accent-d:#0a7258;--user:#eaf2f0;--warn:#a8741a;--bad:#c0392b}
 
 /* ===== 2. BASE ===== */
@@ -325,6 +325,54 @@ body{-webkit-font-smoothing:antialiased}
   transform:perspective(900px) rotateX(calc((1 - var(--q)) * 45deg)) translateY(calc((1 - var(--q)) * 70px)) translateZ(calc((1 - var(--q)) * -140px));transition:transform .12s linear,opacity .12s linear,border-color .3s}
 .sec3d .card:hover{border-color:var(--muted)}
 @media(prefers-reduced-motion:reduce){.sec3d h2,.sec3d>p,.sec3d .card,.sec3d h2::after{transform:none!important;opacity:1!important}}
+/* ===== LANDING POLISH (light-first, one display font) ===== */
+.view{animation:viewIn .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes viewIn{from{opacity:0;transform:translateY(14px) scale(.992);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+[data-theme=dark] .hero{padding-top:22px;margin-bottom:34px}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--line);border-radius:999px;background:var(--panel);font-size:12px;font-weight:500;letter-spacing:.04em;color:var(--muted);animation:up .7s .2s backwards}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 50%,transparent);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.hero h1{font-family:'Archivo Black',Inter,sans-serif;font-weight:400;font-size:clamp(34px,6vw,66px);line-height:1.04;letter-spacing:-.025em;margin:22px auto 0;max-width:880px}
+.hero h1 .w{display:inline-block;opacity:0;transform:translateY(34px);filter:blur(8px);color:inherit;-webkit-text-fill-color:currentColor;background:none;animation:none}
+.hero h1 .acc .w{color:var(--accent)}
+body.ready .hero h1 .w{animation:wordIn .9s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(var(--k) * 75ms)}
+@keyframes wordIn{to{opacity:1;transform:none;filter:none}}
+.hero h1 .acc{background:linear-gradient(var(--accent),var(--accent)) 0 96%/0% 5px no-repeat;-webkit-text-fill-color:currentColor;-webkit-background-clip:border-box;background-clip:border-box;-webkit-box-decoration-break:clone;box-decoration-break:clone;padding-bottom:4px}
+body.ready .hero h1 .acc{animation:ul 1s 1.4s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes ul{to{background-size:100% 5px}}
+.hsub{font-size:16.5px;max-width:600px;margin-top:20px;animation:up .8s 3.9s backwards}
+.cta{display:flex;gap:12px;justify-content:center;margin-top:28px;flex-wrap:wrap;animation:up .8s 4.1s backwards}
+.btn.lg{display:inline-flex;align-items:center;gap:9px;padding:13px 22px;font-size:15px;border-radius:10px}
+.btn.lg:not(.ghost){box-shadow:0 10px 24px -10px color-mix(in srgb,var(--accent) 80%,transparent)}
+.btn.lg svg{transition:transform .3s}.btn.lg:hover svg{transform:translateX(4px)}
+.marq{overflow:hidden;margin-top:38px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);animation:up .8s 4.3s backwards}
+.mt{display:flex;gap:10px;width:max-content;animation:mq 38s linear infinite}.marq:hover .mt{animation-play-state:paused}
+.mt span{padding:7px 15px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;color:var(--muted);background:var(--panel);white-space:nowrap}
+@keyframes mq{to{transform:translateX(-50%)}}
+.card{background-image:radial-gradient(260px circle at var(--mx,-300px) var(--my,-300px),color-mix(in srgb,var(--accent) 10%,transparent),transparent 70%)}
+.mod{position:relative;overflow:hidden}
+.mod::before{content:'';position:absolute;left:0;top:0;height:3px;width:100%;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.2,.8,.2,1)}.mod:hover::before{transform:scaleX(1)}
+.composer{box-shadow:0 14px 44px -22px rgba(20,40,35,.25)}
+[data-theme=light] .card,[data-theme=light] .prog,[data-theme=light] .rp,[data-theme=light] .steps{box-shadow:0 1px 2px rgba(16,40,32,.04),0 12px 32px -20px rgba(16,40,32,.22)}
+[data-theme=light] .card:hover{box-shadow:0 2px 4px rgba(16,40,32,.05),0 22px 44px -22px rgba(16,40,32,.3)}
+.mlabel{font-family:'Archivo Black',Inter,sans-serif;font-size:13px;letter-spacing:.08em;color:var(--text)}
+.mod h3{font-size:16px}
+@media(prefers-reduced-motion:reduce){.hero h1 .w{opacity:1!important;transform:none!important;filter:none!important;animation:none!important}.mt{animation:none}}
+.hero h1{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(42px,7.2vw,80px);line-height:1;letter-spacing:-.015em;max-width:860px}
+.hero h1 .acc{font-style:italic}
+.sdgh{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:34px 0 14px}
+.sdg{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.sdgc h3{font-size:14px;margin:14px 0 6px;line-height:1.35}
+.sdgi{width:100%;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--panel2);display:grid;place-items:center}
+.sdgi img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.sdgc:hover .sdgi img{transform:scale(1.05)}
+.sdgi:empty::after{content:attr(data-n);font-family:'Instrument Serif',Georgia,serif;font-size:64px;color:var(--accent)}
+.sdg{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sdgc{display:grid;grid-template-columns:116px minmax(0,1fr);gap:18px;align-items:center}
+.sdgc .sdgi{width:116px}
+.sdgc h3{font-family:'Archivo Black',Inter,sans-serif;font-weight:400;text-transform:uppercase;font-size:15px;letter-spacing:.01em;line-height:1.2;margin:0 0 8px}
+.sdgc h3 small{display:block;font-family:Inter,sans-serif;font-size:11px;font-weight:600;letter-spacing:.09em;color:var(--accent);margin-bottom:6px}
+@media(max-width:700px){.sdg{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -365,8 +413,10 @@ body{-webkit-font-smoothing:antialiased}
     <section class="view" id="v-home">
       <div id="prog"></div><canvas id="fx"></canvas><div class="meter"><div class="mf" id="mf"></div><span id="mp">0%</span></div>
       <div class="wrap">
-        <div class="hero"><small>AI energy workflow</small><h1>From bills and rooms to <span>lower energy use</span></h1>
-          <p class="hsub">VoltX reads your electricity bills and room videos, builds your energy profile, and recommends how to cut waste.</p></div>
+        <div class="hero"><h1>From bills and rooms to <span class="acc">lower energy use</span></h1>
+          <p class="hsub">VoltX reads your electricity bills and room videos, builds your energy profile, and recommends how to cut waste.</p>
+          <div class="cta"><button class="btn lg" onclick="go('billchat')">Read my bill<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><button class="btn lg" onclick="go('room')">Scan my room<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+          <div class="marq"><div class="mt" id="mt"></div></div></div>
         <div class="flow" id="flow"></div>
         <div class="mlabel">Ask VoltX anything about your energy use</div>
         <div class="composer" id="homeComposer">
@@ -406,7 +456,9 @@ body{-webkit-font-smoothing:antialiased}
         <div class="sec reveal" id="dash"><h2>Your dashboard</h2><div id="dashBody"></div></div>
 
         <svg class="circ" viewBox="0 0 900 12"><path d="M0 6H900"/><circle class="cd" r="3" cx="0" cy="6"/></svg>
-        <div class="sec sec3d" id="about"><h2>About Us</h2><p class="muted">VoltX is an AI energy assistant built to help individuals, homes and institutions understand their electricity use, spot waste and lower their bills. Built by Meet Nimbalkar, Vedant Patel, Nisarg Patel, Krishiv Patel and Soham Panchal.</p></div>
+        <div class="sec sec3d" id="about"><h2>About Us</h2><p class="muted">VoltX is an AI energy assistant built to help individuals, homes and institutions understand their electricity use, spot waste and lower their bills. Built by Meet Nimbalkar, Vedant Patel, Nisarg Patel, Krishiv Patel and Soham Panchal.</p>
+          <h3 class="sdgh">Sustainable Development Goals we support</h3>
+          <div class="grid sdg"><div class="card sdgc"><div class="sdgi" data-n="7"><img src="AACE.png" alt="SDG 7: Affordable and Clean Energy" onerror="this.remove()"></div><h3><small>SDG 7</small>Affordable and Clean Energy</h3><p>Helps people see and cut wasted electricity, lowering bills and energy demand.</p></div><div class="card sdgc"><div class="sdgi" data-n="12"><img src="RCAP.png" alt="SDG 12: Responsible Consumption and Production" onerror="this.remove()"></div><h3><small>SDG 12</small>Responsible Consumption and Production</h3><p>Shows which appliances and habits waste power, so energy is used responsibly.</p></div><div class="card sdgc"><div class="sdgi" data-n="13"><img src="CA.png" alt="SDG 13: Climate Action" onerror="this.remove()"></div><h3><small>SDG 13</small>Climate Action</h3><p>Less electricity wasted means less demand on power generation and fewer emissions.</p></div><div class="card sdgc"><div class="sdgi" data-n="11"><img src="SCAC.png" alt="SDG 11: Sustainable Cities and Communities" onerror="this.remove()"></div><h3><small>SDG 11</small>Sustainable Cities and Communities</h3><p>Efficient homes and workplaces make our communities more sustainable.</p></div></div></div>
         <div class="sec sec3d" id="what"><h2>What We Do</h2>
           <div class="grid">
             <div class="card"><h3>Track</h3><p>Turn your bills and appliance details into clear usage and cost insights.</p></div>
@@ -1209,6 +1261,7 @@ document.querySelectorAll('.grid').forEach(g => [...g.children].forEach((c, i) =
 document.addEventListener('mousemove', e => {             // 3D tilt on cards
   const c = e.target.closest && e.target.closest('.card:not(.scan)'); if (!c) return;
   const r = c.getBoundingClientRect(), px = (e.clientX - r.left) / r.width - .5, py = (e.clientY - r.top) / r.height - .5;
+  c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px');   // cursor spotlight
   c.style.transform = `perspective(700px) rotateX(${-py * 2}deg) rotateY(${px * 2.5}deg) translateY(-2px)`;
 });
 document.addEventListener('mouseout', e => { const c = e.target.closest && e.target.closest('.card'); if (c && !c.contains(e.relatedTarget)) c.style.transform = ''; });
@@ -1252,6 +1305,18 @@ function renderSide() {                                   // real data only, not
     : '<small>No bills yet</small>';
 }
 applyUI();
+
+/* ===== P. LANDING POLISH: word-by-word headline, marquee ===== */
+(function landing() {
+  const h = document.querySelector('.hero h1'); let k = 0;
+  (function walk(n) { [...n.childNodes].forEach(c => {
+    if (c.nodeType === 3) { const f = document.createDocumentFragment();
+      c.textContent.split(/(\s+)/).forEach(t => { if (!t.trim()) f.append(t); else { const w = document.createElement('span'); w.className = 'w'; w.style.setProperty('--k', k++); w.textContent = t; f.append(w); } }); c.replaceWith(f); }
+    else if (c.nodeType === 1) walk(c); }); })(h);
+  setTimeout(() => document.body.classList.add('ready'), 3300);               // starts as the opening animation fades
+  const items = ['Bill reading', 'Room scanning', 'Usage analytics', 'Spike alerts', 'Cost estimates', 'Savings tips', 'Appliance profiling', 'Peak-hour forecast'];
+  $('mt').innerHTML = [...items, ...items].map(t => `<span>${t}</span>`).join('');
+})();
 renderRecents(); renderDash(); renderBills();
 </script>
 </body>
