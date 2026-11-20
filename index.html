@@ -373,6 +373,15 @@ body.ready .hero h1 .acc{animation:ul 1s 1.4s cubic-bezier(.2,.8,.2,1) forwards}
 .sdgc h3{font-family:'Archivo Black',Inter,sans-serif;font-weight:400;text-transform:uppercase;font-size:15px;letter-spacing:.01em;line-height:1.2;margin:0 0 8px}
 .sdgc h3 small{display:block;font-family:Inter,sans-serif;font-size:11px;font-weight:600;letter-spacing:.09em;color:var(--accent);margin-bottom:6px}
 @media(max-width:700px){.sdg{grid-template-columns:minmax(0,1fr)}}
+/* smart plugs + export */
+.dh{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}.dh h2{margin:0!important}
+.how{margin:4px 0 18px;border:1px solid var(--line);border-radius:10px;padding:12px 18px;background:var(--panel)}.how summary{cursor:pointer;font-weight:500;font-size:14px}
+.how ol{margin:12px 0 4px 18px;line-height:1.75;color:var(--muted);font-size:13.5px}.how code{background:var(--panel2);padding:1px 6px;border-radius:5px;font-size:12.5px;color:var(--text)}
+.pf{display:grid;grid-template-columns:1fr 1.3fr 1.3fr auto;gap:8px}@media(max-width:800px){.pf{grid-template-columns:1fr}}
+.plug .ph{display:flex;align-items:center;gap:9px}.plug .ph b{flex:1}.plug .x{color:var(--muted);padding:2px 6px;border-radius:6px}.plug .x:hover{color:var(--bad)}
+.stdot{width:8px;height:8px;border-radius:50%;background:var(--muted)}.stdot.on{background:var(--accent)}.stdot.err{background:var(--bad)}
+.pw{font-size:34px;font-weight:600;letter-spacing:-.02em;margin:10px 0 6px}.pw small{font-size:14px;color:var(--muted);font-weight:400}
+.perr{font-size:12.5px;color:var(--bad);line-height:1.5;margin:8px 0}
 </style>
 </head>
 <body>
@@ -388,6 +397,7 @@ body.ready .hero h1 .acc{animation:ul 1s 1.4s cubic-bezier(.2,.8,.2,1) forwards}
     <button class="nav on" data-nav="home" onclick="go('home')"><svg class="ni" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</button>
     <button class="nav" onclick="newChat()"><svg class="ni" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>New chat</button>
     <button class="nav" data-nav="room" onclick="go('room')"><svg class="ni" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg>Room Scanner</button>
+    <button class="nav" data-nav="plugs" onclick="go('plugs')"><svg class="ni" viewBox="0 0 24 24"><path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/></svg>Smart Plugs</button>
     <button class="nav" data-nav="billchat" onclick="go('billchat')"><svg class="ni" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></svg>Bill Reader</button>
     <button class="nav" data-nav="setup" onclick="go('setup')"><svg class="ni" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10 21v-4h4v4"/></svg>Residential / Commercial</button>
     <div class="fold" data-f="dash"><button class="nav" onclick="go('home','dash')"><svg class="ni" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Dashboard</button><button class="cv" onclick="fold('dash')" title="Show / hide"><i class="chev"></i></button></div>
@@ -453,7 +463,7 @@ body.ready .hero h1 .acc{animation:ul 1s 1.4s cubic-bezier(.2,.8,.2,1) forwards}
             <div class="row" style="grid-template-columns:repeat(3,1fr) auto;margin-top:8px"><input id="mDue" type="date" title="Due date"><input id="mRate" type="number" step="0.01" placeholder="Rate per unit"><input id="mProv" placeholder="Provider"><button class="btn" onclick="addManual()">Add bill</button></div></details>
         </div>
 
-        <div class="sec reveal" id="dash"><h2>Your dashboard</h2><div id="dashBody"></div></div>
+        <div class="sec reveal" id="dash"><div class="dh"><h2>Your dashboard</h2><button class="chip" onclick="exportCSV()">Export CSV report</button></div><div id="dashBody"></div></div>
 
         <svg class="circ" viewBox="0 0 900 12"><path d="M0 6H900"/><circle class="cd" r="3" cx="0" cy="6"/></svg>
         <div class="sec sec3d" id="about"><h2>About Us</h2><p class="muted">VoltX is an AI energy assistant built to help individuals, homes and institutions understand their electricity use, spot waste and lower their bills. Built by Meet Nimbalkar, Vedant Patel, Nisarg Patel, Krishiv Patel and Soham Panchal.</p>
@@ -510,6 +520,7 @@ body.ready .hero h1 .acc{animation:ul 1s 1.4s cubic-bezier(.2,.8,.2,1) forwards}
       </div>
     </section>
 
+    <section class="view hidden" id="v-plugs"></section>
     <!-- ===== AI WORKFLOW PAGES (built by initWf) ===== -->
     <section class="view hidden" id="v-billchat"></section>
     <section class="view hidden" id="v-room"></section>
@@ -558,11 +569,12 @@ function toggleTheme() {
 function go(view, anchor) {
   document.body.classList.remove('sideopen');
   if (window.speechSynthesis) speechSynthesis.cancel();
-  ['home','setup','chat','billchat','room'].forEach(v => $('v-'+v).classList.toggle('hidden', v !== view));
+  ['home','setup','chat','billchat','room','plugs'].forEach(v => $('v-'+v).classList.toggle('hidden', v !== view));
   document.querySelectorAll('[data-nav]').forEach(n => n.classList.toggle('on', n.dataset.nav === view));
   const el = $('v-'+view); el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
   if (view === 'home') { renderDash(); renderBills(); if (anchor) setTimeout(() => $(anchor).scrollIntoView({ behavior: 'smooth' }), 80); else el.scrollTop = 0; }
   if (view === 'setup') renderSetup();
+  if (view === 'plugs') renderPlugs();
 }
 function toast(t) { const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2800); }
 function pick(id) { $(id).click(); }
@@ -728,7 +740,7 @@ function barChart(vals, labels, spikeAt = Infinity) {
 function renderDash() {
   renderSide(); renderFlow();
   const el = $('dashBody'), apps = profile.apps.filter(a => +a.watts && +a.hours), sb = [...bills].sort((a, b) => a.month.localeCompare(b.month));
-  if (!apps.length && !sb.length && !scans.length) { el.innerHTML = `<div class="empty">No data yet. Upload your bills or add your appliances and VoltX will build your dashboard here.<br><br><button class="btn" onclick="go('setup')">Add household details</button></div>`; return; }
+  if (!apps.length && !sb.length && !scans.length && !plugs.length) { el.innerHTML = `<div class="empty">No data yet. Upload your bills or add your appliances and VoltX will build your dashboard here.<br><br><button class="btn" onclick="go('setup')">Add household details</button></div>`; return; }
   let h = '<div class="grid" style="margin-bottom:16px">';
   const tf = tariffOf(), day = apps.reduce((s, a) => s + appKwhDay(a), 0);
   if (apps.length) h += `<div class="card stat"><b>${day.toFixed(1)} kWh</b><span>Estimated daily use (appliances)</span></div><div class="card stat"><b>${(day * 30).toFixed(0)} kWh</b><span>Estimated monthly use</span></div>`;
@@ -755,7 +767,7 @@ function renderDash() {
     h += `<div class="card" style="margin-top:12px"><h3>Savings estimate</h3><input type="range" id="sv" min="5" max="40" value="15" oninput="sv2()" style="padding:0"><p id="svt"></p></div>`;
     window._day = day; window._tf = tfv; setTimeout(sv2, 0);
   }
-  h += scanHtml();
+  h += plugHtml() + scanHtml();
   el.innerHTML = h; countUp(el);
 }
 function sv2() { const v = +$('sv').value, kwh = window._day * 30 * v / 100; $('svt').textContent = `Cutting ${v}% saves about ${kwh.toFixed(0)} kWh/month${window._tf ? ' ≈ ' + (kwh * window._tf).toFixed(0) + ' per month' : ''}.`; }
@@ -779,7 +791,7 @@ function saveSetup() { profile.people = $('people').value; profile.tariff = $('t
 function context() {
   const apps = profile.apps.map(a => `${a.name || a.type} ${a.size || ''} ${a.watts}W x ${a.hours}h/day`).join('; ');
   const b = [...bills].sort((a, c) => a.month.localeCompare(c.month)).map(x => `${x.month}: ${x.units}kWh, ${x.amount}${x.rate ? ', rate ' + x.rate : ''}${x.due ? ', due ' + x.due : ''}`).join('; ');
-  return `${SYSTEM}\nPROFILE: ${profile.type || 'unknown'}, people: ${profile.people || 'unknown'}. APPLIANCES: ${apps || 'none saved'}. BILLS: ${b || 'none saved'}.${scanCtx()}`;
+  return `${SYSTEM}\nPROFILE: ${profile.type || 'unknown'}, people: ${profile.people || 'unknown'}. APPLIANCES: ${apps || 'none saved'}. BILLS: ${b || 'none saved'}.${scanCtx()}${plugCtx()}`;
 }
 function newChat() { cur = { id: Date.now(), title: 'New chat', msgs: [] }; go('chat'); $('msgs').innerHTML = ''; $('chatInput').focus(); }
 function openChat(id) { cur = chats.find(c => c.id === id); go('chat'); $('msgs').innerHTML = ''; cur.msgs.forEach((m, i, a) => bubble(m, i === a.length - 1)); scrollEnd(); }
@@ -1186,6 +1198,7 @@ async function runBills(key, P, note) {
   try {                                                                  // advisor runs after the report is already on screen
     const adv = await callAI([{ role: 'system', content: 'You are VoltX, an energy advisor. Reply in plain text only: no JSON, no code blocks, no follow-up questions.\n' + 'PROFILE:' + context().split('\nPROFILE:')[1] }, { role: 'user', content: 'Using my saved bills and appliances, give exactly 3 short, specific tips to reduce my electricity cost, and mention anything unusual in my latest bill. Under 110 words, plain text, no code blocks.' }], 2, 900);
     $('bcAdv').classList.remove('muted'); $('bcAdv').innerHTML = md(stripJson(adv)).html;
+    adviceLog.push({ date: new Date().toISOString().slice(0, 10), text: stripJson(adv) }); adviceLog = adviceLog.slice(-10); save('vx_advice', adviceLog);
   } catch (e) { $('bcAdv').textContent = 'Personalised advice is unavailable right now. Use the chatbot for tips.'; }
 }
 async function runRoom(key, P, note) {
@@ -1209,6 +1222,105 @@ async function runRoom(key, P, note) {
   P.done('Complete');
 }
 initWf();
+
+/* ===== Q. SMART PLUGS (real device usage) + CSV EXPORT ===== */
+let plugs = load('vx_plugs', []), plugLog = load('vx_pluglog', {}), plugLive = {}, adviceLog = load('vx_advice', []), polling = false;
+const z2 = n => String(n).padStart(2, '0');
+const hourKey = (d = new Date()) => `${d.getFullYear()}-${z2(d.getMonth() + 1)}-${z2(d.getDate())}T${z2(d.getHours())}`;
+async function readPlug(p) {                                    // normalise the three supported local APIs
+  const ctl = new AbortController(), to = setTimeout(() => ctl.abort(), 4000), base = 'http://' + p.ip.replace(/^https?:\/\//, '').replace(/\/+$/, '');
+  const get = async u => (await fetch(base + u, { signal: ctl.signal })).json();
+  try {
+    if (p.type === 'shelly2') { const j = await get('/rpc/Switch.GetStatus?id=0'); return { w: j.apower ?? 0, v: j.voltage ?? 0, a: j.current ?? 0, on: j.output, kwh: (j.aenergy?.total ?? 0) / 1000 }; }
+    if (p.type === 'shelly1') { const j = await get('/status'), m = j.meters?.[0] || {}; return { w: m.power ?? 0, v: 0, a: 0, on: j.relays?.[0]?.ison, kwh: (m.total ?? 0) / 60000 }; }
+    const j = await get('/cm?cmnd=Status%2010'), e = j.StatusSNS?.ENERGY || {}; return { w: e.Power ?? 0, v: e.Voltage ?? 0, a: e.Current ?? 0, on: undefined, kwh: e.Total ?? 0 };
+  } finally { clearTimeout(to); }
+}
+async function pollPlugs() {
+  if (polling || !plugs.length) return; polling = true;
+  for (const p of plugs) {
+    try {
+      const r = await readPlug(p); plugLive[p.id] = { ...r, ts: Date.now() };
+      if (p.last != null && r.kwh >= p.last) { const d = r.kwh - p.last; if (d > 0 && d < 5) { const k = hourKey(), L = plugLog[p.id] || (plugLog[p.id] = {}); L[k] = +((L[k] || 0) + d).toFixed(4); } }
+      p.last = r.kwh;                                          // energy counter on the plug itself, so usage while the page was closed is not lost
+    } catch (e) {
+      plugLive[p.id] = { err: location.protocol === 'https:' ? 'Blocked: a secure (https) page cannot reach devices on your local network. Open VoltX from http://localhost (see the steps above).' : e.name === 'AbortError' ? 'No response. Check the IP address and that the plug is on this Wi-Fi.' : 'Could not connect. Check the IP, the plug type, and that the plug has no password.', ts: Date.now() };
+    }
+  }
+  const cut = hourKey(new Date(Date.now() - 8 * 864e5)); for (const id in plugLog) for (const k in plugLog[id]) if (k < cut) delete plugLog[id][k];
+  save('vx_plugs', plugs); save('vx_pluglog', plugLog); polling = false;
+  if (!$('v-plugs').classList.contains('hidden')) renderPlugs();
+}
+const plugKwh = (id, prefix) => Object.entries(plugLog[id] || {}).filter(([k]) => k.startsWith(prefix)).reduce((t, [, v]) => t + v, 0);
+const plugDay = (id, back = 0) => plugKwh(id, hourKey(new Date(Date.now() - back * 864e5)).slice(0, 10));
+const plug24 = id => Array.from({ length: 24 }, (_, i) => (plugLog[id] || {})[hourKey(new Date(Date.now() - (23 - i) * 36e5))] || 0);
+function initPlugs() {
+  $('v-plugs').innerHTML = `<div class="wf"><div class="wf-head"><div><h2>Smart Plugs</h2><p class="muted">Connect energy-monitoring smart plugs on your Wi-Fi to track the real usage of each appliance.</p></div>
+    <div class="wf-actions"><button class="chip" onclick="go('home','dash')">Dashboard</button><button class="chip" onclick="exportCSV()">Export CSV</button></div></div>
+    <details class="how"><summary>How it works and how to connect a plug</summary><ol>
+      <li>Buy a plug with <b>energy monitoring</b>: Shelly Plug S / Plus Plug S (Gen2+), or any plug running Tasmota with power metering.</li>
+      <li>Plug it in, set it up with its app and join your home Wi-Fi. Keep its password / authentication <b>off</b>.</li>
+      <li>Find its IP address in the plug's app (device settings) or your router's device list, for example <code>192.168.1.45</code>. Reserve that IP in the router so it does not change.</li>
+      <li>Open VoltX on the <b>same Wi-Fi</b> from <code>http://localhost</code> (run <code>python -m http.server 8000</code> in the website folder) or open <code>index.html</code> as a file. A secure https site cannot talk to devices inside your home network.</li>
+      <li>Add the plug below. Live watts appear within seconds. VoltX logs hourly kWh while the page is open and shows it on the dashboard and in the CSV report.</li>
+      <li>Tapo, Kasa and Tuya plugs use private protocols and need a bridge such as Home Assistant. Plugs only measure what is plugged into them.</li></ol></details>
+    <div class="card"><div class="pf"><input id="pgName" placeholder="Name, e.g. Living room AC"><select id="pgType"><option value="shelly2">Shelly Plus / Pro (Gen2+)</option><option value="shelly1">Shelly Plug S (Gen1)</option><option value="tasmota">Tasmota plug</option></select>
+      <input id="pgIp" placeholder="Plug IP, e.g. 192.168.1.45"><button class="btn" onclick="addPlug()">Add plug</button></div></div>
+    <div class="grid" id="plugCards" style="margin-top:18px"></div></div>`;
+}
+function addPlug() {
+  const name = $('pgName').value.trim(), ip = $('pgIp').value.trim(); if (!name || !ip) return toast('Enter a name and the plug IP address');
+  plugs.push({ id: 'p' + Date.now(), name: name.slice(0, 40), type: $('pgType').value, ip, last: null }); save('vx_plugs', plugs);
+  $('pgName').value = $('pgIp').value = ''; renderPlugs(); polling = false; pollPlugs();
+}
+function delPlug(id) { plugs = plugs.filter(p => p.id !== id); delete plugLog[id]; delete plugLive[id]; save('vx_plugs', plugs); save('vx_pluglog', plugLog); renderPlugs(); renderDash(); }
+function renderPlugs() {
+  const el = $('plugCards'); if (!el) return; const tf = tariffOf();
+  el.innerHTML = plugs.length ? plugs.map(p => {
+    const L = plugLive[p.id], h24 = plug24(p.id), t24 = h24.reduce((a, b) => a + b, 0);
+    return `<div class="card plug"><div class="ph"><span class="stdot ${L ? (L.err ? 'err' : 'on') : ''}"></span><b>${esc(p.name)}</b><button class="x" onclick="delPlug('${p.id}')" title="Remove">×</button></div>
+      ${L && !L.err ? `<div class="pw">${Math.round(L.w)}<small> W now</small></div>${L.v ? `<div class="kv"><span>Voltage / current</span><b>${L.v.toFixed(0)} V · ${L.a.toFixed(2)} A</b></div>` : ''}` : `<div class="pw">–<small> W</small></div>`}
+      ${L && L.err ? `<div class="perr">${esc(L.err)}</div>` : ''}
+      <div class="kv"><span>Today</span><b>${plugDay(p.id).toFixed(2)} kWh</b></div><div class="kv"><span>Last 24 hours</span><b>${t24.toFixed(2)} kWh${tf ? ' · ' + (t24 * tf).toFixed(1) : ''}</b></div>
+      <div style="margin-top:10px">${barChart(h24, h24.map((_, i) => (new Date().getHours() - 23 + i + 24) % 24), Math.max(...h24) * .8 || Infinity)}</div></div>`;
+  }).join('') : '<div class="empty" style="grid-column:1/-1">No plugs connected yet. Add one above to see real device usage.</div>';
+}
+function plugHtml() {
+  if (!plugs.length) return '';
+  return `<div class="card" style="margin-top:14px"><h3>Live device usage <span class="muted" style="font-weight:400">(smart plugs)</span></h3><table style="margin-top:8px"><tr><th>Device</th><th>Now</th><th>Today</th><th>Last 24 h</th></tr>${plugs.map(p => {
+    const L = plugLive[p.id]; return `<tr><td>${esc(p.name)}</td><td>${L && !L.err ? Math.round(L.w) + ' W' : '–'}</td><td>${plugDay(p.id).toFixed(2)} kWh</td><td>${plug24(p.id).reduce((a, b) => a + b, 0).toFixed(2)} kWh</td></tr>`; }).join('')}</table>
+    <p class="muted" style="font-size:12px;margin-top:8px">Measured by the plugs; logged while VoltX is open on your Wi-Fi.</p></div>`;
+}
+function plugCtx() { return plugs.length ? ` SMART PLUGS (measured): ${plugs.map(p => `${p.name} ${plugLive[p.id] && !plugLive[p.id].err ? Math.round(plugLive[p.id].w) + 'W now, ' : ''}${plugDay(p.id).toFixed(2)}kWh today`).join('; ')}.` : ''; }
+function exportCSV() {                                           // one CSV: profile, summary, alerts, appliances, bills, room scans, plugs, AI advice
+  const rows = [], q = v => { v = v == null ? '' : String(v); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const add = (...r) => rows.push(r.map(q).join(',')), sec = (t, head) => { rows.push(''); add(t); if (head) add(...head); };
+  const apps = profile.apps.filter(a => +a.watts && +a.hours), day = apps.reduce((t, a) => t + appKwhDay(a), 0), tf = tariffOf(), sb = [...bills].sort((a, b) => a.month.localeCompare(b.month));
+  const hr = hourly(), top = [...apps].sort((a, b) => appKwhDay(b) - appKwhDay(a))[0], u = sb.map(b => b.units), avg = u.length ? u.reduce((a, b) => a + b, 0) / u.length : 0;
+  add('VoltX energy report'); add('Generated', new Date().toLocaleString()); add('Note', 'Appliance figures come from the user-entered watts and hours; wattages from room scans are typical estimates.');
+  sec('PROFILE', ['Field', 'Value']); add('Place type', profile.type); add('People', profile.people); add('Tariff entered (per unit)', profile.tariff); add('Tariff from bills (per unit)', tf ? tf.toFixed(3) : '');
+  sec('SUMMARY (calculated)', ['Metric', 'Value']);
+  if (apps.length) { add('Estimated daily use (kWh)', day.toFixed(2)); add('Estimated monthly use (kWh)', (day * 30).toFixed(1)); if (tf) add('Estimated monthly cost', (day * 30 * tf).toFixed(2)); add('Peak hour of the day', hr.indexOf(Math.max(...hr)) + ':00'); if (top) add('Biggest consumer', `${top.name || top.type} (${appKwhDay(top).toFixed(2)} kWh/day)`); }
+  if (u.length) { add('Bills added', u.length); add('Average per bill (kWh)', avg.toFixed(1)); }
+  if (u.length >= 2) { const l3 = u.slice(-3), pred = l3.reduce((a, b) => a + b, 0) / l3.length + (u[u.length - 1] - u[0]) / u.length * .5; add('Predicted next bill (kWh)', Math.max(0, pred).toFixed(0)); if (tf) add('Predicted next bill (cost)', (Math.max(0, pred) * tf).toFixed(0)); const d = (u[u.length - 1] - u[u.length - 2]) / (u[u.length - 2] || 1) * 100; add('Latest bill vs previous (%)', d.toFixed(1)); }
+  if (apps.length) [10, 20, 30].forEach(p => add(`Savings if usage cut by ${p}%`, `${(day * 30 * p / 100).toFixed(1)} kWh/month${tf ? ' = ' + (day * 30 * p / 100 * tf).toFixed(0) : ''}`));
+  sec('ALERTS (calculated)', ['Alert']); let al = 0;
+  if (u.length > 2) sb.forEach(b => { if (b.units > avg * 1.2) { add(`${b.month}: ${b.units} kWh is ${((b.units / avg - 1) * 100).toFixed(0)}% above your average`); al++; } });
+  if (top) { add(`Biggest consumer: ${top.name || top.type}. Shift flexible loads outside peak hours.`); al++; } if (!al) add('No alerts yet');
+  sec('APPLIANCES', ['Name', 'Type', 'Size', 'Watts', 'Hours per day', 'Start hour', 'kWh per day', 'kWh per month']); profile.apps.forEach(a => add(a.name, a.type, a.size, a.watts, a.hours, a.start, appKwhDay(a).toFixed(2), (appKwhDay(a) * 30).toFixed(1)));
+  sec('HOURLY LOAD PROFILE (from appliance schedule)', ['Hour', 'kW']); hr.forEach((v, i) => add(i, v.toFixed(3)));
+  sec('BILLS', ['Month', 'Units (kWh)', 'Amount', 'Currency', 'Rate per unit', 'Effective rate', 'Bill date', 'Due date', 'Period start', 'Period end', 'Energy charge', 'Fixed charge', 'Tax', 'Provider', 'Needs check', 'Check note']);
+  sb.forEach(b => add(b.month, b.units, b.amount, b.cur, b.rate || '', b.units && b.amount ? (b.amount / b.units).toFixed(3) : '', b.bill_date, b.due, (b.period || [])[0], (b.period || [])[1], b.energy || '', b.fixed || '', b.tax || '', b.provider, b.chk ? 'yes' : 'no', b.why));
+  sec('ROOM SCANS', ['Date', 'Room', 'Lighting', 'Daylight']); scans.forEach(c => add(c.date, c.room, c.lighting.type, c.lighting.daylight));
+  sec('ROOM SCAN: DETECTED APPLIANCES', ['Date', 'Appliance', 'Count', 'Type', 'Typical watts (estimate)']); scans.forEach(c => c.appliances.forEach(a => add(c.date, a.name, a.count, a.type, a.est_watts || '')));
+  sec('ROOM SCAN: ISSUES', ['Date', 'Issue']); scans.forEach(c => c.issues.forEach(i => add(c.date, i)));
+  sec('ROOM SCAN: RECOMMENDATIONS', ['Date', 'Action', 'Impact', 'Estimated saving (%)']); scans.forEach(c => c.recs.forEach(r => add(c.date, r.action, r.impact, r.saving || '')));
+  sec('AI ADVICE (from saved bills and appliances)', ['Date', 'Advice']); adviceLog.forEach(a => add(a.date, a.text));
+  sec('SMART PLUGS (measured)', ['Device', 'Now (W)', 'Today (kWh)', 'Yesterday (kWh)', 'Last 24 h (kWh)']); plugs.forEach(p => { const L = plugLive[p.id]; add(p.name, L && !L.err ? Math.round(L.w) : '', plugDay(p.id).toFixed(3), plugDay(p.id, 1).toFixed(3), plug24(p.id).reduce((a, b) => a + b, 0).toFixed(3)); });
+  const blob = new Blob(['\ufeff' + rows.join('\r\n')], { type: 'text/csv;charset=utf-8' }), a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = `voltx-report-${new Date().toISOString().slice(0, 10)}.csv`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast('CSV report downloaded');
+}
+initPlugs(); setInterval(pollPlugs, 10000); pollPlugs();
 
 /* ===== L. MOTION: energy network, scroll effects, tilt, ripple ===== */
 function countUp(root) {
