@@ -465,6 +465,18 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
 /* responsive + reduced motion */
 @media(max-width:960px){.hero-grid{grid-template-columns:minmax(0,1fr);min-height:0}.stage-wrap{height:430px;margin-top:20px;margin-bottom:70px}.story-in{grid-template-columns:minmax(0,1fr)}.story-vis{display:none}.ss{min-height:auto;padding:26px 0;opacity:1;transform:none}.foot{padding:26px 24px 40px}}
 @media(prefers-reduced-motion:reduce){.stage *,.stage-wrap,.hero h1 .w{animation:none!important}.fld .sk{background:var(--accent);width:54px}.sw{opacity:1}.bars i,.box,.c-rec li{opacity:1;transform:none}}
+/* chat interface polish */
+.chat{position:relative}
+.msgs{padding:30px 0 14px}
+.m{max-width:900px;width:100%;margin:0 auto;box-sizing:border-box}
+.bub{font-size:15.5px;line-height:1.72}
+.u .bub{border-radius:18px 18px 4px 18px;padding:11px 16px}
+.bub table{font-size:13.5px}.bub pre{font-size:13px}
+.cw{max-width:660px;margin:11vh auto 0;text-align:center;padding:0 24px;animation:up .6s both}
+.cw h2{font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(36px,4.6vw,56px);line-height:1.04;letter-spacing:-.02em}.cw em{color:var(--accent)}
+.cwc{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:28px}
+.tobot{position:absolute;left:50%;bottom:150px;transform:translate(-50%,10px);width:36px;height:36px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;box-shadow:0 8px 24px -10px rgba(0,0,0,.3);z-index:5}
+.tobot.show{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
@@ -635,6 +647,7 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
       <div class="chat" id="chatBox">
         <div class="chead"><button class="chip" onclick="go('home')">Home</button><button class="chip" onclick="newChat()">New chat</button><span class="sp"></span><span class="logo-t" style="font-size:17px">Volt<i>X</i></span></div>
         <div class="msgs" id="msgs"></div>
+        <button class="tobot" id="tobot" onclick="scrollEnd()" title="Jump to latest"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
         <div class="cbox"><div class="composer" id="chatComposer">
           <div class="thumbs" id="chatThumbs"></div>
           <textarea id="chatInput" rows="1" placeholder="Message VoltX… (attach images or a video)"></textarea>
@@ -916,7 +929,12 @@ function context() {
   const b = [...bills].sort((a, c) => a.month.localeCompare(c.month)).map(x => `${x.month}: ${x.units}kWh, ${x.amount}${x.rate ? ', rate ' + x.rate : ''}${x.due ? ', due ' + x.due : ''}`).join('; ');
   return `${SYSTEM}\nPROFILE: ${profile.type || 'unknown'}, people: ${profile.people || 'unknown'}. APPLIANCES: ${apps || 'none saved'}. BILLS: ${b || 'none saved'}.${scanCtx()}${plugCtx()}`;
 }
-function newChat() { cur = { id: Date.now(), title: 'New chat', msgs: [] }; go('chat'); $('msgs').innerHTML = ''; $('chatInput').focus(); }
+function newChat() { cur = { id: Date.now(), title: 'New chat', msgs: [] }; go('chat'); $('msgs').innerHTML = ''; chatWelcome(); $('chatInput').focus(); }
+function chatWelcome() {                                   // empty state with starter questions
+  $('msgs').innerHTML = '<div class="cw"><h2>How can I help you <em>save energy</em> today?</h2><div class="cwc">' + ['Why is my electricity bill high?', 'Which appliances use the most power?', 'How can I cut my AC cost?', 'When should I run heavy appliances?']
+    .map(q => `<button class="chip" onclick="$('chatInput').value=this.textContent;sendFrom('chat')">${q}</button>`).join('') + '</div></div>';
+}
+$('msgs').addEventListener('scroll', () => { const m = $('msgs'); $('tobot').classList.toggle('show', m.scrollHeight - m.scrollTop - m.clientHeight > 240); });
 function openChat(id) { cur = chats.find(c => c.id === id); go('chat'); $('msgs').innerHTML = ''; cur.msgs.forEach((m, i, a) => bubble(m, i === a.length - 1)); scrollEnd(); }
 const esc = t => (t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;');
 function chartSvg(raw) {
@@ -955,6 +973,7 @@ function md(t) {                                   // bot reply -> html (tables,
   return { html: t.replace(/\u0001(\d+)\u0002/g, (m, i) => out[i]).trim(), fu: Array.isArray(fu) ? fu.slice(0, 3) : [] };
 }
 function bubble(m, last) {
+  document.querySelector('#msgs .cw')?.remove();
   const d = document.createElement('div'), bot = m.role !== 'user', r = bot ? md(m.text) : null;
   d.className = 'm ' + (bot ? 'b' : 'u');
   d.innerHTML = `${bot ? AV : ''}<div class="bub">${(m.imgs || []).map(s => `<img src="${s}">`).join('')}${(m.vids || []).map(v => `<div class="vchip">${v.thumb ? `<img src="${v.thumb}">` : ''}<span>Video · ${v.n} frames</span></div>`).join('')}${bot ? r.html : fmt(m.text)}</div>`;
