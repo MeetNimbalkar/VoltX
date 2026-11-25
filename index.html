@@ -543,8 +543,6 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
 .dpeak{position:absolute;transform:translate(-50%,-165%);font-size:11.5px;font-weight:600;color:var(--warn);white-space:nowrap;transition:opacity .3s}
 .dlabels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);position:absolute;left:0;right:0;bottom:0}
 /* footer megamark */
-.mega{flex:0 0 100%;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:min(23vw,290px);line-height:.8;letter-spacing:-.045em;text-align:center;color:transparent;-webkit-text-stroke:1px var(--line);height:.62em;overflow:hidden;margin-top:34px;user-select:none;transition:color .6s}
-.mega i{font-family:'Playfair Display',serif;font-style:italic;font-weight:600}.mega:hover{color:var(--panel2)}
 .foot{padding-bottom:0!important}
 @media(max-width:960px){.day{height:210vh}.day-st{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) 130px}.dhouse,.dlist,.scue{display:none}.dleft{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:6px 18px}.dclock{font-size:84px;margin:0}.dsum{inset:0}.dgauge{top:-6px;width:120px}.band{font-size:clamp(60px,16vw,110px)}}
 @media(prefers-reduced-motion:reduce){.band{transform:none!important}.mbill i,.mbill u{animation:none}}
@@ -553,6 +551,21 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
 .sdgc{position:relative;overflow:hidden;border-top:3px solid var(--c)}
 .sdgc::after{content:attr(data-g);position:absolute;right:12px;bottom:-22px;font-family:'Instrument Serif',Georgia,serif;font-size:128px;line-height:1;color:color-mix(in srgb,var(--c) 15%,transparent);pointer-events:none;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
 .sdgc:hover::after{transform:translateY(-10px) scale(1.06)}.sdgc h3 small{color:var(--c)}.sdgc:hover{border-color:var(--c)}
+/* SDG cards in the style of the hero stage cards */
+.sdg{gap:24px;transform-style:preserve-3d;transform:perspective(1400px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .35s ease-out}
+.sdgc{border:1px solid var(--line);border-top:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:0 32px 60px -34px rgba(16,40,32,.4),0 2px 6px rgba(16,40,32,.05)}
+[data-theme=dark] .sdgc{box-shadow:0 30px 60px -30px #000,0 0 0 1px #ffffff0a}
+.sdgc:nth-child(1){--rot:-1.2deg}.sdgc:nth-child(2){--rot:1.2deg}.sdgc:nth-child(3){--rot:1deg}.sdgc:nth-child(4){--rot:-1deg}
+.sec3d .sdgc{transform:perspective(900px) rotateX(calc((1 - var(--q)) * 45deg)) translateY(calc((1 - var(--q)) * 70px)) translateZ(calc((1 - var(--q)) * -140px)) rotate(var(--rot,0deg))}
+.sdgc h3 small{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11.5px;font-weight:500;letter-spacing:.06em}
+.sdgc h3 small::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--c)}
+.sdgc .chip-s{animation:none;margin-top:12px;grid-column:2}
+.sdgc::after{opacity:.55}
+/* halftone wordmark footer */
+.foot{--fpad:40px}
+.hwf{flex:0 0 calc(100% + 2 * var(--fpad));margin:34px calc(-1 * var(--fpad)) 0;position:relative;height:clamp(240px,32vw,440px);overflow:hidden;touch-action:pan-y}
+.hwf canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+@media(max-width:960px){.foot{--fpad:24px}}
 </style>
 </head>
 <body>
@@ -709,7 +722,7 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
       </div>
       <footer class="foot"><div><span class="logo-t">Volt<i>X</i></span><p>Smarter energy. Lower bills.</p></div>
         <nav><a onclick="go('home','flow')">Workflow</a><a onclick="go('billchat')">Bill Reader</a><a onclick="go('room')">Room Scanner</a><a onclick="go('plugs')">Smart Plugs</a><a onclick="go('home','about')">About</a></nav>
-        <small>Supporting SDG 7 · 11 · 12 · 13</small><div class="mega" aria-hidden="true"><span>Volt</span><i>X</i></div></footer>
+        <small>Supporting SDG 7 · 11 · 12 · 13</small><div class="hwf" id="hwf"><canvas id="hwfc" aria-hidden="true"></canvas></div></footer>
     </section>
 
     <!-- ===== SETUP VIEW ===== -->
@@ -1732,7 +1745,10 @@ applyUI();
     else if (c.nodeType === 1) walk(c); }); })(h);
   setTimeout(() => document.body.classList.add('ready'), 3300);               // starts as the opening animation fades
   const C = ['#E5243B', '#DDA63A', '#4C9F38', '#C5192D', '#FF3A21', '#26BDE2', '#FCC30B', '#A21942', '#FD6925', '#DD1367', '#FD9D24', '#BF8B2E', '#3F7E44', '#0A97D9', '#56C02B', '#00689D', '#19486A'], mine = [7, 12, 13, 11];
-  document.querySelectorAll('.sdgc').forEach((c, i) => { c.style.setProperty('--c', C[mine[i] - 1]); c.dataset.g = mine[i]; });
+  document.querySelectorAll('.sdgc').forEach((c, i) => { c.style.setProperty('--c', C[mine[i] - 1]); c.dataset.g = mine[i]; c.insertAdjacentHTML('beforeend', `<span class="chip-s ok">${['Lower bills', 'Smarter use', 'Less waste', 'Efficient spaces'][i]}</span>`); });
+  const sg = document.querySelector('.sdg');                                  // the four goals float and tilt like the hero cards
+  sg.addEventListener('mousemove', e => { const r = sg.getBoundingClientRect(); if (!r.width) return; sg.style.setProperty('--rx', (4 - ((e.clientY - r.top) / r.height - .5) * 9) + 'deg'); sg.style.setProperty('--ry', (((e.clientX - r.left) / r.width - .5) * 9) + 'deg'); });
+  sg.addEventListener('mouseleave', () => { sg.style.setProperty('--rx', '0deg'); sg.style.setProperty('--ry', '0deg'); });
   const st = $('stmt'); st.innerHTML = st.textContent.trim().split(/\s+/).map(w => `<span class="sw">${w}</span>`).join(' ');
   document.querySelectorAll('.mag').forEach(b => { b.addEventListener('mousemove', e => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .16}px,${(e.clientY - r.top - r.height / 2) * .26}px)`; }); b.addEventListener('mouseleave', () => b.style.transform = ''); });
   const g = document.querySelector('.hero-grid'), s = $('stage');
@@ -1754,6 +1770,60 @@ applyUI();
     target = Math.max(0, Math.min(hv.scrollHeight - hv.clientHeight, target + e.deltaY * (e.deltaMode === 1 ? 32 : 1))); if (!raf) raf = requestAnimationFrame(tick);
   }, { passive: false });
   hv.addEventListener('scroll', () => { if (!raf) { cur = target = hv.scrollTop; } });
+})();
+
+/* ===== T. HALFTONE WORDMARK FOOTER: "voltx" printed in dots that part around the pointer (vanilla port of the React component) ===== */
+(function halftoneFooter() {
+  const box = $('hwf'), cv = $('hwfc'); if (!box || !cv) return;
+  const ctx = cv.getContext('2d'), WORD = 'voltx', GAP = 6, RAD = 80, CROP = .2, FACE = '"Archivo Black", "Inter", Arial, sans-serif', reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const hex = v => { const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec((v || '').trim()); if (!m) return null; const x = m[1].length === 3 ? [...m[1]].map(c => c + c).join('') : m[1]; return [0, 2, 4].map(i => parseInt(x.slice(i, i + 2), 16)); };
+  let w = 0, h = 0, dpr = 1, px = -1e5, py = -1e5, raf = 0, visible = true, awake = true, ring = { x: 0, y: 0, t: -1 }, dots = new Float32Array(0), count = 0, ink = [26, 33, 35], warm = [14, 138, 107];
+  function colors() { const cs = getComputedStyle(document.documentElement); ink = hex(cs.getPropertyValue('--text')) || ink; warm = hex(cs.getPropertyValue('--accent')) || warm; }
+  function layout() {
+    const r = box.getBoundingClientRect(); w = Math.round(r.width); h = Math.round(r.height); if (w < 2 || h < 2) return;
+    dpr = Math.min(window.devicePixelRatio || 1, 2); cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    const mk = document.createElement('canvas'); mk.width = w; mk.height = h; const m = mk.getContext('2d', { willReadFrequently: true }); if (!m) return;
+    m.font = '100px ' + FACE; const fit = w * 1.02 / (m.measureText(WORD).width || 1) * 100; m.font = fit + 'px ' + FACE;
+    const bx = m.measureText(WORD), cap = bx.actualBoundingBoxAscent || fit * .72; m.fillStyle = '#000'; m.fillText(WORD, (w - bx.width) / 2, h + cap * CROP);   // word fills the width, bottom is cropped by the page edge
+    const img = m.getImageData(0, 0, w, h).data, cols = Math.ceil(w / GAP), rows = Math.ceil(h / GAP), tmp = [];
+    for (let gy = 0; gy < rows; gy++) for (let gx = 0; gx < cols; gx++) {
+      let sum = 0;
+      for (let sy = 0; sy < 3; sy++) for (let sx = 0; sx < 3; sx++) { const x = Math.min(w - 1, Math.floor(gx * GAP + (sx + .5) * GAP / 3)), y = Math.min(h - 1, Math.floor(gy * GAP + (sy + .5) * GAP / 3)); sum += img[(y * w + x) * 4 + 3]; }
+      const cov = sum / 2295; if (cov < .06) continue;                         // dot size follows how much of the letter covers the cell
+      const hx = gx * GAP + GAP / 2, hy = gy * GAP + GAP / 2; tmp.push(hx, hy, 0, 0, hx, hy, Math.sqrt(Math.min(1, cov)) * GAP * .56);
+    }
+    dots = new Float32Array(tmp); count = tmp.length / 7; wake();
+  }
+  function draw(now) {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+    const r = reduced ? 0 : RAD, age = ring.t < 0 ? 1e9 : now - ring.t, ringR = age * .9; let moving = false;
+    for (let i = 0; i < count; i++) {
+      const j = i * 7; let x = dots[j], y = dots[j + 1], vx = dots[j + 2], vy = dots[j + 3]; const hx = dots[j + 4], hy = dots[j + 5];
+      if (!reduced) {
+        if (age < 900) { const dx = hx - ring.x, dy = hy - ring.y, d = Math.sqrt(dx * dx + dy * dy) + .001, band = 1 - Math.min(1, Math.abs(d - ringR) / 26); if (band > 0) { const f = band * 3.2 * (1 - age / 900); vx += dx / d * f; vy += dy / d * f; } }   // click shock ring
+        const dx = x - px, dy = y - py, d2 = dx * dx + dy * dy;
+        if (d2 < r * r) { const d = Math.sqrt(d2) + .001, f = (1 - d / r) * 2.6; vx += dx / d * f; vy += dy / d * f; }                // pointer pushes dots away
+        vx = (vx + (hx - x) * .05) * .84; vy = (vy + (hy - y) * .05) * .84; x += vx; y += vy;                                            // spring back home
+        if (Math.abs(vx) + Math.abs(vy) > .02 || Math.abs(x - hx) + Math.abs(y - hy) > .05) moving = true; else { x = hx; y = hy; vx = vy = 0; }
+        dots[j] = x; dots[j + 1] = y; dots[j + 2] = vx; dots[j + 3] = vy;
+      }
+      const k = Math.min(1, Math.hypot(x - hx, y - hy) / 28);                   // warms toward the accent colour as it is pushed
+      ctx.fillStyle = k > .02 ? `rgb(${Math.round(ink[0] + (warm[0] - ink[0]) * k)},${Math.round(ink[1] + (warm[1] - ink[1]) * k)},${Math.round(ink[2] + (warm[2] - ink[2]) * k)})` : `rgb(${ink[0]},${ink[1]},${ink[2]})`;
+      ctx.beginPath(); ctx.arc(x, y, dots[j + 6], 0, 6.2832); ctx.fill();
+    }
+    awake = moving || age < 900 || px > -1e4;                                    // sleeps when everything is home
+  }
+  const loop = now => { raf = 0; if (!visible) return; draw(now); if (awake) raf = requestAnimationFrame(loop); };
+  function wake() { awake = true; if (!raf && visible) raf = requestAnimationFrame(loop); }
+  const local = e => { const b = box.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+  box.addEventListener('pointermove', e => { [px, py] = local(e); wake(); });
+  box.addEventListener('pointerleave', () => { px = py = -1e5; wake(); });
+  box.addEventListener('pointerdown', e => { if (reduced) return; const p = local(e); ring = { x: p[0], y: p[1], t: performance.now() }; wake(); });
+  new ResizeObserver(layout).observe(box);
+  new IntersectionObserver(en => { visible = en[0] ? en[0].isIntersecting : true; if (visible) wake(); }).observe(box);
+  new MutationObserver(() => { colors(); wake(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  colors(); layout();
+  if (document.fonts) { document.fonts.load('100px "Archivo Black"').then(layout).catch(() => {}); document.fonts.ready.then(layout); }   // re-set the word once the real face has loaded
 })();
 renderRecents(); renderDash(); renderBills();
 </script>
