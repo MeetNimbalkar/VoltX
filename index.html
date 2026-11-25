@@ -550,9 +550,6 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
 @media(prefers-reduced-motion:reduce){.band{transform:none!important}.mbill i,.mbill u{animation:none}}
 /* calmer primary buttons (no glow) + SDG collection */
 .btn.lg,.btn.lg:not(.ghost){box-shadow:none!important}
-.sdgbar{display:flex;gap:5px;margin:4px 0 22px}
-.sdgbar i{flex:1;height:38px;border-radius:5px;background:var(--c);opacity:.2;display:grid;place-items:center;transition:opacity .4s,transform .4s}
-.sdgbar i b{font-size:11px;color:#fff;font-weight:600}.sdgbar i.on{opacity:1;transform:translateY(-6px)}
 .sdgc{position:relative;overflow:hidden;border-top:3px solid var(--c)}
 .sdgc::after{content:attr(data-g);position:absolute;right:12px;bottom:-22px;font-family:'Instrument Serif',Georgia,serif;font-size:128px;line-height:1;color:color-mix(in srgb,var(--c) 15%,transparent);pointer-events:none;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
 .sdgc:hover::after{transform:translateY(-10px) scale(1.06)}.sdgc h3 small{color:var(--c)}.sdgc:hover{border-color:var(--c)}
@@ -693,7 +690,6 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
         <svg class="circ" viewBox="0 0 900 12"><path d="M0 6H900"/><circle class="cd" r="3" cx="0" cy="6"/></svg>
         <div class="sec sec3d" id="about"><h2>About Us</h2><p class="muted">VoltX is an AI energy assistant built to help individuals, homes and institutions understand their electricity use, spot waste and lower their bills. Built by Meet Nimbalkar, Vedant Patel, Nisarg Patel, Krishiv Patel and Soham Panchal.</p>
           <h3 class="sdgh">Sustainable Development Goals we support</h3>
-          <div class="sdgbar" id="sdgbar"></div>
           <div class="grid sdg"><div class="card sdgc"><div class="sdgi" data-n="7"><img src="AACE.png" alt="SDG 7: Affordable and Clean Energy" onerror="this.remove()"></div><h3><small>SDG 7</small>Affordable and Clean Energy</h3><p>Helps people see and cut wasted electricity, lowering bills and energy demand.</p></div><div class="card sdgc"><div class="sdgi" data-n="12"><img src="RCAP.png" alt="SDG 12: Responsible Consumption and Production" onerror="this.remove()"></div><h3><small>SDG 12</small>Responsible Consumption and Production</h3><p>Shows which appliances and habits waste power, so energy is used responsibly.</p></div><div class="card sdgc"><div class="sdgi" data-n="13"><img src="CA.png" alt="SDG 13: Climate Action" onerror="this.remove()"></div><h3><small>SDG 13</small>Climate Action</h3><p>Less electricity wasted means less demand on power generation and fewer emissions.</p></div><div class="card sdgc"><div class="sdgi" data-n="11"><img src="SCAC.png" alt="SDG 11: Sustainable Cities and Communities" onerror="this.remove()"></div><h3><small>SDG 11</small>Sustainable Cities and Communities</h3><p>Efficient homes and workplaces make our communities more sustainable.</p></div></div></div>
         <div class="sec sec3d" id="what"><h2>What We Do</h2>
           <div class="grid">
@@ -1736,7 +1732,6 @@ applyUI();
     else if (c.nodeType === 1) walk(c); }); })(h);
   setTimeout(() => document.body.classList.add('ready'), 3300);               // starts as the opening animation fades
   const C = ['#E5243B', '#DDA63A', '#4C9F38', '#C5192D', '#FF3A21', '#26BDE2', '#FCC30B', '#A21942', '#FD6925', '#DD1367', '#FD9D24', '#BF8B2E', '#3F7E44', '#0A97D9', '#56C02B', '#00689D', '#19486A'], mine = [7, 12, 13, 11];
-  $('sdgbar').innerHTML = C.map((c, i) => `<i class="${mine.includes(i + 1) ? 'on' : ''}" style="--c:${c}"><b>${i + 1}</b></i>`).join('');   // all 17 goals, ours lit
   document.querySelectorAll('.sdgc').forEach((c, i) => { c.style.setProperty('--c', C[mine[i] - 1]); c.dataset.g = mine[i]; });
   const st = $('stmt'); st.innerHTML = st.textContent.trim().split(/\s+/).map(w => `<span class="sw">${w}</span>`).join(' ');
   document.querySelectorAll('.mag').forEach(b => { b.addEventListener('mousemove', e => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .16}px,${(e.clientY - r.top - r.height / 2) * .26}px)`; }); b.addEventListener('mouseleave', () => b.style.transform = ''); });
