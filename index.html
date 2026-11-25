@@ -548,6 +548,14 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
 .foot{padding-bottom:0!important}
 @media(max-width:960px){.day{height:210vh}.day-st{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) 130px}.dhouse,.dlist,.scue{display:none}.dleft{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:6px 18px}.dclock{font-size:84px;margin:0}.dsum{inset:0}.dgauge{top:-6px;width:120px}.band{font-size:clamp(60px,16vw,110px)}}
 @media(prefers-reduced-motion:reduce){.band{transform:none!important}.mbill i,.mbill u{animation:none}}
+/* calmer primary buttons (no glow) + SDG collection */
+.btn.lg,.btn.lg:not(.ghost){box-shadow:none!important}
+.sdgbar{display:flex;gap:5px;margin:4px 0 22px}
+.sdgbar i{flex:1;height:38px;border-radius:5px;background:var(--c);opacity:.2;display:grid;place-items:center;transition:opacity .4s,transform .4s}
+.sdgbar i b{font-size:11px;color:#fff;font-weight:600}.sdgbar i.on{opacity:1;transform:translateY(-6px)}
+.sdgc{position:relative;overflow:hidden;border-top:3px solid var(--c)}
+.sdgc::after{content:attr(data-g);position:absolute;right:12px;bottom:-22px;font-family:'Instrument Serif',Georgia,serif;font-size:128px;line-height:1;color:color-mix(in srgb,var(--c) 15%,transparent);pointer-events:none;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.sdgc:hover::after{transform:translateY(-10px) scale(1.06)}.sdgc h3 small{color:var(--c)}.sdgc:hover{border-color:var(--c)}
 </style>
 </head>
 <body>
@@ -685,6 +693,7 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
         <svg class="circ" viewBox="0 0 900 12"><path d="M0 6H900"/><circle class="cd" r="3" cx="0" cy="6"/></svg>
         <div class="sec sec3d" id="about"><h2>About Us</h2><p class="muted">VoltX is an AI energy assistant built to help individuals, homes and institutions understand their electricity use, spot waste and lower their bills. Built by Meet Nimbalkar, Vedant Patel, Nisarg Patel, Krishiv Patel and Soham Panchal.</p>
           <h3 class="sdgh">Sustainable Development Goals we support</h3>
+          <div class="sdgbar" id="sdgbar"></div>
           <div class="grid sdg"><div class="card sdgc"><div class="sdgi" data-n="7"><img src="AACE.png" alt="SDG 7: Affordable and Clean Energy" onerror="this.remove()"></div><h3><small>SDG 7</small>Affordable and Clean Energy</h3><p>Helps people see and cut wasted electricity, lowering bills and energy demand.</p></div><div class="card sdgc"><div class="sdgi" data-n="12"><img src="RCAP.png" alt="SDG 12: Responsible Consumption and Production" onerror="this.remove()"></div><h3><small>SDG 12</small>Responsible Consumption and Production</h3><p>Shows which appliances and habits waste power, so energy is used responsibly.</p></div><div class="card sdgc"><div class="sdgi" data-n="13"><img src="CA.png" alt="SDG 13: Climate Action" onerror="this.remove()"></div><h3><small>SDG 13</small>Climate Action</h3><p>Less electricity wasted means less demand on power generation and fewer emissions.</p></div><div class="card sdgc"><div class="sdgi" data-n="11"><img src="SCAC.png" alt="SDG 11: Sustainable Cities and Communities" onerror="this.remove()"></div><h3><small>SDG 11</small>Sustainable Cities and Communities</h3><p>Efficient homes and workplaces make our communities more sustainable.</p></div></div></div>
         <div class="sec sec3d" id="what"><h2>What We Do</h2>
           <div class="grid">
@@ -1617,15 +1626,16 @@ function dayUpdate(p) {
 }
 
 (function ridge() {                                      // generative ridgeline of daily load curves; the cursor lifts the lines
-  const c = $('fx'), x = c.getContext('2d'), hv = $('v-home'), N = 40, GAP = 9, TOP = 300, S = 6; let W = 0, H = 0, mx = -999, my = -999, t = 0, f = 0, col = { bg: '#f7f8f8', ink: '#1a2123', ac: '#0e8a6b' }, ys = new Float32Array(1);
+  const c = $('fx'), x = c.getContext('2d'), hv = $('v-home'), N = 40, GAP = 9, TOP = 300, S = 6; let W = 0, H = 0, mx = -999, my = -999, t = 0, f = 0, col = { bg: '#f7f8f8', ink: '#1a2123', ac: '#0e8a6b' }, ys = new Float32Array(1), lastDraw = 0;
   const rnd = i => { const v = Math.sin(i * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
   const nz = a => Math.sin(a) * .5 + Math.sin(a * 2.17 + 1.3) * .3 + Math.sin(a * 4.31 + .7) * .2;
   function rs() { const d = Math.min(2, window.devicePixelRatio || 1); W = c.offsetWidth; H = c.offsetHeight; c.width = W * d; c.height = H * d; x.setTransform(d, 0, 0, d, 0, 0); ys = new Float32Array(Math.ceil((W + 20) / S) + 2); }
   hv.addEventListener('mousemove', e => { const r = c.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; });
   function colors() { const cs = getComputedStyle(document.documentElement); col = { bg: cs.getPropertyValue('--bg').trim(), ink: cs.getPropertyValue('--text').trim(), ac: cs.getPropertyValue('--accent').trim() }; }
-  (function frame() {
-    if (!hv.classList.contains('hidden') && hv.scrollTop < 900 && W) {
-      if (f++ % 40 === 0) colors(); t += .008; x.clearRect(0, 0, W, H);
+  (function frame(now) {
+    now = now || performance.now();
+    if (now - lastDraw >= 24 && !hv.classList.contains('hidden') && hv.scrollTop < 900 && W) {      // ~40 fps cap keeps scrolling free
+      lastDraw = now; if (f++ % 40 === 0) colors(); t += .011; x.clearRect(0, 0, W, H);
       for (let i = 0; i < N; i++) {
         const base = TOP + i * GAP, r1 = rnd(i), r2 = rnd(i + 50), k = i / N; let n = 0;
         for (let px = -10; px <= W + 10; px += S, n++) {
@@ -1666,7 +1676,7 @@ function dayUpdate(p) {
       const pt = pa.getPointAtLength(L * q), d = sv.querySelector('.cd'); d.setAttribute('cx', pt.x); d.setAttribute('cy', pt.y);
     });
   }
-  hv.addEventListener('scroll', () => requestAnimationFrame(on)); on();
+  let q = 0; hv.addEventListener('scroll', () => { if (!q) q = requestAnimationFrame(() => { q = 0; on(); }); }); on();   // one update per frame
 })();
 document.querySelectorAll('.grid').forEach(g => [...g.children].forEach((c, i) => c.style.setProperty('--i', i)));
 document.addEventListener('mousemove', e => {             // 3D tilt on cards
@@ -1725,6 +1735,9 @@ applyUI();
       c.textContent.split(/(\s+)/).forEach(t => { if (!t.trim()) f.append(t); else { const w = document.createElement('span'); w.className = 'w'; w.style.setProperty('--k', k++); w.textContent = t; f.append(w); } }); c.replaceWith(f); }
     else if (c.nodeType === 1) walk(c); }); })(h);
   setTimeout(() => document.body.classList.add('ready'), 3300);               // starts as the opening animation fades
+  const C = ['#E5243B', '#DDA63A', '#4C9F38', '#C5192D', '#FF3A21', '#26BDE2', '#FCC30B', '#A21942', '#FD6925', '#DD1367', '#FD9D24', '#BF8B2E', '#3F7E44', '#0A97D9', '#56C02B', '#00689D', '#19486A'], mine = [7, 12, 13, 11];
+  $('sdgbar').innerHTML = C.map((c, i) => `<i class="${mine.includes(i + 1) ? 'on' : ''}" style="--c:${c}"><b>${i + 1}</b></i>`).join('');   // all 17 goals, ours lit
+  document.querySelectorAll('.sdgc').forEach((c, i) => { c.style.setProperty('--c', C[mine[i] - 1]); c.dataset.g = mine[i]; });
   const st = $('stmt'); st.innerHTML = st.textContent.trim().split(/\s+/).map(w => `<span class="sw">${w}</span>`).join(' ');
   document.querySelectorAll('.mag').forEach(b => { b.addEventListener('mousemove', e => { const r = b.getBoundingClientRect(); b.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * .16}px,${(e.clientY - r.top - r.height / 2) * .26}px)`; }); b.addEventListener('mouseleave', () => b.style.transform = ''); });
   const g = document.querySelector('.hero-grid'), s = $('stage');
@@ -1736,7 +1749,9 @@ applyUI();
 (function smoothScroll() {
   if (matchMedia('(pointer: coarse)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const hv = $('v-home'); let target = 0, cur = 0, raf = 0;
-  const tick = () => { cur += (target - cur) * .11; hv.scrollTop = cur; if (Math.abs(target - cur) > .5) raf = requestAnimationFrame(tick); else { hv.scrollTop = target; raf = 0; } };
+  let last = 0;
+  const tick = now => { const dt = Math.min(64, now - (last || now)); last = now; cur += (target - cur) * (1 - Math.exp(-dt / 85)); hv.scrollTop = cur;   // same feel at 60, 144 or 240 Hz
+    if (Math.abs(target - cur) > .3) raf = requestAnimationFrame(tick); else { hv.scrollTop = target; raf = 0; last = 0; } };
   hv.addEventListener('wheel', e => {
     if (e.ctrlKey || e.defaultPrevented) return;
     for (let el = e.target; el && el !== hv; el = el.parentElement) { const o = getComputedStyle(el).overflowY; if ((o === 'auto' || o === 'scroll') && el.scrollHeight > el.clientHeight) return; }   // let inner scrollers work
