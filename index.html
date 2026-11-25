@@ -477,6 +477,77 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
 .cwc{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:28px}
 .tobot{position:absolute;left:50%;bottom:150px;transform:translate(-50%,10px);width:36px;height:36px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;box-shadow:0 8px 24px -10px rgba(0,0,0,.3);z-index:5}
 .tobot.show{opacity:1;pointer-events:auto;transform:translate(-50%,0)}
+
+/* ===================== MESMERIZING LANDING ===================== */
+#v-home{scroll-behavior:auto}
+#fx{height:700px;opacity:1;background:none;-webkit-mask-image:linear-gradient(transparent,#000 18%,#000 64%,transparent);mask-image:linear-gradient(transparent,#000 18%,#000 64%,transparent)}
+.w1{padding-bottom:10px}.w2{padding-top:0}
+.hero-grid{position:relative}
+.scue{position:absolute;left:0;bottom:-24px;display:flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.scue i{position:relative;overflow:hidden;width:1px;height:38px;background:var(--line)}.scue i::after{content:'';position:absolute;left:0;top:-16px;width:1px;height:16px;background:var(--accent);animation:scue 1.8s ease-in-out infinite}
+@keyframes scue{to{top:38px}}
+/* splash: counter + curtain */
+#splash{clip-path:inset(0);transition:clip-path 1.1s cubic-bezier(.77,0,.18,1),visibility 0s 1.1s}
+#splash.out{opacity:1;clip-path:inset(0 0 100% 0);visibility:hidden}
+#splash .logo-t{font-size:92px}
+/* module cards: tiny looping art */
+.ma{margin-bottom:18px}
+.mbill{position:relative;height:92px;border:1px solid var(--line);border-radius:10px;padding:16px 18px;background:var(--panel2);overflow:hidden;display:flex;flex-direction:column;gap:11px}
+.mbill i{display:block;height:8px;width:78%;border-radius:4px;background:var(--line);animation:lbill 6s infinite both;animation-delay:calc(var(--k) * .7s + .3s)}.mbill i:nth-child(2){width:58%}.mbill i:nth-child(3){width:68%}
+.mbill u{position:absolute;left:10px;right:10px;height:2px;border-radius:2px;background:var(--accent);top:10px;animation:lscanm 6s linear infinite}
+@keyframes lbill{0%{background:var(--line)}8%,70%{background:var(--accent)}85%,100%{background:var(--line)}}
+@keyframes lscanm{0%{top:10px;opacity:0}5%{opacity:1}45%{top:80px;opacity:1}50%,100%{top:80px;opacity:0}}
+.mchat{height:92px;border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--panel2);display:flex;flex-direction:column;gap:8px}
+.mb1,.mb2{display:block;height:16px;border-radius:9px;background:var(--line)}.mb1{width:60%;border-bottom-left-radius:3px}.mb2{width:46%;margin-left:auto;background:var(--user);border-bottom-right-radius:3px}
+.mchat .dots{margin-top:2px}
+/* giant words that travel with the scroll */
+.bands{overflow:hidden;padding:60px 0 20px;position:relative;z-index:1;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.band{display:flex;align-items:center;gap:.4em;width:max-content;font-family:'Instrument Serif',Georgia,serif;font-size:clamp(70px,11vw,170px);line-height:1.02;letter-spacing:-.03em;white-space:nowrap;will-change:transform}
+.band span{font-style:italic}.band .ol{color:transparent;-webkit-text-stroke:1.4px var(--text);font-style:normal}.band i{font-style:normal;color:var(--accent);font-size:.5em}
+.band.rev{margin-top:-.08em}.band.rev span:not(.ol){color:transparent;-webkit-text-stroke:1.4px var(--text);font-style:normal}.band.rev .ol{color:var(--text);-webkit-text-stroke:0;font-style:italic}
+/* one day in a home */
+.day{height:230vh;position:relative;margin:30px 0 20px}
+.day-st{position:sticky;top:0;height:calc(100vh - 56px);display:grid;grid-template-columns:minmax(230px,290px) minmax(0,1fr);grid-template-rows:minmax(0,1fr) 150px;column-gap:34px;padding:20px 0 6px}
+.dleft{display:flex;flex-direction:column;min-height:0}
+.dlab{font-family:'Archivo Black',Inter,sans-serif;font-size:12px;letter-spacing:.09em;text-transform:uppercase}
+.dclock{font-family:'Instrument Serif',Georgia,serif;font-size:clamp(84px,10vw,142px);line-height:.88;letter-spacing:-.03em;margin-top:18px;font-variant-numeric:tabular-nums}
+.dphase{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-size:26px;color:var(--accent);margin-top:8px;min-height:32px}
+.dlist{margin-top:22px;display:flex;flex-direction:column;gap:2px;min-height:0;overflow:hidden}
+.dli{position:relative;display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:7px 0 9px;border-bottom:1px solid var(--line);animation:up .35s both}.dli span{color:var(--text)}.dli b{font-weight:500;color:var(--muted);white-space:nowrap}
+.dli i{position:absolute;left:0;bottom:-1px;height:2px;background:var(--accent);border-radius:2px;transition:width .4s}.dli.more{color:var(--muted);border:0}
+.dhint{margin-top:auto;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);transition:opacity .4s}
+.dright{position:relative;min-height:0}
+.dhouse{position:absolute;inset:0;opacity:calc(1 - var(--sum,0) * .88);transition:opacity .2s}
+.dsvg{width:100%;height:100%;display:block}
+.dsvg .rm{fill:var(--text);fill-opacity:calc(var(--night,0) * .06);stroke:var(--line);stroke-width:1.4}
+.dsvg .rn{font:600 10px Inter,sans-serif;letter-spacing:.12em;fill:var(--muted)}.dsvg .fl{stroke:var(--line);fill:none}.dsvg .deco{fill:none;stroke:var(--line);stroke-dasharray:3 3}
+.dsvg .ap{fill:none;stroke:var(--muted);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}.dsvg .ap.on{stroke:var(--accent)}
+.dsvg .ap circle{transition:fill .3s}.dsvg .ap.on circle{fill:color-mix(in srgb,var(--accent) 38%,transparent)}
+.dsvg .ap text{stroke:none;font:500 9.5px Inter,sans-serif;fill:var(--accent);opacity:0;transition:opacity .3s}.dsvg .ap.on text{opacity:1}
+.dsvg .air{opacity:0;stroke-dasharray:3 4;transition:opacity .3s}.dsvg .ap.on .air{opacity:1;animation:dflow 1.2s linear infinite}
+@keyframes dflow{to{stroke-dashoffset:-14}}
+.dgauge{position:absolute;top:0;right:0;width:148px;text-align:center;opacity:calc(1 - var(--sum,0))}
+.dgauge svg{width:100%;display:block}.ga{fill:none;stroke:var(--line);stroke-width:7;stroke-linecap:round}.gn{stroke:var(--text);stroke-width:2;stroke-linecap:round;transform-origin:70px 74px;transform:rotate(-90deg);transition:transform .35s cubic-bezier(.3,1.3,.5,1)}.dgauge circle{fill:var(--text)}
+.dgauge b{display:block;font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:34px;line-height:1;margin-top:2px}.dgauge small{color:var(--muted);font-size:11.5px}
+.dsum{position:absolute;inset:3% 3%;display:flex;flex-direction:column;justify-content:center;gap:16px;padding:26px 30px;border:1px solid var(--line);border-radius:16px;background:var(--panel);opacity:var(--sum,0);transform:translateY(calc((1 - var(--sum,0)) * 24px));pointer-events:none;box-shadow:0 30px 60px -34px rgba(16,40,32,.4)}
+.day.sum .dsum{pointer-events:auto}
+.dsum h4{font-family:'Archivo Black',Inter,sans-serif;font-weight:400;font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent)}
+.dsi b{display:block;font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(22px,2.6vw,32px);line-height:1.1;letter-spacing:-.01em}.dsi span{display:block;color:var(--muted);font-size:13.5px;margin-top:5px;line-height:1.5}
+.dsum .btn{align-self:flex-start;margin-top:6px}
+.dcurve{grid-column:1/-1;position:relative;padding-bottom:22px}
+.dcurve svg{width:100%;height:calc(100% - 22px);display:block}
+.cg{fill:none;stroke:var(--line);stroke-width:1.2;vector-effect:non-scaling-stroke}.cl{fill:none;stroke:var(--accent);stroke-width:1.8;vector-effect:non-scaling-stroke}.ca{fill:color-mix(in srgb,var(--accent) 13%,transparent);stroke:none}
+.cs{fill:none;stroke:var(--accent);stroke-width:1.6;stroke-dasharray:5 5;vector-effect:non-scaling-stroke;opacity:var(--sum,0)}
+.dnow{position:absolute;top:0;bottom:22px;width:1px;background:var(--text);opacity:.55}
+.dpk{position:absolute;width:9px;height:9px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--warn);transition:opacity .3s}
+.dpeak{position:absolute;transform:translate(-50%,-165%);font-size:11.5px;font-weight:600;color:var(--warn);white-space:nowrap;transition:opacity .3s}
+.dlabels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);position:absolute;left:0;right:0;bottom:0}
+/* footer megamark */
+.mega{flex:0 0 100%;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:min(23vw,290px);line-height:.8;letter-spacing:-.045em;text-align:center;color:transparent;-webkit-text-stroke:1px var(--line);height:.62em;overflow:hidden;margin-top:34px;user-select:none;transition:color .6s}
+.mega i{font-family:'Playfair Display',serif;font-style:italic;font-weight:600}.mega:hover{color:var(--panel2)}
+.foot{padding-bottom:0!important}
+@media(max-width:960px){.day{height:210vh}.day-st{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) 130px}.dhouse,.dlist,.scue{display:none}.dleft{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:6px 18px}.dclock{font-size:84px;margin:0}.dsum{inset:0}.dgauge{top:-6px;width:120px}.band{font-size:clamp(60px,16vw,110px)}}
+@media(prefers-reduced-motion:reduce){.band{transform:none!important}.mbill i,.mbill u{animation:none}}
 </style>
 </head>
 <body>
@@ -517,7 +588,7 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
     <!-- ===== HOME VIEW ===== -->
     <section class="view" id="v-home">
       <div id="prog"></div><canvas id="fx"></canvas><div class="meter"><div class="mf" id="mf"></div><span id="mp">0%</span></div>
-      <div class="wrap">
+      <div class="wrap w1">
         <div class="hero-grid">
           <div class="hero">
             <h1>From bills and rooms to <span class="acc">lower energy use</span></h1>
@@ -525,6 +596,7 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
             <div class="cta"><button class="btn lg mag" onclick="go('billchat')">Read my bill<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><button class="btn lg mag" onclick="go('room')">Scan my room<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><a class="lnk" onclick="$('story').scrollIntoView({behavior:'smooth'})">See how it works</a></div>
             <div class="reads"><span>Reads</span><b>Bills</b><b>Room videos</b><b>Smart plugs</b><b>Appliance lists</b></div>
           </div>
+          <div class="scue"><span>Scroll</span><i></i></div>
           <div class="stage-wrap"><div class="stage" id="stage">
             <div class="sc c-dash"><div class="sc-h"><b>Usage</b><span>by month</span></div><div class="bars"><i style="--h:38%;--n:0"></i><i style="--h:46%;--n:1"></i><i style="--h:42%;--n:2"></i><i style="--h:58%;--n:3"></i><i style="--h:50%;--n:4"></i><i class="sp" style="--h:86%;--n:5"></i><i style="--h:54%;--n:6"></i><i style="--h:48%;--n:7"></i></div><span class="chip-s">Spike detected</span></div>
             <div class="sc c-bill"><div class="sc-h"><b>Electricity bill</b><span>reading</span></div>
@@ -552,18 +624,33 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
         <input type="file" id="homeFile" accept="image/*,video/*" multiple class="hidden">
         <div class="sug" id="sug"></div>
         <div class="grid mods">
-          <div class="card mod"><h3>Bill Reader</h3><p>Photograph or upload your electricity bills.</p>
+          <div class="card mod"><div class="ma"><div class="mbill"><i style="--k:0"></i><i style="--k:1"></i><i style="--k:2"></i><u></u></div></div><h3>Bill Reader</h3><p>Photograph or upload your electricity bills.</p>
             <dl><dt>Input</dt><dd>Bill photos</dd><dt>AI step</dt><dd>Vision model reads every value</dd><dt>Output</dt><dd>Month, kWh, amount, rate and due date saved to your dashboard</dd></dl>
             <button class="btn" onclick="go('billchat')">Open Bill Reader</button></div>
-          <div class="card mod"><h3>Room Scanner</h3><p>Film your home or workplace.</p>
+          <div class="card mod"><div class="ma"><div class="vp"><i class="box b1" style="--n:0"><em>AC</em></i><i class="box b2" style="--n:1"><em>Light</em></i><i class="box b3" style="--n:2"><em>Fan</em></i></div></div><h3>Room Scanner</h3><p>Film your home or workplace.</p>
             <dl><dt>Input</dt><dd>Room video or photos</dd><dt>AI step</dt><dd>Vision model finds appliances and lighting</dd><dt>Output</dt><dd>Layout and efficiency recommendations on your dashboard</dd></dl>
             <button class="btn" onclick="go('room')">Open Room Scanner</button></div>
-          <div class="card mod"><h3>Ask VoltX</h3><p>An assistant that knows your data.</p>
+          <div class="card mod"><div class="ma"><div class="mchat"><span class="mb1"></span><span class="mb2"></span><div class="dots"><span></span><span></span><span></span></div></div></div><h3>Ask VoltX</h3><p>An assistant that knows your data.</p>
             <dl><dt>Input</dt><dd>Your question</dd><dt>AI step</dt><dd>Chat model with your bills, appliances and scans as context</dd><dt>Output</dt><dd>Personal answers and savings tips</dd></dl>
             <button class="btn" onclick="newChat()">Start a chat</button></div>
         </div>
 
+        </div>
+        <section class="bands" id="bands" aria-hidden="true"><div class="band" id="bn1"><span>Read</span><i>/</i><span class="ol">Understand</span><i>/</i><span>Reduce</span><i>/</i><span class="ol">Repeat</span><i>/</i><span>Read</span><i>/</i><span class="ol">Understand</span><i>/</i><span>Reduce</span><i>/</i><span class="ol">Repeat</span><i>/</i><span>Read</span><i>/</i><span class="ol">Understand</span><i>/</i><span>Reduce</span><i>/</i><span class="ol">Repeat</span><i>/</i><span>Read</span><i>/</i><span class="ol">Understand</span><i>/</i><span>Reduce</span><i>/</i><span class="ol">Repeat</span><i>/</i><span>Read</span><i>/</i><span class="ol">Understand</span><i>/</i><span>Reduce</span><i>/</i><span class="ol">Repeat</span><i>/</i></div><div class="band rev" id="bn2"><span>Read</span><i>/</i><span class="ol">Understand</span><i>/</i><span>Reduce</span><i>/</i><span class="ol">Repeat</span><i>/</i><span>Read</span><i>/</i><span class="ol">Understand</span><i>/</i><span>Reduce</span><i>/</i><span class="ol">Repeat</span><i>/</i><span>Read</span><i>/</i><span class="ol">Understand</span><i>/</i><span>Reduce</span><i>/</i><span class="ol">Repeat</span><i>/</i><span>Read</span><i>/</i><span class="ol">Understand</span><i>/</i><span>Reduce</span><i>/</i><span class="ol">Repeat</span><i>/</i><span>Read</span><i>/</i><span class="ol">Understand</span><i>/</i><span>Reduce</span><i>/</i><span class="ol">Repeat</span><i>/</i></div></section>
+        <div class="wrap w2">
         <section class="stmt"><p id="stmt">Electricity waste is invisible until someone reads it. VoltX reads your bills, your rooms and your devices, then tells you exactly what to change.</p></section>
+        <section class="day" id="day"><div class="day-st" id="dayst">
+          <div class="dleft"><div class="dlab">One day in a sample home</div><div class="dclock" id="dclk">00:00</div><div class="dphase" id="dph">Night</div>
+            <div class="dlist" id="dlist"></div><div class="dhint" id="dhint">Scroll to run the day</div></div>
+          <div class="dright"><div class="dhouse" id="dhouse"></div>
+            <div class="dgauge"><svg viewBox="0 0 140 84"><path class="ga" d="M10 74A60 60 0 0 1 130 74"/><line class="gn" id="gn" x1="70" y1="74" x2="70" y2="26"/><circle cx="70" cy="74" r="4"/></svg><b id="dkw">0.1 kW</b><small id="dkwh">0.0 kWh today</small></div>
+            <div class="dsum" id="dsum"><h4>What VoltX noticed</h4><div class="dsi"><b id="ds1"></b><span id="ds1t"></span></div><div class="dsi"><b id="ds2"></b><span id="ds2t"></span></div><div class="dsi"><b id="ds3"></b><span id="ds3t"></span></div>
+              <button class="btn lg" onclick="go('billchat')">Do this with your own home<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div></div>
+          <div class="dcurve"><svg viewBox="0 0 1000 120" preserveAspectRatio="none"><defs><clipPath id="dclip"><rect id="dclipr" x="0" y="0" width="0" height="120"/></clipPath></defs>
+            <path id="dghost" class="cg"/><g clip-path="url(#dclip)"><path id="darea" class="ca"/><path id="dline" class="cl"/></g><path id="dshift" class="cs"/></svg>
+            <i class="dnow" id="dnow"></i><i class="dpk" id="dpk"></i><span class="dpeak" id="dpeak"></span>
+            <div class="dlabels"><span>0:00</span><span>6:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div></div>
+        </div></section>
         <section class="story" id="story" data-step="0"><div class="story-in">
           <div class="story-steps">
             <div class="ss on"><span class="no">01</span><h3>Capture</h3><p>Photograph a bill, film a room, or plug in a smart plug. Whatever you have is enough to begin.</p></div>
@@ -617,7 +704,7 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
       </div>
       <footer class="foot"><div><span class="logo-t">Volt<i>X</i></span><p>Smarter energy. Lower bills.</p></div>
         <nav><a onclick="go('home','flow')">Workflow</a><a onclick="go('billchat')">Bill Reader</a><a onclick="go('room')">Room Scanner</a><a onclick="go('plugs')">Smart Plugs</a><a onclick="go('home','about')">About</a></nav>
-        <small>Supporting SDG 7 · 11 · 12 · 13</small></footer>
+        <small>Supporting SDG 7 · 11 · 12 · 13</small><div class="mega" aria-hidden="true"><span>Volt</span><i>X</i></div></footer>
     </section>
 
     <!-- ===== SETUP VIEW ===== -->
@@ -682,6 +769,7 @@ let vids = { home: [], chat: [], bc: [], rm: [] };       // videos waiting to be
 
 /* ===== C. SPLASH + THEME ===== */
 setTimeout(() => $('splash').classList.add('out'), 3500);
+
 const THEME_ICO = { dark: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>', light: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>' };
 function applyTheme(t) { document.documentElement.dataset.theme = t; localStorage.setItem('vx_theme_v2', t); $('themeBtn').innerHTML = THEME_ICO[t]; }
 function toggleTheme() {
@@ -1472,22 +1560,91 @@ function countUp(root) {
     (function f(t) { const k = Math.min(1, (t - t0) / 900); b.textContent = (to * (1 - Math.pow(1 - k, 3))).toFixed(dec) + m[2]; if (k < 1) requestAnimationFrame(f); })(t0);
   });
 }
-(function gridPulses() {                                 // faint blueprint grid with slow current pulses
-  const c = $('fx'), x = c.getContext('2d'), hv = $('v-home'), G = 64; let W, H, P = [], col = '#3dbf93', f = 0;
-  function rs() { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; } rs(); addEventListener('resize', rs);
-  function spawn() { const h = Math.random() < .5; P.push({ h, p: ((Math.random() * ((h ? H : W) / G)) | 0) * G, t: -60, v: 1 + Math.random() * 1.4, L: 80 + Math.random() * 90, max: h ? W : H }); }
-  (function loop() {
-    if (!hv.classList.contains('hidden')) {
-      if (f++ % 90 === 0) col = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
-      x.clearRect(0, 0, W, H); if (P.length < 5 && Math.random() < .018) spawn();
-      P = P.filter(p => (p.t += p.v) < p.max + p.L);
-      P.forEach(p => { const g = p.h ? x.createLinearGradient(p.t - p.L, 0, p.t, 0) : x.createLinearGradient(0, p.t - p.L, 0, p.t);
-        g.addColorStop(0, 'transparent'); g.addColorStop(1, col); x.strokeStyle = g; x.globalAlpha = .6; x.lineWidth = 1.5; x.beginPath();
-        if (p.h) { x.moveTo(p.t - p.L, p.p + .5); x.lineTo(p.t, p.p + .5); } else { x.moveTo(p.p + .5, p.t - p.L); x.lineTo(p.p + .5, p.t); } x.stroke(); });
-      x.globalAlpha = 1;
+/* ===== R. ONE DAY IN A HOME: scrolling runs the clock, appliances switch on, the load curve draws, VoltX explains ===== */
+const DAY_ROOMS = [['liv', 'Living room', 0, 0], ['kit', 'Kitchen', 1, 0], ['bed', 'Bedroom', 0, 1], ['stu', 'Study', 1, 1]];
+const DAY_AP = [            // id, name, room, glyph, x, y, watts, [[from, to], ...] (hours)
+  ['lL', 'Living room lights', 'liv', 'light', 150, 44, 40, [[6, 8], [18, 23]]], ['acL', 'Air conditioner', 'liv', 'ac', 26, 30, 900, [[15, 17], [21, 23]]], ['tv', 'Television', 'liv', 'tv', 206, 56, 120, [[19, 23]]],
+  ['fr', 'Fridge', 'kit', 'fridge', 26, 62, 130, [[0, 24]]], ['ind', 'Induction stove', 'kit', 'stove', 104, 100, 1200, [[7, 7.5], [13, 13.5], [19, 19.75]]], ['wm', 'Washing machine', 'kit', 'washer', 216, 82, 500, [[9, 10]]], ['lK', 'Kitchen lights', 'kit', 'light', 150, 44, 20, [[6, 9], [18, 21]]],
+  ['gy', 'Water heater', 'bed', 'geyser', 26, 60, 1500, [[6, 6.75], [19.5, 20.25]]], ['acB', 'Bedroom AC', 'bed', 'ac', 200, 30, 600, [[23, 24], [0, 5]]], ['lB', 'Bedroom lights', 'bed', 'light', 150, 44, 20, [[5.5, 7], [21, 24]]],
+  ['pc', 'Computer', 'stu', 'pc', 112, 84, 150, [[10, 18]]], ['lS', 'Study lights', 'stu', 'light', 150, 44, 20, [[17, 21]]]];
+const DAY_GL = {          // glyph svg, label x, label y
+  light: ['<path d="M0 -44V-8"/><circle r="8"/><path d="M-5 12h10"/>', 0, 28], ac: ['<rect width="62" height="18" rx="5"/><path d="M10 7h42M10 12h42"/><path class="air" d="M10 28q6 6 12 0M28 28q6 6 12 0M46 28q6 6 12 0"/>', 31, 50],
+  tv: ['<rect width="58" height="34" rx="4"/><path d="M20 43h18M29 34v9"/>', 29, 58], fridge: ['<rect width="36" height="64" rx="5"/><path d="M0 22h36M8 10v6M8 32v10"/>', 18, 80],
+  stove: ['<rect width="58" height="12" rx="3"/><ellipse cx="16" cy="-4" rx="9" ry="3"/><ellipse cx="42" cy="-4" rx="9" ry="3"/><path class="air" d="M16 -14q3 -4 0 -8M42 -14q3 -4 0 -8"/>', 29, 30],
+  washer: ['<rect width="42" height="46" rx="6"/><circle cx="21" cy="26" r="12"/><path d="M8 8h8"/>', 21, 62], geyser: ['<rect width="28" height="50" rx="10"/><path d="M14 50v10M6 10h16"/>', 14, 72], pc: ['<rect width="44" height="28" rx="3"/><path d="M22 28v8M12 36h20M-8 46h60"/>', 22, 62]};
+const DAY_SHIFT = [[6, 6.75], [18, 18.75]];                                     // the suggestion: run the evening water heater earlier
+const dayOn = (a, h, shifted) => (shifted && a[0] === 'gy' ? DAY_SHIFT : a[7]).some(([s, e]) => h >= s && h < e);
+const dayLoad = (h, shifted) => DAY_AP.reduce((t, a) => t + (dayOn(a, h, shifted) ? a[6] : 0), 0);
+const DAY_L = Array.from({ length: 96 }, (_, i) => dayLoad(i * .25 + .125)), DAY_L2 = Array.from({ length: 96 }, (_, i) => dayLoad(i * .25 + .125, true));
+const DAY_MAX = 3600, dayY = w => 112 - w / DAY_MAX * 104;
+const dayPeak = a => { const m = Math.max(...a); return { w: m, h: a.indexOf(m) * .25 }; };
+const hhmm = h => `${String(Math.floor(h)).padStart(2, '0')}:${String(Math.floor((h % 1) * 60 / 15) * 15).padStart(2, '0')}`;
+function dayStep(a) { let d = `M0 ${dayY(a[0]).toFixed(1)}`; for (let i = 1; i < 96; i++) d += `H${(i * 1000 / 96).toFixed(1)}V${dayY(a[i]).toFixed(1)}`; return d + 'H1000'; }
+(function buildDay() {
+  let svg = '<svg viewBox="0 0 640 372" class="dsvg" id="dsvg">';
+  DAY_ROOMS.forEach(([id, n, c, r]) => {
+    svg += `<g transform="translate(${20 + c * 300},${16 + r * 170})"><rect class="rm" width="296" height="164" rx="8"/><text class="rn" x="14" y="22">${n.toUpperCase()}</text><path class="fl" d="M0 140H296"/>`;
+    if (id === 'liv') svg += '<rect class="deco" x="96" y="110" width="92" height="30" rx="6"/>'; if (id === 'bed') svg += '<rect class="deco" x="86" y="112" width="104" height="28" rx="5"/>';
+    DAY_AP.filter(a => a[2] === id).forEach(a => { const g = DAY_GL[a[3]]; svg += `<g class="ap" id="ap-${a[0]}" transform="translate(${a[4]},${a[5]})">${g[0]}<text class="wl" x="${g[1]}" y="${g[2]}" text-anchor="middle">${a[6]} W</text></g>`; });
+    svg += '</g>';
+  });
+  $('dhouse').innerHTML = svg + '</svg>';
+  const p = dayPeak(DAY_L), p2 = dayPeak(DAY_L2), kwh = DAY_L.reduce((t, w) => t + w * .25, 0) / 1000, at = DAY_AP.filter(a => dayOn(a, p.h + .125) && a[6] >= 300).sort((a, b) => b[6] - a[6]).slice(0, 3).map(a => a[1].toLowerCase());
+  $('dghost').setAttribute('d', dayStep(DAY_L)); $('dline').setAttribute('d', dayStep(DAY_L)); $('darea').setAttribute('d', dayStep(DAY_L) + 'V120H0Z'); $('dshift').setAttribute('d', dayStep(DAY_L2));
+  $('dpeak').textContent = `Peak ${(p.w / 1000).toFixed(1)} kW · ${hhmm(p.h)}`;
+  $('ds1').textContent = `Peak ${(p.w / 1000).toFixed(1)} kW at ${hhmm(p.h)}`; $('ds1t').textContent = `${at.join(' and ')} overlap with your everyday loads.`;
+  $('ds2').textContent = `Move the evening water heater to 18:00 and the peak falls to ${(p2.w / 1000).toFixed(1)} kW (${Math.round((1 - p2.w / p.w) * 100)}% lower)`; $('ds2t').textContent = 'The dashed line shows the flatter day.';
+  $('ds3').textContent = `The day still uses ${kwh.toFixed(1)} kWh`; $('ds3t').textContent = 'Only the timing changes. If your tariff charges more at peak hours, this is where the saving is.';
+  window.__dayPeak = p;
+})();
+const dayEls = {}; let dayList = '';
+function dayUpdate(p) {
+  const T = Math.min(1, p / .86) * 24, t = Math.min(23.99, T), sm = Math.min(1, Math.max(0, (p - .86) / .07)), W = dayLoad(t);
+  $('day').style.setProperty('--sum', sm.toFixed(3)); $('day').classList.toggle('sum', sm > .02);
+  $('dclk').textContent = sm > .02 ? '24:00' : hhmm(t);
+  $('dph').textContent = sm > .5 ? 'The day, read' : t < 5 ? 'Night' : t < 9 ? 'Morning routine' : t < 12 ? 'Late morning' : t < 17 ? 'Afternoon' : t < 19 ? 'Evening' : t < 21 ? 'Evening peak' : 'Night';
+  $('dhint').style.opacity = p < .02 ? 1 : 0;
+  const night = t < 5 || t >= 19 ? 1 : t < 7 ? (7 - t) / 2 : t > 17 ? (t - 17) / 2 : 0; $('dsvg').style.setProperty('--night', night.toFixed(2));
+  const act = [];
+  DAY_AP.forEach(a => { const e = dayEls[a[0]] || (dayEls[a[0]] = $('ap-' + a[0])), on = dayOn(a, t); e.classList.toggle('on', on); if (on) act.push(a); });
+  act.sort((a, b) => b[6] - a[6]); const sig = act.map(a => a[0]).join();
+  if (sig !== dayList) { dayList = sig; $('dlist').innerHTML = act.slice(0, 5).map(a => `<div class="dli"><span>${a[1]}</span><b>${a[6]} W</b><i style="width:${Math.min(100, a[6] / 20)}%"></i></div>`).join('') + (act.length > 5 ? `<div class="dli more">+ ${act.length - 5} more</div>` : ''); }
+  $('gn').style.transform = `rotate(${-90 + Math.min(1, W / DAY_MAX) * 180}deg)`; $('dkw').textContent = (W / 1000).toFixed(1) + ' kW';
+  const upto = Math.floor(t / .25); let e = 0; for (let i = 0; i < upto; i++) e += DAY_L[i] * .25; e += DAY_L[Math.min(95, upto)] * (t - upto * .25); $('dkwh').textContent = (e / 1000).toFixed(1) + ' kWh today';
+  $('dclipr').setAttribute('width', (T / 24 * 1000).toFixed(1)); $('dnow').style.left = (T / 24 * 100) + '%';
+  const pk = window.__dayPeak, pkp = $('dpk'); pkp.style.left = (pk.h / 24 * 100) + '%'; pkp.style.top = (dayY(pk.w) / 120 * 100) + '%'; $('dpeak').style.left = (pk.h / 24 * 100) + '%'; $('dpeak').style.top = (dayY(pk.w) / 120 * 100) + '%';
+  const seen = T >= pk.h; pkp.style.opacity = seen ? 1 : 0; $('dpeak').style.opacity = seen ? 1 : 0;
+}
+
+(function ridge() {                                      // generative ridgeline of daily load curves; the cursor lifts the lines
+  const c = $('fx'), x = c.getContext('2d'), hv = $('v-home'), N = 40, GAP = 9, TOP = 300, S = 6; let W = 0, H = 0, mx = -999, my = -999, t = 0, f = 0, col = { bg: '#f7f8f8', ink: '#1a2123', ac: '#0e8a6b' }, ys = new Float32Array(1);
+  const rnd = i => { const v = Math.sin(i * 127.1 + 311.7) * 43758.5453; return v - Math.floor(v); };
+  const nz = a => Math.sin(a) * .5 + Math.sin(a * 2.17 + 1.3) * .3 + Math.sin(a * 4.31 + .7) * .2;
+  function rs() { const d = Math.min(2, window.devicePixelRatio || 1); W = c.offsetWidth; H = c.offsetHeight; c.width = W * d; c.height = H * d; x.setTransform(d, 0, 0, d, 0, 0); ys = new Float32Array(Math.ceil((W + 20) / S) + 2); }
+  hv.addEventListener('mousemove', e => { const r = c.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; });
+  function colors() { const cs = getComputedStyle(document.documentElement); col = { bg: cs.getPropertyValue('--bg').trim(), ink: cs.getPropertyValue('--text').trim(), ac: cs.getPropertyValue('--accent').trim() }; }
+  (function frame() {
+    if (!hv.classList.contains('hidden') && hv.scrollTop < 900 && W) {
+      if (f++ % 40 === 0) colors(); t += .008; x.clearRect(0, 0, W, H);
+      for (let i = 0; i < N; i++) {
+        const base = TOP + i * GAP, r1 = rnd(i), r2 = rnd(i + 50), k = i / N; let n = 0;
+        for (let px = -10; px <= W + 10; px += S, n++) {
+          const u = px / W, dx = px - mx, dy = base - my;
+          const a = (26 + 22 * r1) * Math.exp(-Math.pow((u - .27) / .09, 2)) * (1 + .08 * Math.sin(t * 2 + i * .3))
+                  + (40 + 30 * r2) * Math.exp(-Math.pow((u - .74 - .02 * Math.sin(t + i)) / .1, 2))
+                  + 7 * nz(px * .012 + i * .35 + t * 1.2) * (.4 + k) + 5 * Math.max(0, nz(px * .05 + i * 2.1 - t * 2))
+                  + 46 * Math.exp(-(dx * dx) / 24200 - (dy * dy) / 12800);
+          ys[n] = base - a;
+        }
+        x.beginPath(); x.moveTo(-10, ys[0]); for (let j = 1; j < n; j++) x.lineTo(-10 + j * S, ys[j]);
+        x.lineTo(W + 10, base + 60); x.lineTo(-10, base + 60); x.closePath(); x.fillStyle = col.bg; x.fill();                // hides the lines behind
+        x.beginPath(); x.moveTo(-10, ys[0]); for (let j = 1; j < n; j++) x.lineTo(-10 + j * S, ys[j]);
+        x.strokeStyle = i === 27 ? col.ac : col.ink; x.globalAlpha = i === 27 ? .95 : .12 + .3 * k; x.lineWidth = i === 27 ? 1.4 : 1; x.stroke(); x.globalAlpha = 1;
+      }
     }
-    requestAnimationFrame(loop);
+    requestAnimationFrame(frame);
   })();
+  rs(); addEventListener('resize', rs);
 })();
 (function scrollFx() {                                    // progress bar, battery meter, hero parallax, circuit lines
   const hv = $('v-home');
@@ -1495,6 +1652,8 @@ function countUp(root) {
     const st = hv.scrollTop, mxs = hv.scrollHeight - hv.clientHeight, p = mxs > 0 ? st / mxs : 0, h = document.querySelector('.hero-grid');
     $('prog').style.width = p * 100 + '%'; $('mf').style.height = p * 100 + '%'; $('mp').textContent = Math.round(p * 100) + '%';
     if (h) { h.style.transform = `translateY(${st * .18}px)`; h.style.opacity = Math.max(0, 1 - st / 420); }
+    const dy = $('day'); if (dy) { const r = dy.getBoundingClientRect(), span = r.height - $('dayst').offsetHeight; dayUpdate(span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0); }
+    const bd = $('bands'); if (bd) { const r = bd.getBoundingClientRect(), k = innerHeight - r.top; $('bn1').style.transform = `translateX(${-k * .45}px)`; $('bn2').style.transform = `translateX(${k * .45 - 2400}px)`; }
     const sm = $('stmt');                                                       // statement: words light up as you scroll
     if (sm) { const r = sm.getBoundingClientRect(), q = Math.min(1, Math.max(0, (innerHeight * .85 - r.top) / (innerHeight * .55 + r.height * .5))), ws = sm.children, n = Math.round(q * ws.length); for (let i = 0; i < ws.length; i++) ws[i].classList.toggle('lit', i < n); }
     const ss = document.querySelectorAll('.ss');                                // pinned story: the step nearest the middle of the screen is active
@@ -1571,6 +1730,20 @@ applyUI();
   const g = document.querySelector('.hero-grid'), s = $('stage');
   g.addEventListener('mousemove', e => { const r = g.getBoundingClientRect(); if (!r.width || !r.height) return; const px = (e.clientX - r.left) / r.width - .5, py = (e.clientY - r.top) / r.height - .5; s.style.setProperty('--rx', (6 - py * 10) + 'deg'); s.style.setProperty('--ry', (-12 + px * 14) + 'deg'); });
   g.addEventListener('mouseleave', () => { s.style.setProperty('--rx', '6deg'); s.style.setProperty('--ry', '-12deg'); });
+})();
+
+/* ===== S. SMOOTH SCROLL on the landing page (mouse wheel only) ===== */
+(function smoothScroll() {
+  if (matchMedia('(pointer: coarse)').matches || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const hv = $('v-home'); let target = 0, cur = 0, raf = 0;
+  const tick = () => { cur += (target - cur) * .11; hv.scrollTop = cur; if (Math.abs(target - cur) > .5) raf = requestAnimationFrame(tick); else { hv.scrollTop = target; raf = 0; } };
+  hv.addEventListener('wheel', e => {
+    if (e.ctrlKey || e.defaultPrevented) return;
+    for (let el = e.target; el && el !== hv; el = el.parentElement) { const o = getComputedStyle(el).overflowY; if ((o === 'auto' || o === 'scroll') && el.scrollHeight > el.clientHeight) return; }   // let inner scrollers work
+    e.preventDefault(); if (!raf) { cur = hv.scrollTop; target = cur; }
+    target = Math.max(0, Math.min(hv.scrollHeight - hv.clientHeight, target + e.deltaY * (e.deltaMode === 1 ? 32 : 1))); if (!raf) raf = requestAnimationFrame(tick);
+  }, { passive: false });
+  hv.addEventListener('scroll', () => { if (!raf) { cur = target = hv.scrollTop; } });
 })();
 renderRecents(); renderDash(); renderBills();
 </script>
