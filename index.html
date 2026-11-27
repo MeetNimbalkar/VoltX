@@ -587,7 +587,7 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
 [data-theme=dark] .arc-btn:hover{color:#07140f}
 @media(hover:none){.arc-btn{opacity:.9;transform:translateY(-50%) scale(1);pointer-events:auto}}
 /* ===== DRUM OF TYPE: the manifesto turns on a cylinder as you scroll (CSS scroll timeline) ===== */
-.drum{--ink:#07130e;--pg:var(--accent);--seg:calc(100% / (var(--n) - 1));position:relative;z-index:1;height:calc(var(--n) * 36vh + 100vh);view-timeline:--read block;background:var(--pg);color:var(--ink);margin:50px 0 30px}
+.drum{--ink:var(--text);--pg:var(--bg);--seg:calc(100% / (var(--n) - 1));position:relative;z-index:1;height:calc(var(--n) * 36vh + 100vh);view-timeline:--read block;background:var(--pg);color:var(--ink);margin:50px 0 30px}
 .dstage{position:sticky;top:0;height:calc(100vh - 52px);display:grid;place-items:center;perspective:900px;overflow:hidden}
 .dr{list-style:none;margin:0;padding:0;position:relative;width:100%;height:1.1em;font:400 clamp(32px,7.4vw,150px)/1 'Archivo Black',Inter,sans-serif;letter-spacing:-.045em;text-align:center;transform-style:preserve-3d}
 .dr li{position:absolute;inset:0;white-space:nowrap;transform-origin:50% 50% -1.45em;backface-visibility:hidden;will-change:transform,opacity,filter;animation:roll linear both;animation-timeline:--read;animation-range:contain calc((var(--i) - 2) * var(--seg)) contain calc((var(--i) + 2) * var(--seg))}
@@ -1889,7 +1889,7 @@ applyUI();
     `<div class="arc-card"><div class="sdgi" data-n="${g[1]}"><img src="${g[0]}" alt="SDG ${g[1]}: ${g[2]}" onerror="this.remove()"></div></div>`).join('')}</div>
     <button class="arc-btn l" id="arcPrev" aria-label="Previous goal">${chev('M15 5l-7 7 7 7')}</button><button class="arc-btn r" id="arcNext" aria-label="Next goal">${chev('M9 5l7 7-7 7')}</button></div><p class="arc-desc" id="arcD"></p>`;
   const n = G.length, cards = [...box.querySelectorAll('.arc-card')], reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let active = 3, pos = 3, vel = 0, visible = false, hover = false, raf = 0, shown = -1, R = 560, stp = 36, x0 = 0, moved = 0;
+  let pos = 3, tgt = null, last = 0, visible = false, hover = false, raf = 0, shown = -1, R = 560, stp = 36, x0 = 0, moved = 0;
   const idx = v => ((Math.round(v) % n) + n) % n;
   function metrics() { const W = box.clientWidth || 900, small = W < 700, S = small ? 220 : 330; R = S * 1.7; stp = (S + 26) / R * 57.2958; box.style.setProperty('--S', S + 'px'); box.style.setProperty('--P', (small ? 760 : 940) + 'px'); box.style.setProperty('--sh', Math.round(S * .92) + 'px'); render(); }
   function render() {                                                    // cards sit on a ring that wraps around: turned toward the centre, flat in the middle, fading further round
@@ -1899,12 +1899,18 @@ applyUI();
     const b = idx(pos);
     if (b !== shown) { shown = b; $('arcN').textContent = 'SDG ' + String(G[b][1]).padStart(2, '0'); $('arcT').textContent = G[b][2]; $('arcD').textContent = G[b][3]; cards.forEach((el, i) => el.style.zIndex = n - Math.min((i - b + n) % n, (b - i + n) % n)); }
   }
-  function step() { raf = 0; if (!visible) return; vel += (active - pos) * .09; vel *= .76; pos += vel; if (Math.abs(active - pos) < .002 && Math.abs(vel) < .002) { pos = active; vel = 0; } render(); if (pos !== active) raf = requestAnimationFrame(step); }
-  const wake = () => { if (reduced) { pos = active; render(); } else if (!raf && visible) raf = requestAnimationFrame(step); };
-  const go = d => { active += d; wake(); };
+  const SPEED = .2;                                                      // cards per second: a slow, steady camera roll that never stops on a card
+  function step(now) {
+    raf = 0; if (!visible) { last = 0; return; }
+    const dt = Math.min(.05, (now - (last || now)) / 1000); last = now;   // time-based, so it is equally smooth at 60, 120 or 240 Hz
+    if (tgt !== null) { pos += (tgt - pos) * (1 - Math.exp(-dt * 6)); if (Math.abs(tgt - pos) < .004) { pos = tgt; tgt = null; } }   // arrows glide, then the roll carries on
+    else if (!hover) pos += SPEED * dt;
+    render(); raf = requestAnimationFrame(step);
+  }
+  const wake = () => { if (reduced) { if (tgt !== null) { pos = tgt; tgt = null; } render(); } else if (!raf && visible) raf = requestAnimationFrame(step); };
+  const go = d => { tgt = (tgt !== null ? tgt : Math.round(pos)) + d; wake(); };
   metrics(); new ResizeObserver(metrics).observe(box);
   new IntersectionObserver(en => { visible = en[0] ? en[0].isIntersecting : true; if (visible) { box.classList.add('go'); wake(); } }, { threshold: .15 }).observe(box);
-  if (!reduced) setInterval(() => { if (visible && !hover && !document.hidden) go(1); }, 3200);   // turns by itself, pauses while you hover
   box.addEventListener('pointerenter', () => hover = true); box.addEventListener('pointerleave', () => { hover = false; });
   $('arcPrev').onclick = () => go(-1); $('arcNext').onclick = () => go(1);
   box.addEventListener('keydown', e => { if (e.key === 'ArrowLeft') go(-1); if (e.key === 'ArrowRight') go(1); });
