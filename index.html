@@ -621,6 +621,24 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
   .dr{height:auto;transform-style:flat;font-size:clamp(34px,9vw,96px)}.dr li{position:static;animation:none;transform:none;opacity:1;filter:none;white-space:normal;margin:.1em 0;backface-visibility:visible}
   .cog,.dmeter,.dh2{display:none}
 }
+/* team */
+.team{margin-top:8px}
+.trow{position:relative;border-top:1px solid var(--line);transition:opacity .4s,background .4s}.trow:last-child{border-bottom:1px solid var(--line)}
+.team.has .trow:not(.act){opacity:.3}
+.tr-top{display:flex;flex-direction:column;gap:10px;padding:30px 0;cursor:default}
+.tr-name{display:flex;align-items:baseline;gap:clamp(18px,3vw,44px);transition:transform .5s cubic-bezier(.2,.8,.2,1)}.trow.act .tr-name{transform:translateX(16px)}
+.tr-n{font:500 12px 'JetBrains Mono',ui-monospace,monospace;color:var(--muted)}
+.tr-name h3{margin:0;font-family:'Instrument Serif',Georgia,serif;font-weight:400;font-size:clamp(34px,5.4vw,72px);line-height:1;letter-spacing:-.02em;color:var(--muted);transition:color .3s}.trow.act .tr-name h3{color:var(--text)}
+.tr-role{display:flex;align-items:center;justify-content:space-between;gap:24px;font-size:12px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.tr-ar{display:none;color:var(--text);opacity:0;transform:translateX(-10px);transition:opacity .3s,transform .4s}.trow.act .tr-ar{opacity:1;transform:none}
+.tr-pm{width:14px;height:14px;position:relative}.tr-pm::before,.tr-pm::after{content:'';position:absolute;left:0;right:0;top:50%;height:1.5px;background:currentColor;transition:transform .3s}.tr-pm::after{transform:rotate(90deg)}.trow.open .tr-pm::after{transform:rotate(0)}
+.tr-acc{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease}.tr-acc>div{overflow:hidden}.trow.open .tr-acc{grid-template-rows:1fr}.tr-acc .tp{margin:0 0 22px;aspect-ratio:16/9}
+.tp{position:relative;border-radius:12px;overflow:hidden;background:var(--panel2);display:grid;place-items:center}.tp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tp:empty::after,.tp:not(:has(img))::after{content:attr(data-i);font-family:'Instrument Serif',Georgia,serif;font-size:56px;color:var(--accent)}
+.tcard{position:fixed;left:0;top:0;z-index:70;pointer-events:none;width:300px;opacity:0;scale:.6;filter:blur(10px);transition:opacity .35s,scale .45s cubic-bezier(.34,1.56,.64,1),filter .35s;display:none}
+.tcard .tp{height:240px;border:1px solid var(--line);box-shadow:0 24px 50px -20px rgba(0,0,0,.45)}
+.tcard span{display:block;margin-top:8px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}.tcard.on{opacity:1;scale:1;filter:none}
+@media(min-width:768px){.tcard{display:block}.tr-top{flex-direction:row;align-items:center;justify-content:space-between;padding:44px 0}.tr-role{justify-content:flex-end;gap:36px}.tr-ar{display:block}.tr-pm,.tr-acc{display:none}}
 </style>
 </head>
 <body>
@@ -653,6 +671,7 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
       <button class="icon" id="sideBtn" onclick="toggleSide()" title="Hide / show sidebar (Ctrl+B)" style="margin-right:auto"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>
       <a onclick="go('home','flow')">Workflow</a>
       <a onclick="go('home','about')">About Us</a>
+      <a onclick="go('home','team')">Team</a>
       <a onclick="go('home','what')">What We Do</a>
       <a onclick="go('home','provide')">What We Provide</a>
       <button class="icon" id="themeBtn" onclick="toggleTheme()" title="Toggle theme"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
@@ -775,6 +794,7 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
             <div class="card"><h3>Room Scanner</h3><p>Finds appliances and lighting in a room video and suggests changes.</p></div>
             <div class="card"><h3>Smart alerts</h3><p>Warnings for high usage and estimated savings.</p></div>
             <div class="card"><h3>Personal dashboard</h3><p>Built only from the data you add. Nothing made up.</p></div></div></div>
+        <div class="sec sec3d" id="team"><h2>Our Team</h2><div class="team" id="teamList"></div></div>
         <section class="closer reveal"><h2>Start with <em>one bill.</em></h2><p>Turn a photo into a dashboard, and a dashboard into savings.</p>
           <div class="cta"><button class="btn lg mag" onclick="go('billchat')">Read my bill<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><button class="btn lg mag" onclick="go('room')">Scan my room<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div></section>
       </div>
@@ -1899,7 +1919,7 @@ applyUI();
     const b = idx(pos);
     if (b !== shown) { shown = b; $('arcN').textContent = 'SDG ' + String(G[b][1]).padStart(2, '0'); $('arcT').textContent = G[b][2]; $('arcD').textContent = G[b][3]; cards.forEach((el, i) => el.style.zIndex = n - Math.min((i - b + n) % n, (b - i + n) % n)); }
   }
-  const SPEED = .2;                                                      // cards per second: a slow, steady camera roll that never stops on a card
+  const SPEED = .45;                                                      // cards per second: a slow, steady camera roll that never stops on a card
   function step(now) {
     raf = 0; if (!visible) { last = 0; return; }
     const dt = Math.min(.05, (now - (last || now)) / 1000); last = now;   // time-based, so it is equally smooth at 60, 120 or 240 Hz
@@ -1924,6 +1944,25 @@ applyUI();
   const d = $('drum'), hv = $('v-home'), st = d.querySelector('.dstage');
   const upd = () => { const r = d.getBoundingClientRect(), top = hv.getBoundingClientRect().top, span = r.height - st.offsetHeight; d.style.setProperty('--p', span > 0 ? Math.min(1, Math.max(0, (top - r.top) / span)).toFixed(4) : 0); };
   hv.addEventListener('scroll', upd, { passive: true }); upd();
+})();
+/* ===== V. TEAM: names in a list; on desktop a photo follows the cursor, on phones a row opens like an accordion (vanilla port) ===== */
+(function team() {
+  const T = [['Meet Nimbalkar', 'Lead Developer, Backend', 'meet.png'], ['Vedant Patel', 'Frontend and Element Developer', 'vedant.png'], ['Nisarg Patel', 'Backend Development', 'nisarg.png'], ['Krishiv Patel', 'UI/UX', 'krishiv.png'], ['Soham Panchal', 'Project Analyst', 'soham.png']];
+  const list = $('teamList'), mob = matchMedia('(max-width: 767px)'), ini = n => n.split(' ').map(w => w[0]).join('');
+  const img = (t, c) => `<div class="tp" data-i="${ini(t[0])}"><img class="${c}" src="${t[2]}" alt="${t[0]}" onerror="this.remove()"></div>`;
+  list.innerHTML = T.map((t, i) => `<div class="trow" data-k="${i}"><div class="tr-top"><div class="tr-name"><span class="tr-n">0${i + 1}</span><h3>${t[0]}</h3></div>
+    <div class="tr-role"><span>${t[1]}</span><i class="tr-pm"></i><svg class="tr-ar" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></div></div>
+    <div class="tr-acc"><div>${img(t, 'ta')}</div></div></div>`).join('');
+  const card = document.createElement('div'); card.className = 'tcard'; card.innerHTML = '<div class="tp"><img alt=""></div><span></span>'; document.body.appendChild(card);
+  const ci = card.querySelector('img'), tp = card.querySelector('.tp'), cs = card.querySelector('span');
+  let tx = 0, ty = 0, cx = 0, cy = 0, on = false, raf = 0, last = 0;
+  const tick = now => { const dt = Math.min(.05, (now - (last || now)) / 1000); last = now; const k = 1 - Math.exp(-dt * 12); cx += (tx - cx) * k; cy += (ty - cy) * k; card.style.transform = `translate(${cx}px,${cy}px)`;
+    if (on || Math.abs(tx - cx) + Math.abs(ty - cy) > .5) raf = requestAnimationFrame(tick); else { raf = 0; last = 0; } };    // spring-like follow, same feel at any refresh rate
+  function show(i) { on = i !== null; list.classList.toggle('has', on); card.classList.toggle('on', on); list.querySelectorAll('.trow').forEach((r, k) => r.classList.toggle('act', k === i));
+    if (on) { ci.style.display = ''; ci.onerror = () => { ci.style.display = 'none'; }; ci.src = T[i][2]; tp.dataset.i = ini(T[i][0]); cs.textContent = T[i][1]; } if (!raf) raf = requestAnimationFrame(tick); }
+  list.addEventListener('pointermove', e => { if (mob.matches) return; tx = e.clientX + 20; ty = e.clientY + 20; if (!raf) { cx = tx; cy = ty; raf = requestAnimationFrame(tick); } });
+  list.querySelectorAll('.trow').forEach((r, i) => { r.addEventListener('pointerenter', () => { if (!mob.matches) show(i); }); r.addEventListener('pointerleave', () => { if (!mob.matches) show(null); });
+    r.addEventListener('click', () => { if (!mob.matches) return; const o = r.classList.contains('open'); list.querySelectorAll('.trow').forEach(x => x.classList.remove('open')); if (!o) r.classList.add('open'); }); });
 })();
 renderRecents(); renderDash(); renderBills();
 </script>
