@@ -639,6 +639,32 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
 .tcard .tp{height:240px;border:1px solid var(--line);box-shadow:0 24px 50px -20px rgba(0,0,0,.45)}
 .tcard span{display:block;margin-top:8px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}.tcard.on{opacity:1;scale:1;filter:none}
 @media(min-width:768px){.tcard{display:block}.tr-top{flex-direction:row;align-items:center;justify-content:space-between;padding:44px 0}.tr-role{justify-content:flex-end;gap:36px}.tr-ar{display:block}.tr-pm,.tr-acc{display:none}}
+/* animated tabs */
+.tabs{position:relative;display:flex;gap:4px;margin-right:6px}
+.tabs button{position:relative;z-index:1;padding:7px 13px;font-size:13.5px;font-weight:500;color:var(--text);border-radius:8px;transition:opacity .3s;-webkit-tap-highlight-color:transparent}
+.tabs button:not(.on):hover{opacity:.6}.tabs button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.bub{position:absolute;top:0;bottom:0;left:0;width:0;background:#fff;mix-blend-mode:difference;border-radius:8px;z-index:10;pointer-events:none;opacity:0;transition:left .6s cubic-bezier(.34,1.35,.64,1),width .6s cubic-bezier(.34,1.35,.64,1),opacity .3s}
+@media(max-width:860px){.tabs{display:none}}
+/* info icons + calculator */
+.ib{display:inline-grid;place-items:center;width:15px;height:15px;margin-left:6px;border-radius:50%;border:1px solid var(--muted);color:var(--muted);font:600 9.5px/1 Inter,sans-serif;font-style:normal;cursor:help;position:relative;vertical-align:middle;transition:color .2s,border-color .2s,background .2s;text-transform:none;letter-spacing:0}
+.ib:hover,.ib:focus-visible{color:var(--bg);background:var(--text);border-color:var(--text);outline:0}
+.ib::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 9px);left:-8px;width:max-content;max-width:260px;padding:9px 12px;border-radius:10px;background:var(--text);color:var(--bg);font:400 12px/1.5 Inter,sans-serif;text-align:left;opacity:0;pointer-events:none;transform:translateY(5px);transition:opacity .2s,transform .25s;z-index:80;white-space:normal}
+.ib:hover::after,.ib:focus-visible::after{opacity:1;transform:none}.cres .ib::after{left:auto;right:-8px}.ib.static{margin:0 3px}
+.cgrid2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.8fr);gap:26px;align-items:start}@media(max-width:960px){.cgrid2{grid-template-columns:minmax(0,1fr)}}
+.cleft{display:flex;flex-direction:column;gap:16px;min-width:0}.cfs h3{font-size:14px;font-weight:600;margin-bottom:14px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px 16px}
+.cf{display:flex;flex-direction:column;gap:6px;min-width:0}.cl{font-size:12.5px;color:var(--muted);display:flex;align-items:center}
+.cin{position:relative;display:block}.cin input{padding-right:62px}.cin em{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-style:normal;font-size:11.5px;color:var(--muted);pointer-events:none}
+.cnote{font-size:12.5px;color:var(--muted);margin-top:12px;line-height:1.5}
+.srow,.arow{display:grid;grid-template-columns:auto 1fr auto 1fr 28px;gap:8px;align-items:center;margin-bottom:8px;font-size:12.5px}.arow{grid-template-columns:1.4fr 1fr .7fr 1fr 28px}
+.srow .x,.arow .x{color:var(--muted);border-radius:6px}.srow .x:hover,.arow .x:hover{color:var(--bad)}
+.cbtns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.cres{position:sticky;top:12px}.cres .card:hover{transform:none}
+.ctot-l{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center}
+.ctot{font-family:'Instrument Serif',Georgia,serif;font-size:clamp(52px,6vw,76px);line-height:1;letter-spacing:-.02em;margin:8px 0 6px;transition:color .3s}
+.cmeta{font-size:13px;color:var(--muted);margin-bottom:14px}
+.cbar{display:flex;height:8px;border-radius:6px;overflow:hidden;gap:2px;margin-bottom:12px}.cbar i{background:var(--c);transition:flex .5s cubic-bezier(.2,.8,.2,1)}
+.cst{font-size:12.5px;margin-top:12px}.cwhat{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}.cwhat input[type=range]{padding:0;margin:10px 0 6px;accent-color:var(--accent);background:none;border:0}
 </style>
 </head>
 <body>
@@ -654,6 +680,7 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
     <button class="nav on" data-nav="home" onclick="go('home')"><svg class="ni" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Home</button>
     <button class="nav" onclick="newChat()"><svg class="ni" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>New chat</button>
     <button class="nav" data-nav="room" onclick="go('room')"><svg class="ni" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg>Room Scanner</button>
+    <button class="nav" data-nav="calc" onclick="go('calc')"><svg class="ni" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M16 12h0M8 16h2M12 16h2M16 16h0"/></svg>Bill Calculator</button>
     <button class="nav" data-nav="plugs" onclick="go('plugs')"><svg class="ni" viewBox="0 0 24 24"><path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/></svg>Smart Plugs</button>
     <button class="nav" data-nav="billchat" onclick="go('billchat')"><svg class="ni" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/></svg>Bill Reader</button>
     <button class="nav" data-nav="setup" onclick="go('setup')"><svg class="ni" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 8h2M13 8h2M9 12h2M13 12h2M10 21v-4h4v4"/></svg>Residential / Commercial</button>
@@ -669,11 +696,7 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
     <!-- ===== TOP MENU ===== -->
     <header class="top">
       <button class="icon" id="sideBtn" onclick="toggleSide()" title="Hide / show sidebar (Ctrl+B)" style="margin-right:auto"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button>
-      <a onclick="go('home','flow')">Workflow</a>
-      <a onclick="go('home','about')">About Us</a>
-      <a onclick="go('home','team')">Team</a>
-      <a onclick="go('home','what')">What We Do</a>
-      <a onclick="go('home','provide')">What We Provide</a>
+      <nav class="tabs" id="tabs"><span class="bub" id="bub"></span><button data-t="flow" onclick="tabGo('flow')">Workflow</button><button data-t="calc" onclick="tabGo('calc')">Calculator</button><button data-t="about" onclick="tabGo('about')">About Us</button><button data-t="team" onclick="tabGo('team')">Team</button><button data-t="what" onclick="tabGo('what')">What We Do</button><button data-t="provide" onclick="tabGo('provide')">What We Provide</button></nav>
       <button class="icon" id="themeBtn" onclick="toggleTheme()" title="Toggle theme"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
     </header>
 
@@ -840,6 +863,7 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
     </section>
 
     <section class="view hidden" id="v-plugs"></section>
+    <section class="view hidden" id="v-calc"></section>
     <!-- ===== AI WORKFLOW PAGES (built by initWf) ===== -->
     <section class="view hidden" id="v-billchat"></section>
     <section class="view hidden" id="v-room"></section>
@@ -889,12 +913,13 @@ function toggleTheme() {
 function go(view, anchor) {
   document.body.classList.remove('sideopen');
   if (window.speechSynthesis) speechSynthesis.cancel();
-  ['home','setup','chat','billchat','room','plugs'].forEach(v => $('v-'+v).classList.toggle('hidden', v !== view));
+  ['home','setup','chat','billchat','room','plugs','calc'].forEach(v => $('v-'+v).classList.toggle('hidden', v !== view));
   document.querySelectorAll('[data-nav]').forEach(n => n.classList.toggle('on', n.dataset.nav === view));
   const el = $('v-'+view); el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
   if (view === 'home') { renderDash(); renderBills(); if (anchor) setTimeout(() => $(anchor).scrollIntoView({ behavior: 'smooth' }), 80); else el.scrollTop = 0; }
   if (view === 'setup') renderSetup();
   if (view === 'plugs') renderPlugs();
+  tabSync(view, anchor);
 }
 function toast(t) { const d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 2800); }
 function pick(id) { $(id).click(); }
@@ -1647,6 +1672,140 @@ function exportCSV() {                                           // one CSV: pro
   a.href = URL.createObjectURL(blob); a.download = `voltx-report-${new Date().toISOString().slice(0, 10)}.csv`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast('CSV report downloaded');
 }
 initPlugs(); setInterval(pollPlugs, 10000); pollPlugs();
+
+/* ===== W. MENU TABS (sliding bubble) + ELECTRICITY BILL CALCULATOR ===== */
+function tabSync(view, anchor) {
+  const b = $('tabs').querySelector(`[data-t="${view === 'calc' ? 'calc' : view === 'home' ? anchor : ''}"]`), bub = $('bub');
+  $('tabs').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+  if (b) { bub.style.left = b.offsetLeft + 'px'; bub.style.width = b.offsetWidth + 'px'; bub.style.opacity = 1; } else bub.style.opacity = 0;
+}
+function tabGo(t) { t === 'calc' ? go('calc') : go('home', t); }
+addEventListener('resize', () => { const b = $('tabs').querySelector('.on'); if (b) { $('bub').style.left = b.offsetLeft + 'px'; $('bub').style.width = b.offsetWidth + 'px'; } });
+
+const CALC_SEC = [   // [section title, fields]; field = [id, label, type, unit-or-options, tip]
+  ['Meter and usage', [
+    ['mode', 'Usage source', 'select', ['Meter readings', 'Units directly'], 'Meter readings: VoltX subtracts the previous reading from the current one and applies the multiplying factor. Units directly: type the kWh printed on your bill.'],
+    ['prev', 'Previous meter reading', 'number', 'kWh', 'The meter reading at the start of the billing period (the "current reading" on your last bill).'],
+    ['curr', 'Current meter reading', 'number', 'kWh', 'The meter reading at the end of the billing period.'],
+    ['mf', 'Meter multiplying factor', 'number', 'x', 'Most home meters use 1. Some commercial meters have a higher factor (CT/PT ratio) printed on the bill; units are multiplied by it.'],
+    ['units', 'Units consumed', 'number', 'kWh', 'Total kWh used. Only used when "Units directly" is selected.'],
+    ['days', 'Billing days', 'number', 'days', 'Length of the billing period. Used to pro-rate fixed charges and to show your cost per day.']]],
+  ['Connection', [
+    ['cat', 'Consumer category', 'select', ['Residential', 'Commercial', 'Industrial', 'Agricultural'], 'Your tariff category. On a real bill it decides which rates apply; here it is just a label for your summary.'],
+    ['phase', 'Phase', 'select', ['Single phase', 'Three phase'], 'Single phase suits most homes; three phase is for big loads, shops and industry. Label only.'],
+    ['load', 'Sanctioned load', 'number', 'kW', 'The load your connection is approved for. Fixed or demand charges are usually billed per kW of this load.']]],
+  ['Time of day (optional)', [
+    ['peakUnits', 'Units used in peak hours', 'number', 'kWh', 'For time-of-day tariffs: units used during the expensive peak window. Leave blank if your tariff has no time-of-day pricing.'],
+    ['peakPct', 'Peak surcharge', 'number', '%', 'Extra percent added to the average energy rate for peak-hour units.'],
+    ['offPct', 'Off-peak rebate', 'number', '%', 'Percent taken off the average energy rate for off-peak units (total units minus peak units).']]],
+  ['Fixed and other charges', [
+    ['fixedLoad', 'Fixed charge per kW', 'number', 'per kW', 'Demand or fixed charge per kW of sanctioned load per month.'],
+    ['fixedFlat', 'Fixed charge (flat)', 'number', 'per month', 'A flat monthly fixed charge that does not depend on load.'],
+    ['prorate', 'Pro-rate fixed charges', 'select', ['Yes', 'No'], 'Yes: fixed charges are scaled by billing days divided by 30. No: they are charged in full.'],
+    ['meterRent', 'Meter rent', 'number', 'per month', 'Monthly rent for the meter, if your provider charges it.'],
+    ['service', 'Service / other charges', 'number', 'amount', 'Any other connection, service or administration charge on the bill.']]],
+  ['Adjustments, duty and tax', [
+    ['fuel', 'Fuel / power purchase adjustment', 'number', 'per unit', 'FPPCA: an extra amount per unit that covers changes in the provider\'s fuel and power purchase cost.'],
+    ['fuelPct', 'Fuel adjustment (percent)', 'number', '%', 'The same adjustment expressed as a percent of the energy charge, if your bill uses that form.'],
+    ['pf', 'Power factor', 'number', '0 to 1', 'How efficiently your load uses power. Commercial and industrial connections are penalised for a low power factor. Leave blank for homes.'],
+    ['pfThr', 'Power factor threshold', 'number', '', 'Penalty applies below this power factor. Commonly 0.90.'],
+    ['pfPen', 'Penalty per 0.01 below', 'number', '%', 'Percent of (energy + fixed charges) added for each 0.01 that power factor is below the threshold.'],
+    ['duty', 'Electricity duty', 'number', '%', 'State duty on the energy, fixed and fuel charges, in percent.'],
+    ['tax', 'GST / other tax', 'number', '%', 'GST, municipal or other tax in percent, applied on the charges plus duty.'],
+    ['subU', 'Subsidy per unit', 'number', 'per unit', 'Government subsidy deducted for every unit consumed.'],
+    ['subFlat', 'Flat subsidy / rebate', 'number', 'amount', 'A fixed subsidy or rebate deducted from the bill.']]],
+  ['Solar and net metering', [
+    ['exp', 'Solar units exported', 'number', 'kWh', 'Units your solar system sent back to the grid in this period (net metering).'],
+    ['expRate', 'Export credit rate', 'number', 'per unit', 'Credit paid for each exported unit. The credit is deducted from the bill.']]],
+  ['Payment', [
+    ['arrears', 'Previous arrears', 'number', 'amount', 'Unpaid amount carried over from earlier bills. It is added to the total.'],
+    ['deposit', 'Security deposit adjusted', 'number', 'amount', 'Part of your security deposit adjusted against this bill. It is deducted from the total.'],
+    ['early', 'Paying before the due date?', 'select', ['No', 'Yes'], 'Choose Yes to apply the prompt payment discount below.'],
+    ['disc', 'Prompt payment discount', 'number', '%', 'Percent discount given by some providers for paying on or before the due date.'],
+    ['lateDays', 'Days paid after the due date', 'number', 'days', 'How late you expect to pay. Leave 0 if on time.'],
+    ['late', 'Late payment surcharge', 'number', '% per month', 'Surcharge as a percent of the bill for each month of delay (pro-rated by days).'],
+    ['round', 'Round final amount', 'select', ['Yes', 'No'], 'Yes: the payable amount is rounded to the nearest whole number, as many providers do.'],
+    ['cur', 'Currency symbol', 'text', '', 'Symbol shown in the results.']]]];
+const CALC_DEF = { mode: 'Meter readings', mf: '1', days: '30', cat: 'Residential', phase: 'Single phase', prorate: 'Yes', pfThr: '0.90', early: 'No', round: 'Yes', cur: '₹', slabMode: 'Telescopic (each block at its own rate)' };
+let CS = Object.assign({ slabs: [{ up: '100', rate: '' }, { up: '300', rate: '' }, { up: '', rate: '' }], apps: [] }, CALC_DEF, load('vx_calc', {}));
+const nz = v => { const x = parseFloat(String(v ?? '').replace(/,/g, '')); return isFinite(x) ? x : 0; };
+const IB = t => `<i class="ib" tabindex="0" data-tip="${t.replace(/"/g, '&quot;')}">i</i>`;
+function calcBill(S, uOver) {                                    // returns every line of the bill, in the order a provider prints them
+  const L = [], add = (k, label, amt, tip) => L.push({ k, label, amt, tip });
+  const units = uOver != null ? uOver : S.mode === 'Units directly' ? nz(S.units) : Math.max(0, nz(S.curr) - nz(S.prev)) * (nz(S.mf) || 1), days = nz(S.days) || 30;
+  let rem = units, prev = 0, energy = 0; const blocks = [];
+  if (S.slabMode.startsWith('Tele')) S.slabs.forEach(b => { const cap = b.up === '' ? Infinity : nz(b.up), size = Math.max(0, Math.min(rem, cap - prev)); if (size > 0 || b.up === '') { energy += size * nz(b.rate); blocks.push([prev, cap, size, nz(b.rate), size * nz(b.rate)]); } rem -= size; prev = Math.max(prev, cap); });
+  else { const b = S.slabs.find(x => x.up === '' || units <= nz(x.up)) || S.slabs[S.slabs.length - 1]; energy = units * nz(b.rate); blocks.push([0, Infinity, units, nz(b.rate), energy]); }
+  add('energy', 'Energy charge', energy, 'Units consumed priced through your slab rates. Telescopic: each block of units at its own rate; otherwise all units at the rate of the highest block reached.');
+  const avg = units ? energy / units : 0, peakU = Math.min(units, nz(S.peakUnits)), offU = units - peakU, tod = peakU * avg * nz(S.peakPct) / 100 - (nz(S.peakUnits) ? offU * avg * nz(S.offPct) / 100 : 0);
+  if (tod) add('tod', 'Time-of-day adjustment', tod, 'Peak-hour units cost more and off-peak units cost less, as a percent of your average energy rate.');
+  const fixed = (nz(S.fixedLoad) * nz(S.load) + nz(S.fixedFlat)) * (S.prorate === 'Yes' ? days / 30 : 1); if (fixed) add('fixed', 'Fixed / demand charge', fixed, 'Charge for keeping the connection and sanctioned load available, whether or not you use power.');
+  const fuel = units * nz(S.fuel) + energy * nz(S.fuelPct) / 100; if (fuel) add('fuel', 'Fuel / power purchase adjustment', fuel, 'Adjustment for changes in the provider\'s fuel and power purchase costs.');
+  const pf = nz(S.pf), thr = nz(S.pfThr), pen = pf > 0 && pf < thr ? Math.round((thr - pf) / .01) * nz(S.pfPen) / 100 * (energy + fixed) : 0; if (pen) add('pf', 'Power factor penalty', pen, 'Extra charge because the power factor is below the threshold.');
+  const sub = energy + tod + fixed + fuel + pen, duty = sub * nz(S.duty) / 100; if (duty) add('duty', 'Electricity duty', duty, 'State duty on the charges above.');
+  const tax = (sub + duty) * nz(S.tax) / 100; if (tax) add('tax', 'GST / other tax', tax, 'Tax applied on the charges plus duty.');
+  const misc = nz(S.meterRent) + nz(S.service); if (misc) add('misc', 'Meter rent and service charges', misc, 'Fixed meter rent and any other service charges.');
+  const gross = sub + duty + tax + misc, solar = -nz(S.exp) * nz(S.expRate), subs = -(units * nz(S.subU) + nz(S.subFlat));
+  if (solar) add('solar', 'Solar export credit', solar, 'Credit for units your solar system exported to the grid.'); if (subs) add('subs', 'Subsidy / rebate', subs, 'Government subsidy or rebate deducted from the bill.');
+  const net = gross + solar + subs, early = S.early === 'Yes' ? -net * nz(S.disc) / 100 : 0, late = nz(S.lateDays) > 0 ? net * nz(S.late) / 100 * nz(S.lateDays) / 30 : 0;
+  if (early) add('early', 'Prompt payment discount', early, 'Discount for paying on or before the due date.'); if (late) add('late', 'Late payment surcharge', late, 'Surcharge for paying after the due date.');
+  const arrears = nz(S.arrears), dep = -nz(S.deposit); if (arrears) add('arrears', 'Previous arrears', arrears, 'Unpaid amount carried over from earlier bills.'); if (dep) add('dep', 'Security deposit adjusted', dep, 'Part of your security deposit used against this bill.');
+  let total = net + early + late + arrears + dep; if (S.round === 'Yes') total = Math.round(total);
+  const cur = total - arrears - dep;
+  return { L, units, days, total, energy, blocks, current: cur, eff: units ? cur / units : 0, perDay: cur / days, gross, net };
+}
+function calcAppUnits() { return CS.apps.reduce((t, a) => t + nz(a.w) * nz(a.q || 1) * nz(a.h) * (nz(CS.days) || 30) / 1000, 0); }
+function buildCalc() {
+  const f = ([id, lab, type, o, tip]) => `<label class="cf"><span class="cl">${lab}${IB(tip)}</span>${type === 'select' ? `<select data-k="${id}">${o.map(x => `<option>${x}</option>`).join('')}</select>` : `<span class="cin"><input data-k="${id}" type="${type === 'number' ? 'text' : type}" inputmode="${type === 'number' ? 'decimal' : 'text'}" placeholder="${type === 'number' ? '0' : ''}">${type === 'number' && o ? `<em>${o}</em>` : ''}</span>`}</label>`;
+  const sec = ([t, fs], i) => `<div class="card cfs"><h3>${t}</h3><div class="cgrid">${fs.map(f).join('')}</div>${i === 0 ? '<div id="calcUsed" class="cnote"></div>' : ''}${i === 2 ? '' : ''}</div>`;
+  $('v-calc').innerHTML = `<div class="wf calc"><div class="wf-head"><div><h2>Electricity Bill Calculator</h2><p class="muted">Rebuild your bill line by line, see where every rupee goes, and test what a lower usage would save. Hover the <i class="ib static">i</i> icons for what each field does.</p></div>
+    <div class="wf-actions"><button class="chip" onclick="calcLatest()">Use my latest saved bill</button><button class="chip" onclick="calcExample()">Load example tariff</button><button class="chip" onclick="calcReset()">Reset</button></div></div>
+    <div class="cgrid2"><div class="cleft">${CALC_SEC.slice(0, 2).map(sec).join('')}
+      <div class="card cfs"><h3>Energy charge slabs${IB('Your tariff charges different rates as usage grows. Add a row for every block on your provider\'s tariff sheet.')}</h3>
+        <label class="cf"><span class="cl">Slab method${IB('Telescopic: each block of units is charged at its own rate (most common). Non-telescopic: all units are charged at the rate of the block your total falls into.')}</span><select data-k="slabMode"><option>Telescopic (each block at its own rate)</option><option>Non-telescopic (all units at the top block rate)</option></select></label>
+        <div id="slabRows"></div><button class="chip" onclick="slabAdd()">Add a slab</button></div>
+      ${CALC_SEC.slice(2).map(sec).join('')}
+      <div class="card cfs"><h3>Appliance estimator${IB('Estimate monthly units from what you run. Units = watts x quantity x hours per day x billing days / 1000. Use the result as your units, or import the appliances you saved.')}</h3><div id="appRows"></div>
+        <div class="cbtns"><button class="chip" onclick="appAdd()">Add appliance</button><button class="chip" onclick="appImport()">Import my appliances</button><button class="chip" onclick="appUse()">Use estimate as units</button><span class="muted" id="appTot"></span></div></div></div>
+      <aside class="cres"><div class="card"><div class="ctot-l">Amount payable${IB('The final amount after every charge, tax, credit and adjustment below.')}</div><div class="ctot" id="cTot">0</div><div class="cmeta" id="cMeta"></div>
+        <div class="cbar" id="cBar"></div><div id="cLines"></div><div id="cSlabs"></div>
+        <div class="cwhat"><div class="cl">What if I use less?${IB('Re-runs the whole bill with fewer units to show the saving, slabs and all.')}</div><input type="range" id="cRange" min="0" max="50" value="10"><div id="cWhat" class="muted"></div></div>
+        <div id="cCmp" class="cnote"></div><div class="cbtns"><button class="btn" onclick="calcSave()">Save to my bills</button><button class="chip" onclick="calcCopy()">Copy summary</button></div></div></aside></div></div>`;
+  $('v-calc').querySelectorAll('[data-k]').forEach(e => { e.value = CS[e.dataset.k] ?? ''; e.addEventListener('input', () => { CS[e.dataset.k] = e.value; calcRun(); }); });
+  $('cRange').addEventListener('input', calcRun); slabRender(); appRender(); calcRun();
+}
+function slabRender() { $('slabRows').innerHTML = CS.slabs.map((b, i) => `<div class="srow"><span class="muted">${i ? 'Up to' : 'First'}</span><input data-s="${i}" data-f="up" value="${b.up}" placeholder="${i === CS.slabs.length - 1 ? 'rest' : 'units'}" inputmode="decimal"><span class="muted">units at</span><input data-s="${i}" data-f="rate" value="${b.rate}" placeholder="rate" inputmode="decimal"><button class="x" onclick="slabDel(${i})" title="Remove">×</button></div>`).join('');
+  $('slabRows').querySelectorAll('input').forEach(e => e.addEventListener('input', () => { CS.slabs[+e.dataset.s][e.dataset.f] = e.value; calcRun(); })); }
+const slabAdd = () => { CS.slabs.splice(CS.slabs.length - 1, 0, { up: '', rate: '' }); slabRender(); calcRun(); }, slabDel = i => { if (CS.slabs.length > 1) { CS.slabs.splice(i, 1); slabRender(); calcRun(); } };
+function appRender() { $('appRows').innerHTML = CS.apps.map((a, i) => `<div class="arow"><input data-a="${i}" data-f="n" value="${esc(a.n || '')}" placeholder="Appliance"><input data-a="${i}" data-f="w" value="${a.w || ''}" placeholder="Watts" inputmode="decimal"><input data-a="${i}" data-f="q" value="${a.q || ''}" placeholder="Qty" inputmode="decimal"><input data-a="${i}" data-f="h" value="${a.h || ''}" placeholder="Hours/day" inputmode="decimal"><button class="x" onclick="appDel(${i})">×</button></div>`).join('') || '<p class="muted" style="font-size:13px">No appliances yet.</p>';
+  $('appRows').querySelectorAll('input').forEach(e => e.addEventListener('input', () => { CS.apps[+e.dataset.a][e.dataset.f] = e.value; calcRun(); })); }
+const appAdd = () => { CS.apps.push({ n: '', w: '', q: '1', h: '' }); appRender(); }, appDel = i => { CS.apps.splice(i, 1); appRender(); calcRun(); };
+function appImport() { profile.apps.forEach(a => { if (+a.watts) CS.apps.push({ n: a.name || a.type, w: a.watts, q: '1', h: a.hours || '' }); }); appRender(); calcRun(); if (!profile.apps.length) toast('No saved appliances yet'); }
+function appUse() { CS.mode = 'Units directly'; CS.units = calcAppUnits().toFixed(1); $('v-calc').querySelector('[data-k=mode]').value = CS.mode; $('v-calc').querySelector('[data-k=units]').value = CS.units; calcRun(); toast('Units set from the estimate'); }
+function calcFill() { $('v-calc').querySelectorAll('[data-k]').forEach(e => e.value = CS[e.dataset.k] ?? ''); slabRender(); appRender(); calcRun(); }
+function calcReset() { CS = Object.assign({ slabs: [{ up: '100', rate: '' }, { up: '300', rate: '' }, { up: '', rate: '' }], apps: [] }, CALC_DEF); calcFill(); }
+function calcExample() { Object.assign(CS, { slabs: [{ up: '100', rate: '3.2' }, { up: '300', rate: '4.8' }, { up: '', rate: '6.5' }], fixedFlat: '25', fuel: '0.45', duty: '15', meterRent: '10' }); calcFill(); toast('Example values loaded. Replace them with your provider\'s tariff.'); }
+function calcLatest() { const b = [...bills].sort((a, c) => a.month.localeCompare(c.month)).pop(); if (!b) return toast('No saved bills yet'); CS.mode = 'Units directly'; CS.units = String(b.units); CS.days = CS.days || '30'; if (b.rate && !CS.slabs.some(x => x.rate)) CS.slabs = [{ up: '', rate: String(b.rate) }]; calcFill(); toast('Loaded ' + (b.month || 'your latest bill')); }
+function calcRun() {
+  const R = calcBill(CS), cu = CS.cur || '', m = v => cu + (Math.abs(v) >= 1000 ? v.toLocaleString(undefined, { maximumFractionDigits: 2 }) : v.toFixed(2));
+  $('cTot').textContent = cu + (CS.round === 'Yes' ? R.total.toLocaleString() : R.total.toFixed(2));
+  $('cMeta').innerHTML = R.units ? `${R.units.toFixed(1)} kWh · ${m(R.eff)} per unit · ${m(R.perDay)} per day` : 'Enter your units and tariff rates to see the bill.';
+  $('calcUsed').textContent = CS.mode === 'Units directly' ? '' : `Units consumed = (${nz(CS.curr)} - ${nz(CS.prev)}) x ${nz(CS.mf) || 1} = ${R.units.toFixed(1)} kWh`;
+  const parts = R.L.filter(l => l.amt > 0 && !['arrears'].includes(l.k)), tot = parts.reduce((t, l) => t + l.amt, 0) || 1;
+  $('cBar').innerHTML = parts.map((l, i) => `<i style="flex:${l.amt / tot};--c:${['var(--accent)', '#6f8fa3', '#c9a24d', '#8e7fb0', '#c46b63', '#8a9a9c'][i % 6]}" title="${l.label}"></i>`).join('');
+  $('cLines').innerHTML = R.L.map(l => `<div class="kv"><span>${l.label}${IB(l.tip)}</span><b>${l.amt < 0 ? '-' : ''}${m(Math.abs(l.amt))}</b></div>`).join('');
+  $('cSlabs').innerHTML = R.blocks.length && R.energy ? `<table class="cst"><tr><th>Block</th><th>Units</th><th>Rate</th><th>Amount</th></tr>${R.blocks.map(b => `<tr><td>${b[1] === Infinity ? (b[0] ? 'Above ' + b[0] : 'All') : (b[0] + 1) + ' to ' + b[1]}</td><td>${b[2].toFixed(1)}</td><td>${b[3]}</td><td>${m(b[4])}</td></tr>`).join('')}</table>` : '';
+  const p = +$('cRange').value, R2 = calcBill(CS, R.units * (1 - p / 100));
+  $('cWhat').textContent = R.units ? `Using ${p}% less (${(R.units * p / 100).toFixed(0)} kWh) would save about ${m(R.current - R2.current)} on this bill.` : '';
+  const lb = [...bills].sort((a, c) => a.month.localeCompare(c.month)).pop();
+  $('cCmp').innerHTML = lb && lb.amount && R.units ? `Latest saved bill: ${lb.units} kWh and ${esc(lb.cur || cu)}${lb.amount}. This calculation is ${m(Math.abs(R.current - lb.amount))} ${R.current >= lb.amount ? 'higher' : 'lower'}.` : '';
+  $('appTot').textContent = CS.apps.length ? `Estimate: ${calcAppUnits().toFixed(1)} kWh` : '';
+  try { save('vx_calc', CS); } catch {}
+}
+function calcSave() { const R = calcBill(CS); if (!R.units) return toast('Enter your usage first'); const month = new Date().toISOString().slice(0, 7), rec = { id: Date.now(), month, units: +R.units.toFixed(1), amount: +R.current.toFixed(2), cur: CS.cur, period: ['', ''], chk: false, why: '', provider: 'Calculated in VoltX' };
+  const o = bills.findIndex(b => b.month === month); if (o >= 0) bills[o] = rec; else bills.push(rec); saveBills(); renderBills(); renderDash(); toast('Saved to your bills for ' + month); }
+function calcCopy() { const R = calcBill(CS), cu = CS.cur || ''; const t = `VoltX bill estimate\nUnits: ${R.units.toFixed(1)} kWh (${CS.days} days)\n` + R.L.map(l => `${l.label}: ${cu}${l.amt.toFixed(2)}`).join('\n') + `\nTotal payable: ${cu}${R.total}`; navigator.clipboard?.writeText(t).then(() => toast('Summary copied')); }
+buildCalc();
 
 /* ===== L. MOTION: energy network, scroll effects, tilt, ripple ===== */
 function countUp(root) {
