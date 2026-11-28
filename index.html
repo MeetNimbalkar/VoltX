@@ -665,6 +665,14 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
 .cmeta{font-size:13px;color:var(--muted);margin-bottom:14px}
 .cbar{display:flex;height:8px;border-radius:6px;overflow:hidden;gap:2px;margin-bottom:12px}.cbar i{background:var(--c);transition:flex .5s cubic-bezier(.2,.8,.2,1)}
 .cst{font-size:12.5px;margin-top:12px}.cwhat{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}.cwhat input[type=range]{padding:0;margin:10px 0 6px;accent-color:var(--accent);background:none;border:0}
+/* text loop in the closing call to action */
+.closer h2.tl{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;font-size:clamp(40px,7.4vw,108px);line-height:1.08}
+.tl-s{margin-right:.22em}
+.tl-w{position:relative;display:inline-block;overflow:hidden;width:0;opacity:0;transition:width .8s cubic-bezier(.65,0,.35,1),opacity .8s ease-in-out}
+.tl-w::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--accent) 12%,transparent) 55%,color-mix(in srgb,var(--accent) 26%,transparent))}
+.tl-r{position:relative;display:inline-block;white-space:nowrap;color:var(--accent);padding-right:.08em;font-style:italic}
+.tl-c{width:.06em;min-width:3px;height:.95em;margin-left:.04em;background:var(--accent);animation:tlblink .8s ease-in-out infinite alternate}
+@keyframes tlblink{from{opacity:1}to{opacity:.35}}
 </style>
 </head>
 <body>
@@ -818,7 +826,7 @@ body.ready .c-dash{animation-delay:.15s}body.ready .c-bill{animation-delay:.3s}b
             <div class="card"><h3>Smart alerts</h3><p>Warnings for high usage and estimated savings.</p></div>
             <div class="card"><h3>Personal dashboard</h3><p>Built only from the data you add. Nothing made up.</p></div></div></div>
         <div class="sec sec3d" id="team"><h2>Our Team</h2><div class="team" id="teamList"></div></div>
-        <section class="closer reveal"><h2>Start with <em>one bill.</em></h2><p>Turn a photo into a dashboard, and a dashboard into savings.</p>
+        <section class="closer reveal"><h2 class="tl" aria-label="Start with one bill, one room, one plug or one habit"><span class="tl-s">Start with</span><span class="tl-w" id="tlW"><span class="tl-r" id="tlR">one bill.</span></span><i class="tl-c"></i></h2><p>Turn a photo into a dashboard, and a dashboard into savings.</p>
           <div class="cta"><button class="btn lg mag" onclick="go('billchat')">Read my bill<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><button class="btn lg mag" onclick="go('room')">Scan my room<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div></section>
       </div>
       <footer class="foot"><div><span class="logo-t">Volt<i>X</i></span><p>Smarter energy. Lower bills.</p></div>
@@ -2013,8 +2021,10 @@ applyUI();
     const r = box.getBoundingClientRect(); w = Math.round(r.width); h = Math.round(r.height); if (w < 2 || h < 2) return;
     dpr = Math.min(window.devicePixelRatio || 1, 2); cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
     const mk = document.createElement('canvas'); mk.width = w; mk.height = h; const m = mk.getContext('2d', { willReadFrequently: true }); if (!m) return;
-    m.font = '100px ' + FACE; const fit = w * 1.02 / (m.measureText(WORD).width || 1) * 100; m.font = fit + 'px ' + FACE;
-    const bx = m.measureText(WORD), cap = bx.actualBoundingBoxAscent || fit * .72; m.fillStyle = '#000'; m.fillText(WORD, (w - bx.width) / 2, h + cap * CROP);   // word fills the width, bottom is cropped by the page edge
+    const F1 = '700 100px "Space Grotesk", sans-serif', F2 = 'italic 600 100px "Playfair Display", Georgia, serif';   // the exact faces of the VoltX logo: "Volt" + italic "X"
+    m.font = F1; const wa = m.measureText('Volt').width; m.font = F2; const wb = m.measureText('X').width;
+    const fit = w * 1.02 / ((wa + wb) || 1) * 100, k = fit / 100; m.font = F1.replace('100px', fit + 'px'); const cap = m.measureText('Volt').actualBoundingBoxAscent || fit * .72;
+    const x0 = (w - (wa + wb) * k) / 2, yb = h + cap * CROP; m.fillStyle = '#000'; m.fillText('Volt', x0, yb); m.font = F2.replace('100px', fit + 'px'); m.fillText('X', x0 + wa * k, yb);   // word fills the width, bottom is cropped by the page edge
     const img = m.getImageData(0, 0, w, h).data, cols = Math.ceil(w / GAP), rows = Math.ceil(h / GAP), tmp = [];
     for (let gy = 0; gy < rows; gy++) for (let gx = 0; gx < cols; gx++) {
       let sum = 0;
@@ -2052,7 +2062,7 @@ applyUI();
   new IntersectionObserver(en => { visible = en[0] ? en[0].isIntersecting : true; if (visible) wake(); }).observe(box);
   new MutationObserver(() => { colors(); wake(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   colors(); layout();
-  if (document.fonts) { document.fonts.load('100px "Archivo Black"').then(layout).catch(() => {}); document.fonts.ready.then(layout); }   // re-set the word once the real face has loaded
+  if (document.fonts) { Promise.all([document.fonts.load('700 100px "Space Grotesk"'), document.fonts.load('italic 600 100px "Playfair Display"')]).then(layout).catch(() => {}); document.fonts.ready.then(layout); }   // re-set the word once the real face has loaded
 })();
 
 /* ===== U. SDG COLLECTION: inside-of-a-cylinder gallery that turns by itself; hover shows arrows for manual control ===== */
@@ -2121,6 +2131,18 @@ applyUI();
   list.addEventListener('pointermove', e => { if (mob.matches) return; tx = e.clientX + 20; ty = e.clientY + 20; if (!raf) { cx = tx; cy = ty; raf = requestAnimationFrame(tick); } });
   list.querySelectorAll('.trow').forEach((r, i) => { r.addEventListener('pointerenter', () => { if (!mob.matches) show(i); }); r.addEventListener('pointerleave', () => { if (!mob.matches) show(null); });
     r.addEventListener('click', () => { if (!mob.matches) return; const o = r.classList.contains('open'); list.querySelectorAll('.trow').forEach(x => x.classList.remove('open')); if (!o) r.classList.add('open'); }); });
+})();
+/* ===== X. TEXT LOOP: a fixed phrase, a rotating word that unrolls and rolls up, and a blinking cursor (vanilla port) ===== */
+(function textLoop() {
+  const w = $('tlW'), r = $('tlR'); if (!w) return;
+  const T = ['one bill.', 'one room.', 'one plug.', 'one habit.'], reduced = matchMedia('(prefers-reduced-motion: reduce)').matches, DUR = 800, HOLD = 2400; let i = 0, timer = 0, on = false, started = false;
+  const fit = () => { w.style.width = r.offsetWidth + 'px'; w.style.opacity = 1; };
+  const cycle = () => { w.style.width = '0px'; w.style.opacity = 0;                                  // old word rolls up...
+    timer = setTimeout(() => { i = (i + 1) % T.length; r.textContent = T[i]; fit(); timer = setTimeout(cycle, HOLD); }, DUR); };   // ...new word unrolls
+  if (reduced) { w.style.width = 'auto'; w.style.opacity = 1; return; }
+  new IntersectionObserver(en => { on = en[0] ? en[0].isIntersecting : true; clearTimeout(timer);
+    if (on) { if (!started) { started = true; (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { fit(); timer = setTimeout(cycle, HOLD); }); } else timer = setTimeout(cycle, 600); } }).observe(w.parentElement);
+  addEventListener('resize', () => { if (started && w.style.opacity === '1') fit(); });
 })();
 renderRecents(); renderDash(); renderBills();
 </script>
